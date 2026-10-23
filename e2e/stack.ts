@@ -64,11 +64,17 @@ function launch(args: string[], cwd: string): ChildProcess {
   return child;
 }
 
-async function stopChild(child: ChildProcess): Promise<void> {
+/** SIGTERM first; a child that is still alive after the grace period is killed, and the log says so. */
+async function stopChild(child: ChildProcess, graceMs = 5_000): Promise<void> {
   if (!child.pid || child.exitCode !== null || child.signalCode !== null) return;
   const exited = once(child, 'exit');
   child.kill('SIGTERM');
+  const timer = setTimeout(() => {
+    console.error(`E2E: pid ${child.pid} ignored SIGTERM for ${graceMs} ms; sending SIGKILL.`);
+    child.kill('SIGKILL');
+  }, graceMs);
   await exited;
+  clearTimeout(timer);
 }
 
 async function stopVendor(): Promise<void> {
