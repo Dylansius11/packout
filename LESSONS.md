@@ -2,6 +2,11 @@
 
 Read the headlines before starting work. Format: `### YYYY-MM-DD: headline`, then what happened, root cause, rule going forward. Newest on top.
 
+### 2026-10-23: Hardhat 3.21 emits artifact typings that TypeScript 7 rejects
+- What happened: once contracts compiled, `tsc` failed on every generated `artifacts/**/artifacts.d.ts` with `TS1036: Statements are not allowed in ambient contexts`.
+- Root cause: Hardhat's declaration generator closes each artifact interface with `};`. The stray `;` is an empty statement, which TypeScript 7 refuses in a `.d.ts`.
+- Rule: keep the one-character fix as a pnpm patch (`patches/hardhat@3.21.0.patch`, registered in `pnpm-workspace.yaml`). Drop it once Hardhat ships the fix. Never use `skipLibCheck` or exclude the artifacts, because viem's typed reads depend on them.
+
 ### 2026-10-23: On Portaldot, a passing dry run says nothing about funding, and gas numbers are not Ethereum gas
 - What happened: creation `eth_call` and `eth_estimateGas` succeeded from a zero-balance address, with estimates around 3.4 × 10^15. A storage-writing call from the same address failed with `StorageDepositNotEnoughFunds`.
 - Root cause: pallet-revive folds weight and storage deposit into one gas scalar and only charges the deposit on real execution.

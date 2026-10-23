@@ -162,6 +162,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  hardhat@3.21.0: e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e
+
 importers:
 
   .:
@@ -183,10 +186,10 @@ importers:
     devDependencies:
       '@nomicfoundation/hardhat-toolbox-viem':
         specifier: 5.0.7
-        version: 5.0.7(853bfce65f1d97620c0aecf7375201b4)
+        version: 5.0.7(37f0e6fab00b35ac53b89ef41f69e7d8)
       hardhat:
         specifier: 3.21.0
-        version: 3.21.0
+        version: 3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e)
       viem:
         specifier: 2.57.10
         version: 2.57.10(typescript@7.0.2)(zod@3.25.76)
@@ -1774,73 +1777,73 @@ snapshots:
     dependencies:
       '@nomicfoundation/hardhat-utils': 5.0.0
 
-  '@nomicfoundation/hardhat-ignition-viem@3.1.6(@nomicfoundation/hardhat-ignition@3.1.9(@nomicfoundation/hardhat-verify@3.1.3(hardhat@3.21.0))(hardhat@3.21.0))(@nomicfoundation/hardhat-verify@3.1.3(hardhat@3.21.0))(@nomicfoundation/hardhat-viem@3.0.10(hardhat@3.21.0)(viem@2.57.10(typescript@7.0.2)(zod@3.25.76)))(@nomicfoundation/ignition-core@3.1.11)(hardhat@3.21.0)(viem@2.57.10(typescript@7.0.2)(zod@3.25.76))':
+  '@nomicfoundation/hardhat-ignition-viem@3.1.6(@nomicfoundation/hardhat-ignition@3.1.9(@nomicfoundation/hardhat-verify@3.1.3(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e)))(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e)))(@nomicfoundation/hardhat-verify@3.1.3(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e)))(@nomicfoundation/hardhat-viem@3.0.10(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))(viem@2.57.10(typescript@7.0.2)(zod@3.25.76)))(@nomicfoundation/ignition-core@3.1.11)(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))(viem@2.57.10(typescript@7.0.2)(zod@3.25.76))':
     dependencies:
       '@nomicfoundation/hardhat-errors': 3.1.3
-      '@nomicfoundation/hardhat-ignition': 3.1.9(@nomicfoundation/hardhat-verify@3.1.3(hardhat@3.21.0))(hardhat@3.21.0)
-      '@nomicfoundation/hardhat-verify': 3.1.3(hardhat@3.21.0)
-      '@nomicfoundation/hardhat-viem': 3.0.10(hardhat@3.21.0)(viem@2.57.10(typescript@7.0.2)(zod@3.25.76))
+      '@nomicfoundation/hardhat-ignition': 3.1.9(@nomicfoundation/hardhat-verify@3.1.3(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e)))(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))
+      '@nomicfoundation/hardhat-verify': 3.1.3(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))
+      '@nomicfoundation/hardhat-viem': 3.0.10(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))(viem@2.57.10(typescript@7.0.2)(zod@3.25.76))
       '@nomicfoundation/ignition-core': 3.1.11
-      hardhat: 3.21.0
+      hardhat: 3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e)
       viem: 2.57.10(typescript@7.0.2)(zod@3.25.76)
 
-  '@nomicfoundation/hardhat-ignition@3.1.9(@nomicfoundation/hardhat-verify@3.1.3(hardhat@3.21.0))(hardhat@3.21.0)':
+  '@nomicfoundation/hardhat-ignition@3.1.9(@nomicfoundation/hardhat-verify@3.1.3(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e)))(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))':
     dependencies:
       '@nomicfoundation/hardhat-errors': 3.1.3
-      '@nomicfoundation/hardhat-utils': 5.0.0
-      '@nomicfoundation/hardhat-verify': 3.1.3(hardhat@3.21.0)
+      '@nomicfoundation/hardhat-utils': 5.1.0
+      '@nomicfoundation/hardhat-verify': 3.1.3(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))
       '@nomicfoundation/ignition-core': 3.1.11
       '@nomicfoundation/ignition-ui': 3.2.0
-      hardhat: 3.21.0
+      hardhat: 3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e)
       json5: 2.2.3
       prompts: 2.4.2
     transitivePeerDependencies:
       - bufferutil
       - utf-8-validate
 
-  '@nomicfoundation/hardhat-keystore@3.1.2(hardhat@3.21.0)':
+  '@nomicfoundation/hardhat-keystore@3.1.2(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))':
     dependencies:
       '@noble/ciphers': 2.4.0
       '@noble/hashes': 2.4.0
       '@nomicfoundation/hardhat-errors': 3.1.3
-      '@nomicfoundation/hardhat-utils': 5.0.0
+      '@nomicfoundation/hardhat-utils': 5.1.0
       '@nomicfoundation/hardhat-zod-utils': 3.0.8(zod@3.25.76)
-      hardhat: 3.21.0
+      hardhat: 3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e)
       zod: 3.25.76
 
-  '@nomicfoundation/hardhat-network-helpers@3.0.12(hardhat@3.21.0)':
+  '@nomicfoundation/hardhat-network-helpers@3.0.12(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))':
     dependencies:
       '@nomicfoundation/hardhat-errors': 3.1.3
-      '@nomicfoundation/hardhat-utils': 5.0.0
-      hardhat: 3.21.0
+      '@nomicfoundation/hardhat-utils': 5.1.0
+      hardhat: 3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e)
 
   '@nomicfoundation/hardhat-node-test-reporter@3.1.1':
     dependencies:
       '@actions/core': 3.0.1
       jest-diff: 30.5.2
 
-  '@nomicfoundation/hardhat-node-test-runner@3.1.1(hardhat@3.21.0)':
+  '@nomicfoundation/hardhat-node-test-runner@3.1.1(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))':
     dependencies:
       '@nomicfoundation/hardhat-errors': 3.1.3
       '@nomicfoundation/hardhat-node-test-reporter': 3.1.1
-      '@nomicfoundation/hardhat-utils': 5.0.0
+      '@nomicfoundation/hardhat-utils': 5.1.0
       '@nomicfoundation/hardhat-zod-utils': 3.0.8(zod@3.25.76)
-      hardhat: 3.21.0
+      hardhat: 3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e)
       tsx: 4.23.15
       zod: 3.25.76
 
-  '@nomicfoundation/hardhat-toolbox-viem@5.0.7(853bfce65f1d97620c0aecf7375201b4)':
+  '@nomicfoundation/hardhat-toolbox-viem@5.0.7(37f0e6fab00b35ac53b89ef41f69e7d8)':
     dependencies:
-      '@nomicfoundation/hardhat-ignition': 3.1.9(@nomicfoundation/hardhat-verify@3.1.3(hardhat@3.21.0))(hardhat@3.21.0)
-      '@nomicfoundation/hardhat-ignition-viem': 3.1.6(@nomicfoundation/hardhat-ignition@3.1.9(@nomicfoundation/hardhat-verify@3.1.3(hardhat@3.21.0))(hardhat@3.21.0))(@nomicfoundation/hardhat-verify@3.1.3(hardhat@3.21.0))(@nomicfoundation/hardhat-viem@3.0.10(hardhat@3.21.0)(viem@2.57.10(typescript@7.0.2)(zod@3.25.76)))(@nomicfoundation/ignition-core@3.1.11)(hardhat@3.21.0)(viem@2.57.10(typescript@7.0.2)(zod@3.25.76))
-      '@nomicfoundation/hardhat-keystore': 3.1.2(hardhat@3.21.0)
-      '@nomicfoundation/hardhat-network-helpers': 3.0.12(hardhat@3.21.0)
-      '@nomicfoundation/hardhat-node-test-runner': 3.1.1(hardhat@3.21.0)
-      '@nomicfoundation/hardhat-verify': 3.1.3(hardhat@3.21.0)
-      '@nomicfoundation/hardhat-viem': 3.0.10(hardhat@3.21.0)(viem@2.57.10(typescript@7.0.2)(zod@3.25.76))
-      '@nomicfoundation/hardhat-viem-assertions': 3.1.4(@nomicfoundation/hardhat-viem@3.0.10(hardhat@3.21.0)(viem@2.57.10(typescript@7.0.2)(zod@3.25.76)))(hardhat@3.21.0)(viem@2.57.10(typescript@7.0.2)(zod@3.25.76))
+      '@nomicfoundation/hardhat-ignition': 3.1.9(@nomicfoundation/hardhat-verify@3.1.3(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e)))(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))
+      '@nomicfoundation/hardhat-ignition-viem': 3.1.6(@nomicfoundation/hardhat-ignition@3.1.9(@nomicfoundation/hardhat-verify@3.1.3(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e)))(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e)))(@nomicfoundation/hardhat-verify@3.1.3(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e)))(@nomicfoundation/hardhat-viem@3.0.10(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))(viem@2.57.10(typescript@7.0.2)(zod@3.25.76)))(@nomicfoundation/ignition-core@3.1.11)(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))(viem@2.57.10(typescript@7.0.2)(zod@3.25.76))
+      '@nomicfoundation/hardhat-keystore': 3.1.2(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))
+      '@nomicfoundation/hardhat-network-helpers': 3.0.12(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))
+      '@nomicfoundation/hardhat-node-test-runner': 3.1.1(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))
+      '@nomicfoundation/hardhat-verify': 3.1.3(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))
+      '@nomicfoundation/hardhat-viem': 3.0.10(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))(viem@2.57.10(typescript@7.0.2)(zod@3.25.76))
+      '@nomicfoundation/hardhat-viem-assertions': 3.1.4(@nomicfoundation/hardhat-viem@3.0.10(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))(viem@2.57.10(typescript@7.0.2)(zod@3.25.76)))(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))(viem@2.57.10(typescript@7.0.2)(zod@3.25.76))
       '@nomicfoundation/ignition-core': 3.1.11
-      hardhat: 3.21.0
+      hardhat: 3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e)
       viem: 2.57.10(typescript@7.0.2)(zod@3.25.76)
 
   '@nomicfoundation/hardhat-utils@5.0.0':
@@ -1867,28 +1870,28 @@ snapshots:
 
   '@nomicfoundation/hardhat-vendored@3.0.4': {}
 
-  '@nomicfoundation/hardhat-verify@3.1.3(hardhat@3.21.0)':
+  '@nomicfoundation/hardhat-verify@3.1.3(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))':
     dependencies:
       '@nomicfoundation/hardhat-errors': 3.1.3
-      '@nomicfoundation/hardhat-utils': 5.0.0
+      '@nomicfoundation/hardhat-utils': 5.1.0
       '@nomicfoundation/hardhat-zod-utils': 3.0.8(zod@3.25.76)
       cbor2: 2.4.0
-      hardhat: 3.21.0
+      hardhat: 3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e)
       zod: 3.25.76
 
-  '@nomicfoundation/hardhat-viem-assertions@3.1.4(@nomicfoundation/hardhat-viem@3.0.10(hardhat@3.21.0)(viem@2.57.10(typescript@7.0.2)(zod@3.25.76)))(hardhat@3.21.0)(viem@2.57.10(typescript@7.0.2)(zod@3.25.76))':
+  '@nomicfoundation/hardhat-viem-assertions@3.1.4(@nomicfoundation/hardhat-viem@3.0.10(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))(viem@2.57.10(typescript@7.0.2)(zod@3.25.76)))(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))(viem@2.57.10(typescript@7.0.2)(zod@3.25.76))':
     dependencies:
       '@nomicfoundation/hardhat-errors': 3.1.3
-      '@nomicfoundation/hardhat-utils': 5.0.0
-      '@nomicfoundation/hardhat-viem': 3.0.10(hardhat@3.21.0)(viem@2.57.10(typescript@7.0.2)(zod@3.25.76))
-      hardhat: 3.21.0
+      '@nomicfoundation/hardhat-utils': 5.1.0
+      '@nomicfoundation/hardhat-viem': 3.0.10(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))(viem@2.57.10(typescript@7.0.2)(zod@3.25.76))
+      hardhat: 3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e)
       viem: 2.57.10(typescript@7.0.2)(zod@3.25.76)
 
-  '@nomicfoundation/hardhat-viem@3.0.10(hardhat@3.21.0)(viem@2.57.10(typescript@7.0.2)(zod@3.25.76))':
+  '@nomicfoundation/hardhat-viem@3.0.10(hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e))(viem@2.57.10(typescript@7.0.2)(zod@3.25.76))':
     dependencies:
       '@nomicfoundation/hardhat-errors': 3.1.3
-      '@nomicfoundation/hardhat-utils': 5.0.0
-      hardhat: 3.21.0
+      '@nomicfoundation/hardhat-utils': 5.1.0
+      hardhat: 3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e)
       viem: 2.57.10(typescript@7.0.2)(zod@3.25.76)
 
   '@nomicfoundation/hardhat-zod-utils@3.0.8(zod@3.25.76)':
@@ -1901,7 +1904,7 @@ snapshots:
     dependencies:
       '@ethersproject/address': 5.8.0
       '@nomicfoundation/hardhat-errors': 3.1.3
-      '@nomicfoundation/hardhat-utils': 5.0.0
+      '@nomicfoundation/hardhat-utils': 5.1.0
       '@nomicfoundation/solidity-analyzer': 0.1.2
       cbor2: 2.4.0
       ethers: 6.17.0
@@ -2236,7 +2239,7 @@ snapshots:
   fsevents@2.3.3:
     optional: true
 
-  hardhat@3.21.0:
+  hardhat@3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e):
     dependencies:
       '@nomicfoundation/edr': 0.24.0
       '@nomicfoundation/hardhat-errors': 3.1.3

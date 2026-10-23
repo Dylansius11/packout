@@ -8,3 +8,5 @@ minimumReleaseAgeExclude:
   - viem@2.57.10
 allowBuilds:
   esbuild@0.28.2: true
+patchedDependencies:
+  hardhat@3.21.0: patches/hardhat@3.21.0.patch

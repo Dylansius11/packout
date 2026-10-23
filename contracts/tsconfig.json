@@ -1,4 +1,11 @@
 {
   "extends": "../tsconfig.base.json",
-  "include": ["hardhat.config.ts", "test/**/*.ts", "ignition/**/*.ts", "types/**/*.d.ts"]
+  "include": [
+    "hardhat.config.ts",
+    "test/**/*.ts",
+    "scripts/**/*.ts",
+    "ignition/**/*.ts",
+    "artifacts/**/*.d.ts",
+    "types/**/*.d.ts"
+  ]
 }
