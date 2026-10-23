@@ -85,10 +85,10 @@ pnpm demo:full
 | --- | --- |
 | `PackoutRegistry` contract | Done. 22 contract tests plus 10 SDK-client integration tests on a local chain |
 | `@packout/sdk` | Done: canonical ops, encrypted envelopes, head chain, bundle v1, 6-step verifier, reducer, viem client |
-| `pnpm demo:checkin` | Runs end to end on a local chain; the testnet run waits for funding |
+| `pnpm demo:checkin`, `pnpm demo:full` | Run end to end on a local chain (`demo:full` also mines the vendor's reverted write after takeover); the testnet runs wait for funding |
 | Portaldot testnet deployment | Waiting for test tokens |
-| Vendor A API and web app | In progress |
-| Client B restore app, takeover, rejected vendor write | Planned (BUILD-PLAN phase 5) |
+| Vendor A API and web app | Done on a local chain; Playwright covers onboarding, member writes, anchoring and export |
+| Client B restore app | Import, six-check verification, takeover with `rotateEpoch`, continued writes and stale-bundle refusal work on a local chain (`pnpm client-b`, port 5174). Browser test of the full demo in progress |
 
 Progress is tracked box by box in [BUILD-PLAN.md](BUILD-PLAN.md); open questions and blockers in [OPEN-DECISIONS.md](OPEN-DECISIONS.md); surprises and fixes in [LESSONS.md](LESSONS.md).
 

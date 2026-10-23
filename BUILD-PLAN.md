@@ -59,11 +59,11 @@ Goal: one real core flow on Portaldot testnet, honestly documented. Breadth come
 
 ## Phase 5: Client B restore app (target 2026-11-02)
 
-- [ ] **5.1 Import + verification UI (F5).** Step-by-step checks with plain-language results; incomplete or failed bundle blocks continuing.
-- [ ] **5.2 Workspace view (F5).** Read-only render of reconstructed state before takeover.
-- [ ] **5.3 Takeover (F5).** Owner wallet signs `rotateEpoch` revoking Vendor A and authorizing Client B.
-- [ ] **5.4 Continue writing (F5).** New ops append directly from Client B and appear in state.
-- [ ] **5.5 Independence guard.** Test fails if `apps/client-b` imports vendor packages or references the vendor API URL.
+- [x] **5.1 Import + verification UI (F5).** Step-by-step checks with plain-language results; incomplete or failed bundle blocks continuing.
+- [x] **5.2 Workspace view (F5).** Read-only render of reconstructed state before takeover.
+- [x] **5.3 Takeover (F5).** Owner wallet signs `rotateEpoch` revoking Vendor A and authorizing Client B.
+- [x] **5.4 Continue writing (F5).** New ops append directly from Client B and appear in state.
+- [x] **5.5 Independence guard.** Test fails if `apps/client-b` imports vendor packages or references the vendor API URL.
   - AC for phase: Playwright runs the full PRD section 4 demo with the vendor process stopped, including the final rejected vendor write.
 
 ## Phase 6: CI and quality (target 2026-11-03)
