@@ -102,12 +102,22 @@ let closing = false;
 async function shutdown(): Promise<void> {
   if (closing) return;
   closing = true;
+  const deadline = setTimeout(() => {
+    console.error('Vendor A shutdown was forced after 500 ms; chain I/O did not finish.');
+    // Exit immediately after closing SQLite so an unfinished tick cannot use the closed store.
+    store.close();
+    process.exit(1);
+  }, 500);
   const closed = new Promise<void>((resolveClose, reject) => {
     server.close((error) => (error ? reject(error) : resolveClose()));
   });
+  // server.close() leaves sockets with no HTTP request (browser preconnections) open.
+  if ('closeAllConnections' in server) server.closeAllConnections();
   await Promise.all([...batchers.values()].map((batcher) => batcher.stop()));
   await closed;
   store.close();
+  clearTimeout(deadline);
+  process.exit(0);
 }
 process.once('SIGINT', () => {
   void shutdown();

@@ -46,6 +46,10 @@ One loop per registered workspace, every `BATCH_INTERVAL_MS` (default 3000):
 5. On `NotWriter`: set `writerState = 'revoked'`, mark every pending envelope `rejected`, set `lastError`, and stop that workspace's loop. No retry loop.
 6. On transport errors: keep the envelopes `pending`, set `lastError`, and retry on the next tick.
 
+## Shutdown
+
+On SIGTERM or SIGINT the API stops listening, closes every open connection (including browser preconnections that never sent a request), stops the batchers and closes SQLite, then exits 0. If chain I/O is still pending after 500 ms, it logs "Vendor A shutdown was forced after 500 ms; chain I/O did not finish." and exits 1. Nothing is lost: envelopes stay `pending`, and a batch that was already submitted keeps its recorded tx hash, which the next start reconciles before resending.
+
 ## Configuration (env, validated with Zod)
 
 | Variable | Default | Meaning |

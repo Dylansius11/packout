@@ -4,8 +4,8 @@ Read the headlines before starting work. Format: `### YYYY-MM-DD: headline`, the
 
 ### 2026-10-23: `child.kill('SIGTERM')` behaves differently on Windows and Linux
 - What happened: the browser demo passed on Windows but timed out on the Linux runner while stopping the vendor API.
-- Root cause: on Windows, `kill` terminates the process immediately. On Linux, SIGTERM runs vendor-api's graceful shutdown, which did not finish within 5 s (OPEN-DECISIONS B3). A follow-up slip, `children.map(stopChild)`, also passed the array index in as the grace period.
-- Rule: anything that stops a process escalates to SIGKILL after a logged grace period. Process-lifecycle changes count as verified only after a Linux CI run. Never pass a function with optional parameters straight to `map`.
+- Root cause: on Windows, `kill` terminates the process immediately. On Linux, SIGTERM runs vendor-api's graceful shutdown, where `server.close()` waited forever on Chromium's speculative preconnections: TCP sockets that never send an HTTP request, so Node never treats them as idle. A follow-up slip, `children.map(stopChild)`, also passed the array index in as the grace period.
+- Rule: HTTP servers call `closeAllConnections()` after `close()` and put a deadline on shutdown. Anything that stops a process escalates to SIGKILL after a logged grace period. Process-lifecycle behavior counts as verified only on Linux (CI or WSL). Never pass a function with optional parameters straight to `map`.
 
 ### 2026-10-23: Hardhat mines a reverted tx but answers `eth_sendRawTransaction` with an error
 - What happened: `pnpm demo:full:local` force-sent a vendor append after takeover. Hardhat mined it as reverted, but the RPC call returned only revert data, with no tx hash.

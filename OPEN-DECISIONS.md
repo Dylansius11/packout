@@ -8,7 +8,7 @@ Rows marked `owner: founder` are never decided by an agent. Close a row with the
 | --- | --- | --- | --- | --- |
 | B1 | Fund testnet keys: deployer `5GEy3B5b8LhcwUf2tD9wMmhmJrLgV272jpvWTxwbEZvJ3NsV` (about 600 tPOT, code deposit dominates) and vendor writer `5EMHXSkuyeDhMMVft4oZagVoRmJ8KZF2RhxqgdxiCYuEYMu5` (about 50 tPOT). See INTEGRATIONS.md section 2. Blocks BUILD-PLAN 1.4 and 1.5. | founder | open | Requested 2026-10-23. Balances were `0x0` at request time. |
 | B2 | Record the check-in video (3 min max) and submit the DoraHacks check-in before 2026-10-24 12:00 UTC. The lead supplies the script and every field's text. | founder | open | |
-| B3 | On the Linux CI runner, vendor-api ignored SIGTERM for over 5 s (E2E log: "ignored SIGTERM for 5000 ms; sending SIGKILL"). Cause UNVERIFIED. Probes on Windows ruled out idle and actively polled keep-alive HTTP connections and RPC keep-alive sockets; each one exited in under 25 ms. Remaining suspects: a batcher tick still in flight, or tsx's signal handling under `node --import tsx`. Must be resolved before hosting (D5), because hosts send SIGTERM on every deploy. | lead | open | The E2E stack escalates to SIGKILL after 5 s and logs it, so CI stays reliable (`fix(e2e)` commit). |
+| B3 | On the Linux CI runner, vendor-api ignored SIGTERM for over 5 s (E2E log: "ignored SIGTERM for 5000 ms; sending SIGKILL"). | lead | resolved | Root cause, reproduced on WSL Ubuntu: Chromium opens speculative TCP preconnections that never send an HTTP request, and `server.close()` waits on them forever. Shutdown now calls `closeAllConnections()` and has a 500 ms deadline; WSL exit time went from 5550 ms (SIGKILL) to 76 ms. The E2E SIGKILL escalation stays as a safety net. |
 
 ## Decisions
 
