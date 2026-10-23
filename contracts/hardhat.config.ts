@@ -15,6 +15,12 @@ export default defineConfig({
   },
   networks: {
     default: { type: 'edr-simulated', chainType: 'l1' },
+    localhost: {
+      type: 'http',
+      url: 'http://127.0.0.1:8545',
+      chainId: 31337,
+      accounts: 'remote',
+    },
     portaldotTestnet: {
       type: 'http',
       url: process.env.PORTALDOT_EVM_RPC ?? 'https://test-evm-rpc-v3.portaldot.dev',

@@ -5,6 +5,8 @@
   "type": "module",
   "scripts": {
     "build": "node --env-file-if-exists=../.env ./node_modules/hardhat/dist/src/cli.js build",
+    "deploy:testnet": "node --env-file-if-exists=../.env ./node_modules/hardhat/dist/src/cli.js run scripts/deploy.ts --network portaldotTestnet",
+    "deploy:localhost": "node --env-file-if-exists=../.env ./node_modules/hardhat/dist/src/cli.js run scripts/deploy.ts --network localhost",
     "test": "node --env-file-if-exists=../.env ./node_modules/hardhat/dist/src/cli.js test",
     "typecheck": "pnpm build && tsc --noEmit -p tsconfig.json"
   },

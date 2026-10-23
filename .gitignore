@@ -11,6 +11,10 @@ contracts/artifacts/
 contracts/cache/
 contracts/types/
 contracts/ignition/deployments/chain-31337/
+contracts/deployments/localhost.json
+
+# Demo run output (bundles, keys, evidence copies)
+out/
 
 # Playwright
 test-results/
