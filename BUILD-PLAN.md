@@ -20,7 +20,7 @@ Goal: one real core flow on Portaldot testnet, honestly documented. Breadth come
 
 - [x] **1.1 Monorepo scaffold.** pnpm 12 workspaces, Node 24 LTS pinned (`.nvmrc`, `engines`, `packageManager`), Biome 2.6, root Vitest 5 config, TypeScript 7.0 with fallback to 5.9.3, `pnpm check` (lint + typecheck + unit tests).
   - AC: `pnpm install && pnpm check` passes on a clean clone. TS 7 compatibility result (Hardhat, Vite, Vitest) recorded in LESSONS and the resulting choice closed in OPEN-DECISIONS D2.
-- [ ] **1.2 PackoutRegistry contract (F1).** Implements the spec in `docs/technical/SMART-CONTRACT.md` exactly.
+- [x] **1.2 PackoutRegistry contract (F1).** Implements the spec in `docs/technical/SMART-CONTRACT.md` exactly.
   - AC: Hardhat 3 tests cover create (and duplicate revert), grant, revoke, rotateEpoch, append batch, stale count revert, stale head revert, unauthorized revert, revoked-writer revert, previous-epoch writer revert, batch size limit, events. Shared head vectors file passes.
 - [x] **1.3 SDK core (F2 subset).** Canonical op encoding, envelope encryption, digest, head chain.
   - AC: Vitest passes; SDK reproduces every head vector the contract tests use (`packages/sdk/test/vectors/head-chain.json` shared with contracts).
