@@ -43,7 +43,7 @@ async function shutdown(): Promise<void> {
   if (closing) return;
   closing = true;
   await Promise.all([frontend?.close(), restoreFrontend?.close()]);
-  await Promise.all(children.map(stopChild));
+  await Promise.all(children.map((child) => stopChild(child)));
   await rm(temporary, { recursive: true, force: true });
 }
 process.once('SIGINT', () => void shutdown());

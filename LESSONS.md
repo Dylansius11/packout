@@ -2,6 +2,11 @@
 
 Read the headlines before starting work. Format: `### YYYY-MM-DD: headline`, then what happened, root cause, rule going forward. Newest on top.
 
+### 2026-10-23: `child.kill('SIGTERM')` behaves differently on Windows and Linux
+- What happened: the browser demo passed on Windows but timed out on the Linux runner while stopping the vendor API.
+- Root cause: on Windows, `kill` terminates the process immediately. On Linux, SIGTERM runs vendor-api's graceful shutdown, which did not finish within 5 s (OPEN-DECISIONS B3). A follow-up slip, `children.map(stopChild)`, also passed the array index in as the grace period.
+- Rule: anything that stops a process escalates to SIGKILL after a logged grace period. Process-lifecycle changes count as verified only after a Linux CI run. Never pass a function with optional parameters straight to `map`.
+
 ### 2026-10-23: Hardhat mines a reverted tx but answers `eth_sendRawTransaction` with an error
 - What happened: `pnpm demo:full:local` force-sent a vendor append after takeover. Hardhat mined it as reverted, but the RPC call returned only revert data, with no tx hash.
 - Root cause: Hardhat's automine reports the revert synchronously as an RPC error. Portaldot's behavior is UNVERIFIED.
