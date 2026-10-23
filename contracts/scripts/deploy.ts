@@ -1,4 +1,6 @@
 import { mkdir, readFile, writeFile } from 'node:fs/promises';
+import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { artifacts, network } from 'hardhat';
 
 interface CompilerBuildInfo {
@@ -40,10 +42,12 @@ try {
     },
     deployedAt: new Date().toISOString(),
   };
-  const directory = new URL('../deployments/', import.meta.url);
+  const directory = process.env.PACKOUT_DEPLOYMENTS_DIR
+    ? resolve(process.env.PACKOUT_DEPLOYMENTS_DIR)
+    : fileURLToPath(new URL('../deployments/', import.meta.url));
   await mkdir(directory, { recursive: true });
   await writeFile(
-    new URL(`${connection.networkName}.json`, directory),
+    resolve(directory, `${connection.networkName}.json`),
     `${JSON.stringify(deployment, null, 2)}\n`,
   );
   console.log(JSON.stringify(deployment));

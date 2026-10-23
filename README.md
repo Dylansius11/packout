@@ -63,6 +63,13 @@ pnpm --filter @packout/contracts deploy:localhost           # terminal 2
 pnpm demo:local
 ```
 
+Browser end-to-end test (starts its own chain, vendor API and Vendor A on separate ports):
+
+```bash
+pnpm --filter @packout/e2e exec playwright install chromium   # once
+pnpm e2e
+```
+
 Run it on Portaldot testnet (needs funded keys in `.env`, see [INTEGRATIONS.md](docs/technical/INTEGRATIONS.md)):
 
 ```bash

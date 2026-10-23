@@ -51,10 +51,10 @@ Goal: one real core flow on Portaldot testnet, honestly documented. Breadth come
 
 ## Phase 4: Vendor A web app (target 2026-10-31)
 
-- [ ] **4.1 App shell.** Vite 8, React 19.3, TanStack Router, Tailwind 4.3, shadcn; wallet via viem/wagmi for the owner only.
-- [ ] **4.2 Owner onboarding (F4).** Connect wallet, create workspace, generate key, grant vendor writer, all with real transaction states.
-- [ ] **4.3 Journal (F4).** Create issue, change status, comment; member invite link with key in URL fragment.
-- [ ] **4.4 Sync indicator + local mirror + export (F4).** IndexedDB (Dexie) mirror; per-op state: device, vendor, anchored (index + explorer link); "Export bundle".
+- [x] **4.1 App shell.** Vite 8, React 19.3, TanStack Router, Tailwind 4.3, shadcn; wallet via viem/wagmi for the owner only.
+- [x] **4.2 Owner onboarding (F4).** Connect wallet, create workspace, generate key, grant vendor writer, all with real transaction states.
+- [x] **4.3 Journal (F4).** Create issue, change status, comment; member invite link with key in URL fragment.
+- [x] **4.4 Sync indicator + local mirror + export (F4).** IndexedDB (Dexie) mirror; per-op state: device, vendor, anchored (index + explorer link); "Export bundle".
   - AC for phase: Playwright creates a workspace, writes three ops as a member, exports a bundle that passes the verifier.
 
 ## Phase 5: Client B restore app (target 2026-11-02)

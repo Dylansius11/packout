@@ -3,6 +3,7 @@ packages:
   - packages/*
   - apps/*
   - scripts
+  - e2e
 minimumReleaseAgeExclude:
   - "@nomicfoundation/hardhat-utils@5.1.0"
   - hardhat@3.21.0

@@ -7,12 +7,14 @@ export type NetworkName = (typeof NETWORKS)[number];
 const envSchema = z.object({
   network: z.enum(NETWORKS),
   vendorApiUrl: z.url(),
+  localRpcUrl: z.url({ protocol: /^https?$/ }),
 });
 
 // An unset or empty Vite variable means "use the default"; anything else must validate.
 const parsed = envSchema.safeParse({
   network: import.meta.env.VITE_PACKOUT_NETWORK || 'localhost',
   vendorApiUrl: import.meta.env.VITE_VENDOR_API_URL || 'http://localhost:8787',
+  localRpcUrl: import.meta.env.VITE_LOCAL_RPC_URL || 'http://127.0.0.1:8545',
 });
 if (!parsed.success) {
   throw new Error(
@@ -28,7 +30,7 @@ const chains = {
     id: 31337,
     name: 'Local test chain',
     nativeCurrency: { name: 'Ether', symbol: 'ETH', decimals: 18 },
-    rpcUrls: { default: { http: ['http://127.0.0.1:8545'] } },
+    rpcUrls: { default: { http: [parsed.data.localRpcUrl] } },
   }),
   portaldotTestnet: defineChain({
     id: 420420777,
@@ -60,7 +62,11 @@ type Registry = { address: Address; fromBlock: bigint };
 export type RegistryLookup = { ok: true; registry: Registry } | { ok: false; message: string };
 
 function lookupRegistry(): RegistryLookup {
-  const entry = Object.entries(deployments).find(([path]) => path.endsWith(`/${network}.json`));
+  // Isolated local stacks may inject a deployment without replacing developers' localhost.json.
+  const injected: unknown = import.meta.env.VITE_PACKOUT_DEPLOYMENT;
+  const entry = injected
+    ? ['VITE_PACKOUT_DEPLOYMENT', injected]
+    : Object.entries(deployments).find(([path]) => path.endsWith(`/${network}.json`));
   if (!entry) {
     return {
       ok: false,

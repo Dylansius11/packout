@@ -24,14 +24,17 @@ const root = fileURLToPath(new URL('../../../', import.meta.url));
 const deployment = parseDeployment(
   JSON.parse(
     await readFile(
-      resolve(root, 'contracts/deployments', `${config.PACKOUT_NETWORK}.json`),
+      resolve(
+        config.PACKOUT_DEPLOYMENTS_DIR ?? resolve(root, 'contracts/deployments'),
+        `${config.PACKOUT_NETWORK}.json`,
+      ),
       'utf8',
     ),
   ),
   config.PACKOUT_NETWORK,
 );
 const rpc =
-  config.PACKOUT_NETWORK === 'localhost' ? 'http://127.0.0.1:8545' : config.PORTALDOT_EVM_RPC;
+  config.PACKOUT_NETWORK === 'localhost' ? config.LOCAL_RPC_URL : config.PORTALDOT_EVM_RPC;
 const chain = defineChain({
   id: deployment.chainId,
   name: config.PACKOUT_NETWORK,

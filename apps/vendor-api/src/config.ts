@@ -5,6 +5,8 @@ const envSchema = z
   .object({
     PORT: z.coerce.number().int().min(1).max(65_535).default(8787),
     DATABASE_PATH: z.string().min(1).default('data/vendor-api.sqlite'),
+    PACKOUT_DEPLOYMENTS_DIR: z.string().min(1).optional(),
+    LOCAL_RPC_URL: z.url({ protocol: /^https?$/ }).default('http://127.0.0.1:8545'),
     PACKOUT_NETWORK: z.enum(['localhost', 'portaldotTestnet']).default('localhost'),
     PORTALDOT_EVM_RPC: z
       .url({ protocol: /^https?$/ })

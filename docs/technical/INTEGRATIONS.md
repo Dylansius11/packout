@@ -72,8 +72,15 @@ Copy `.env.example` to `.env` at the repo root. Never commit `.env`.
 | Variable | Used by | Purpose |
 | --- | --- | --- |
 | `DEPLOYER_PRIVATE_KEY` | contracts deploy, `demo:checkin`, smoke | owner/deployer key on testnet |
-| `VENDOR_WRITER_PRIVATE_KEY` | vendor-api batcher, `demo:checkin` | Vendor A's writer key |
+| `VENDOR_WRITER_PRIVATE_KEY` | vendor-api batcher, `demo:checkin` | Vendor A's writer key on testnet. Ignored on `localhost`, where Hardhat dev account #1 is always used |
 | `PORTALDOT_EVM_RPC` | everything that talks to the chain | defaults to the testnet EVM RPC |
+| `PACKOUT_NETWORK` | vendor-api | `localhost` or `portaldotTestnet` (see VENDOR-API.md for the API's own settings) |
+| `LOCAL_RPC_URL` | contracts `localhost` network, vendor-api | local chain URL, default `http://127.0.0.1:8545` |
+| `PACKOUT_DEPLOYMENTS_DIR` | deploy script, vendor-api | where `<network>.json` is written and read; default `contracts/deployments/`. E2E points it at a temp dir so it never overwrites a developer's `localhost.json` |
+| `VITE_PACKOUT_NETWORK`, `VITE_VENDOR_API_URL`, `VITE_LOCAL_RPC_URL` | vendor-a (client-b without the vendor URL) | build-time network, API URL and local chain URL |
+| `VITE_PACKOUT_DEPLOYMENT` | vendor-a | build-time deployment JSON that overrides `contracts/deployments/<network>.json` (used by E2E) |
+
+E2E (`pnpm e2e`) runs its own stack on ports 8645 (chain), 8887 (API) and 5273 (Vendor A), and never reads `.env`.
 
 ## 5. GitHub Actions secrets
 
