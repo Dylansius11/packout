@@ -64,7 +64,7 @@ Goal: one real core flow on Portaldot testnet, honestly documented. Breadth come
 - [x] **5.3 Takeover (F5).** Owner wallet signs `rotateEpoch` revoking Vendor A and authorizing Client B.
 - [x] **5.4 Continue writing (F5).** New ops append directly from Client B and appear in state.
 - [x] **5.5 Independence guard.** Test fails if `apps/client-b` imports vendor packages or references the vendor API URL.
-  - AC for phase: Playwright runs the full PRD section 4 demo with the vendor process stopped, including the final rejected vendor write.
+  - AC for phase: Playwright runs the full PRD section 4 demo with the vendor process stopped, including the final rejected vendor write. Met by `e2e/demo.spec.ts` (local chain); the testnet run is 7.1.
 
 ## Phase 6: CI and quality (target 2026-11-03)
 
