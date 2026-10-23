@@ -77,6 +77,7 @@ Run it on Portaldot testnet (needs funded keys in `.env`, see [INTEGRATIONS.md](
 cp .env.example .env       # fill DEPLOYER_PRIVATE_KEY and VENDOR_WRITER_PRIVATE_KEY
 pnpm demo:checkin
 pnpm demo:full
+pnpm smoke:testnet         # same full flow; requires the committed testnet deployment, never deploys
 ```
 
 ## Status

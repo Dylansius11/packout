@@ -1,0 +1,59 @@
+name: Testnet smoke
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: testnet-smoke
+  cancel-in-progress: false
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Require committed testnet deployment
+        shell: bash
+        run: |
+          if [ ! -f contracts/deployments/portaldotTestnet.json ]; then
+            echo "::error::Missing committed contracts/deployments/portaldotTestnet.json. Testnet smoke never deploys; commit the real deployment before running it." | tee run-output.txt
+            exit 1
+          fi
+
+      - name: Install pnpm from packageManager
+        uses: pnpm/action-setup@v6
+
+      - name: Set up Node and pnpm cache
+        uses: actions/setup-node@v7
+        with:
+          node-version-file: .nvmrc
+          cache: pnpm
+          cache-dependency-path: pnpm-lock.yaml
+
+      - name: Install locked dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Run existing full demo on testnet
+        shell: bash
+        env:
+          DEPLOYER_PRIVATE_KEY: ${{ secrets.DEPLOYER_PRIVATE_KEY }}
+          VENDOR_WRITER_PRIVATE_KEY: ${{ secrets.VENDOR_WRITER_PRIVATE_KEY }}
+        run: pnpm smoke:testnet 2>&1 | tee run-output.txt
+
+      - name: Upload smoke evidence without workspace keys
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: testnet-smoke-evidence
+          path: |
+            out/demo-full/**/evidence.json
+            run-output.txt
+          retention-days: 7

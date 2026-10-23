@@ -85,3 +85,5 @@ E2E (`pnpm e2e`) runs its own stack on ports 8645 (chain), 8887 (API) and 5273 (
 ## 5. GitHub Actions secrets
 
 Set on `Dylansius11/packout` only for the manual testnet smoke workflow (BUILD-PLAN 6.2): `DEPLOYER_PRIVATE_KEY`, `VENDOR_WRITER_PRIVATE_KEY`. Push CI uses a local chain and needs no secrets.
+
+Trigger the manual-only smoke with `gh workflow run testnet-smoke.yml`: it runs `pnpm smoke:testnet` against the committed `contracts/deployments/portaldotTestnet.json` (fails if missing, never deploys) and uploads only `evidence.json` and `run-output.txt`, never the workspace key.
