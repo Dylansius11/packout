@@ -44,7 +44,7 @@ Goal: one real core flow on Portaldot testnet, honestly documented. Breadth come
 
 ## Phase 3: Vendor A API (target 2026-10-28)
 
-- [ ] **3.1 Envelope store + HTTP API (F3).** Hono on Node 24; `node:sqlite` storage (fallback recorded if unstable).
+- [x] **3.1 Envelope store + HTTP API (F3).** Hono on Node 24; `node:sqlite` storage (fallback recorded if unstable).
   - AC: Vitest integration tests for submit, list-from-index, status; invalid input rejected by Zod.
 - [ ] **3.2 Batcher (F3).** Appends pending envelopes on-chain with the vendor writer key; on stale head, refetch and retry with bounded attempts; on `NotWriter`, enter a terminal "revoked" state surfaced to clients.
   - AC: tests for happy path, concurrent stale-head conflict, revocation.
