@@ -15,7 +15,8 @@
     "test:contracts": "pnpm --filter @packout/contracts test",
     "demo:checkin": "pnpm --filter @packout/scripts demo:checkin",
     "demo:local": "pnpm --filter @packout/scripts demo:local",
-    "vendor-api": "pnpm --filter @packout/vendor-api start"
+    "vendor-api": "pnpm --filter @packout/vendor-api start",
+    "vendor-a": "pnpm --filter @packout/vendor-a dev"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.2",

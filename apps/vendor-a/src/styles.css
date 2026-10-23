@@ -1,0 +1,130 @@
+@import "tailwindcss";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+
+/*
+ * Neutral zinc surfaces, one blue accent. Green, amber and red appear only as state colors
+ * (anchored, waiting, failed) and always come with a word, never color alone.
+ */
+@theme {
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --color-background: #fafafa;
+  --color-surface: #ffffff;
+  --color-foreground: #18181b;
+  --color-muted: #f4f4f5;
+  --color-muted-foreground: #52525b;
+  --color-border: #e4e4e7;
+  --color-input: #71717a;
+  --color-primary: #1d4ed8;
+  --color-primary-hover: #1e40af;
+  --color-primary-foreground: #ffffff;
+  --color-ring: #2563eb;
+
+  --color-success: #166534;
+  --color-success-soft: #f0fdf4;
+  --color-success-line: #bbf7d0;
+  --color-warning: #78350f;
+  --color-warning-soft: #fffbeb;
+  --color-warning-line: #fde68a;
+  --color-danger: #991b1b;
+  --color-danger-soft: #fef2f2;
+  --color-danger-line: #fecaca;
+
+  --radius-sm: 6px;
+  --radius-md: 8px;
+  --radius-lg: 8px;
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+  body {
+    margin: 0;
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.55;
+    font-feature-settings:
+      "tnum" 1,
+      "cv11" 1;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+    letter-spacing: -0.015em;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--color-primary) 22%, white);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+  button,
+  [role="button"],
+  summary,
+  a {
+    touch-action: manipulation;
+  }
+  code,
+  kbd {
+    font-family: var(--font-mono);
+    font-size: 0.9em;
+  }
+  textarea,
+  input,
+  select {
+    font: inherit;
+  }
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  /* Entrance for a state that just appeared (a step finishing, a banner arriving). */
+  .state-in {
+    animation: state-in 220ms var(--ease-out-expo) both;
+  }
+  .spin {
+    animation: spin 900ms linear infinite;
+  }
+}
+
+@keyframes state-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .state-in {
+    animation: none;
+  }
+  .spin {
+    animation-duration: 3s;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms;
+    scroll-behavior: auto;
+  }
+}
