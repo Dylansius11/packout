@@ -74,4 +74,10 @@ describe('an issue shaped by several operations', () => {
     expect(weakestSyncState([anchored, rejected, device])).toBe(rejected);
     expect(weakestSyncState([])).toBeNull();
   });
+
+  it('once every operation is anchored, shows the latest anchoring regardless of list order', () => {
+    const second: SyncState = { kind: 'anchored', index: 2, txHash: null, blockNumber: 6 };
+    expect(weakestSyncState([anchored, second])).toBe(second);
+    expect(weakestSyncState([second, anchored])).toBe(second);
+  });
 });

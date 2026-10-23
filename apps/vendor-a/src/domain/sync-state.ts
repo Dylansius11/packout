@@ -36,11 +36,19 @@ export function syncStateOf(op: SyncFields, now: number): SyncState {
 
 const rank: Record<SyncState['kind'], number> = { rejected: 0, device: 1, vendor: 2, anchored: 3 };
 
-/** What an issue or comment shows when several operations shaped it: the least final one wins. */
+/**
+ * What an issue or comment shows when several operations shaped it: the least final one wins.
+ * When all are anchored, the latest anchoring wins, so the badge covers the most recent change.
+ */
 export function weakestSyncState(states: readonly SyncState[]): SyncState | null {
   let weakest: SyncState | null = null;
   for (const state of states) {
-    if (weakest === null || rank[state.kind] < rank[weakest.kind]) weakest = state;
+    if (
+      weakest === null ||
+      rank[state.kind] < rank[weakest.kind] ||
+      (state.kind === 'anchored' && weakest.kind === 'anchored' && state.index > weakest.index)
+    )
+      weakest = state;
   }
   return weakest;
 }
