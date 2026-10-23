@@ -1,4 +1,12 @@
+export {
+  BUNDLE_FORMAT,
+  type Bundle,
+  createBundle,
+  parseBundle,
+  serializeBundle,
+} from './bundle.ts';
 export { canonicalJson, type JsonValue } from './canonical.ts';
+export type { AppendedEvent, ChainReader, WorkspaceOnChain } from './chain-reader.ts';
 export {
   ENVELOPE_VERSION,
   envelopeDigest,

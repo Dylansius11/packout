@@ -3,7 +3,8 @@ export type PackoutErrorCode =
   | 'decrypt-failed'
   | 'workspace-mismatch'
   | 'unknown-op-type'
-  | 'invalid-op';
+  | 'invalid-op'
+  | 'invalid-bundle';
 
 export class PackoutError extends Error {
   constructor(
