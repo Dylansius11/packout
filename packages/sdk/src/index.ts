@@ -1,4 +1,11 @@
 export { canonicalJson, type JsonValue } from './canonical.ts';
+export {
+  ENVELOPE_VERSION,
+  envelopeDigest,
+  generateWorkspaceKey,
+  openEnvelope,
+  sealOp,
+} from './envelope.ts';
 export { PackoutError, type PackoutErrorCode } from './errors.ts';
 export { chainHeads, HEAD_DOMAIN, nextHead, ZERO_HEAD } from './head.ts';
 export {
