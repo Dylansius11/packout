@@ -12,6 +12,7 @@
   },
   "devDependencies": {
     "@nomicfoundation/hardhat-toolbox-viem": "5.0.7",
+    "@packout/sdk": "workspace:*",
     "hardhat": "3.21.0",
     "viem": "2.57.10"
   }

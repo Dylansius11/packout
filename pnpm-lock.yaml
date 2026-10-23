@@ -187,6 +187,9 @@ importers:
       '@nomicfoundation/hardhat-toolbox-viem':
         specifier: 5.0.7
         version: 5.0.7(37f0e6fab00b35ac53b89ef41f69e7d8)
+      '@packout/sdk':
+        specifier: workspace:*
+        version: link:../packages/sdk
       hardhat:
         specifier: 3.21.0
         version: 3.21.0(patch_hash=e65e1c6a35a07bd6ba993603cde7b0a1da57bae41361bc6519c6a9a58a758d0e)
@@ -208,6 +211,22 @@ importers:
       zod:
         specifier: 4.6.7
         version: 4.6.7
+
+  scripts:
+    dependencies:
+      '@packout/sdk':
+        specifier: workspace:*
+        version: link:../packages/sdk
+      viem:
+        specifier: 2.57.10
+        version: 2.57.10(typescript@7.0.2)(zod@4.6.7)
+      zod:
+        specifier: 4.6.7
+        version: 4.6.7
+    devDependencies:
+      tsx:
+        specifier: 4.23.15
+        version: 4.23.15
 
 packages:
 

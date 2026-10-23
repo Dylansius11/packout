@@ -2,6 +2,11 @@
 
 Read the headlines before starting work. Format: `### YYYY-MM-DD: headline`, then what happened, root cause, rule going forward. Newest on top.
 
+### 2026-10-23: Two viem copies break `instanceof` across packages
+- What happened: contract reverts from a client built in `contracts/` were not recognized as viem `BaseError` inside `@packout/sdk`.
+- Root cause: pnpm installed viem twice, once per peer-dependency context (zod). The versions match, but the class identities differ.
+- Rule: never use `instanceof` on library error classes across package boundaries. Walk `Error.cause` and match on `name` and decoded data instead.
+
 ### 2026-10-23: Hardhat 3.21 emits artifact typings that TypeScript 7 rejects
 - What happened: once contracts compiled, `tsc` failed on every generated `artifacts/**/artifacts.d.ts` with `TS1036: Statements are not allowed in ambient contexts`.
 - Root cause: Hardhat's declaration generator closes each artifact interface with `};`. The stray `;` is an empty statement, which TypeScript 7 refuses in a `.d.ts`.

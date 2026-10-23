@@ -39,7 +39,7 @@ Goal: one real core flow on Portaldot testnet, honestly documented. Breadth come
   - AC: tamper tests (omit, alter byte, reorder, substitute workspace, wrong key, stale bundle) each fail at the right step with a human message.
 - [x] **2.3 Reducer (F2).** Ops to workspace state for schema `packout.journal/1`.
   - AC: deterministic state from any valid op sequence; unknown op type is a verifier error, not a silent skip.
-- [ ] **2.4 Chain client (F2).** viem-based reads (workspace, writers, events) and writes (create, grant, revoke, rotate, append) with typed errors for contract reverts.
+- [x] **2.4 Chain client (F2).** viem-based reads (workspace, writers, events) and writes (create, grant, revoke, rotate, append) with typed errors for contract reverts.
   - AC: integration tests against a local Hardhat node.
 
 ## Phase 3: Vendor A API (target 2026-10-28)
