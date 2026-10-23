@@ -17,6 +17,9 @@ const origin = 'http://127.0.0.1:5273';
 const temporary = await mkdtemp(join(tmpdir(), 'packout-e2e-'));
 const children: ChildProcess[] = [];
 let frontend: ViteDevServer | undefined;
+let restoreFrontend: ViteDevServer | undefined;
+let vendor: ChildProcess | undefined;
+let vendorStopped = false;
 let closing = false;
 const environment: NodeJS.ProcessEnv = {
   ...process.env,
@@ -39,15 +42,8 @@ delete environment.NODE_OPTIONS;
 async function shutdown(): Promise<void> {
   if (closing) return;
   closing = true;
-  await frontend?.close();
-  await Promise.all(
-    children.map(async (child) => {
-      if (child.exitCode !== null || child.signalCode !== null) return;
-      const exited = once(child, 'exit');
-      child.kill('SIGTERM');
-      await exited;
-    }),
-  );
+  await Promise.all([frontend?.close(), restoreFrontend?.close()]);
+  await Promise.all(children.map(stopChild));
   await rm(temporary, { recursive: true, force: true });
 }
 process.once('SIGINT', () => void shutdown());
@@ -66,6 +62,32 @@ function launch(args: string[], cwd: string): ChildProcess {
     void shutdown();
   });
   return child;
+}
+
+async function stopChild(child: ChildProcess): Promise<void> {
+  if (!child.pid || child.exitCode !== null || child.signalCode !== null) return;
+  const exited = once(child, 'exit');
+  child.kill('SIGTERM');
+  await exited;
+}
+
+async function stopVendor(): Promise<void> {
+  vendorStopped = true;
+  if (vendor) await stopChild(vendor);
+}
+
+async function startVendor(): Promise<void> {
+  if (vendor && vendor.exitCode === null && vendor.signalCode === null) return;
+  vendorStopped = false;
+  vendor = launch(['--import', 'tsx', 'src/main.ts'], join(root, 'apps/vendor-api'));
+  vendor.once('exit', (exitCode) => {
+    if (!closing && !vendorStopped) {
+      console.error(`E2E vendor API exited unexpectedly (exit ${exitCode}).`);
+      process.exitCode = 1;
+      void shutdown();
+    }
+  });
+  await waitFor(`${api}/health`, vendor);
 }
 
 async function reserveCheck(port: number): Promise<void> {
@@ -110,41 +132,71 @@ async function waitFor(url: string, child: ChildProcess, rpcRequest = false): Pr
 }
 
 try {
-  await Promise.all([8645, 8887, 5273].map(reserveCheck));
+  await Promise.all([8645, 8887, 5273, 5274].map(reserveCheck));
   const node = launch([hardhat, 'node', '--hostname', '127.0.0.1', '--port', '8645'], contracts);
   await waitFor(rpc, node, true);
   const deploy = launch([hardhat, 'run', 'scripts/deploy.ts', '--network', 'localhost'], contracts);
   const [code] = await once(deploy, 'exit');
   if (code !== 0) throw new Error(`E2E registry deployment failed (exit ${code}).`);
   const deployment = await readFile(join(temporary, 'localhost.json'), 'utf8');
-  const vendor = launch(['--import', 'tsx', 'src/main.ts'], join(root, 'apps/vendor-api'));
-  await waitFor(`${api}/health`, vendor);
+  await startVendor();
   Object.assign(process.env, {
     VITE_PACKOUT_NETWORK: environment.VITE_PACKOUT_NETWORK,
     VITE_LOCAL_RPC_URL: environment.VITE_LOCAL_RPC_URL,
     VITE_VENDOR_API_URL: environment.VITE_VENDOR_API_URL,
   });
+  restoreFrontend = await createServer({
+    root: join(root, 'apps/client-b'),
+    configFile: join(root, 'apps/client-b/vite.config.ts'),
+    envDir: temporary,
+    define: { 'import.meta.env.VITE_PACKOUT_DEPLOYMENT': deployment },
+    server: { host: '127.0.0.1', port: 5274, strictPort: true },
+  });
+  await restoreFrontend.listen();
   frontend = await createServer({
     root: join(root, 'apps/vendor-a'),
     configFile: join(root, 'apps/vendor-a/vite.config.ts'),
     // Never load .env files; this directory contains only this run's deployment and database.
     envDir: temporary,
     define: { 'import.meta.env.VITE_PACKOUT_DEPLOYMENT': deployment },
+    plugins: [
+      {
+        name: 'packout-e2e-process-control',
+        configureServer(server) {
+          server.middlewares.use((request, response, next) => {
+            if (!request.url?.startsWith('/__e2e/')) return next();
+            if (request.headers['x-packout-e2e'] !== '1') {
+              response.writeHead(403).end();
+              return;
+            }
+            void (async () => {
+              response.setHeader('Content-Type', 'application/json');
+              if (request.method === 'GET' && request.url === '/__e2e/deployment') {
+                response.end(deployment);
+              } else if (request.method === 'POST' && request.url === '/__e2e/vendor/stop') {
+                await stopVendor();
+                response.end(JSON.stringify({ running: false }));
+              } else if (request.method === 'POST' && request.url === '/__e2e/vendor/start') {
+                await startVendor();
+                response.end(JSON.stringify({ running: true }));
+              } else {
+                response.writeHead(404).end();
+              }
+            })().catch(next);
+          });
+        },
+      },
+    ],
     server: { host: '127.0.0.1', port: 5273, strictPort: true },
   });
   await frontend.listen();
-  for (const [name, child] of [
-    ['chain', node],
-    ['vendor API', vendor],
-  ] as const) {
-    child.once('exit', (exitCode) => {
-      if (!closing) {
-        console.error(`E2E ${name} exited unexpectedly (exit ${exitCode}).`);
-        process.exitCode = 1;
-        void shutdown();
-      }
-    });
-  }
+  node.once('exit', (exitCode) => {
+    if (!closing) {
+      console.error(`E2E chain exited unexpectedly (exit ${exitCode}).`);
+      process.exitCode = 1;
+      void shutdown();
+    }
+  });
   console.log(`Isolated E2E stack ready at ${origin}`);
 } catch (error) {
   console.error(error);
