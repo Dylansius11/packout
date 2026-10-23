@@ -9,7 +9,7 @@ Legend: P0 required for final demo, P1 strongly wanted, P2 stretch. Feature ids 
 - [x] Repo initialized, project skills installed (`skills-lock.json`), `.omp/config.yml` skill allowlist
 - [x] Draft agent rules `CLAUDE.md`, `PRD.md`, this plan (written by the ideation session; lead reviews and owns them)
 - [x] `OPEN-DECISIONS.md`, `LESSONS.md`
-- [ ] `docs/technical/ARCHITECTURE.md`, `SMART-CONTRACT.md`, `INTEGRATIONS.md`
+- [x] `docs/technical/ARCHITECTURE.md`, `SMART-CONTRACT.md`, `INTEGRATIONS.md`
 - [ ] Public GitHub repo `Dylansius11/packout` with `main` pushed
 
 AC: a fresh agent can read the docs and start Phase 1 without asking what the product is.
