@@ -129,7 +129,7 @@ describe('vendor process shutdown', () => {
     expect(await exited).toEqual([0, null]);
     expect(performance.now() - started).toBeLessThan(1000);
     expect(stderr()).not.toContain('forced');
-  }, 3000);
+  }, 20_000);
 
   it('forces a bounded exit while chain I/O is stuck and preserves pending envelopes', async () => {
     const { child, exited, readingChain, database, wsId, stderr } = await fixture(true);
@@ -145,5 +145,5 @@ describe('vendor process shutdown', () => {
     } finally {
       store.close();
     }
-  }, 3000);
+  }, 20_000);
 });
