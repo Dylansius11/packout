@@ -61,6 +61,7 @@ Rehearse the check-in flow on a local chain:
 pnpm --filter @packout/contracts exec hardhat node          # terminal 1
 pnpm --filter @packout/contracts deploy:localhost           # terminal 2
 pnpm demo:local
+pnpm demo:full:local       # whole exit story: restore, takeover, owner write, vendor write reverted on-chain
 ```
 
 Browser end-to-end test (starts its own chain, vendor API and Vendor A on separate ports):
@@ -75,6 +76,7 @@ Run it on Portaldot testnet (needs funded keys in `.env`, see [INTEGRATIONS.md](
 ```bash
 cp .env.example .env       # fill DEPLOYER_PRIVATE_KEY and VENDOR_WRITER_PRIVATE_KEY
 pnpm demo:checkin
+pnpm demo:full
 ```
 
 ## Status

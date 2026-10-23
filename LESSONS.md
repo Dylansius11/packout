@@ -2,6 +2,16 @@
 
 Read the headlines before starting work. Format: `### YYYY-MM-DD: headline`, then what happened, root cause, rule going forward. Newest on top.
 
+### 2026-10-23: Hardhat mines a reverted tx but answers `eth_sendRawTransaction` with an error
+- What happened: `pnpm demo:full:local` force-sent a vendor append after takeover. Hardhat mined it as reverted, but the RPC call returned only revert data, with no tx hash.
+- Root cause: Hardhat's automine reports the revert synchronously as an RPC error. Portaldot's behavior is UNVERIFIED.
+- Rule: never guess or parse a hash from error text. Read it from the error's structured data, or find the mined tx by sender, nonce, destination and exact calldata, then confirm its receipt is `reverted`.
+
+### 2026-10-23: Sorting by "least final" still needs a deterministic tie-break
+- What happened: Playwright failed 2 of 4 runs because an issue badge showed `Anchored #0` where `#2` was expected.
+- Root cause: several anchored ops tied on rank, so the first one in IndexedDB order won, and that order follows random op ids.
+- Rule: any reducer that picks one item from a set must break ties explicitly (here: highest anchored index), and needs a test that feeds both orders.
+
 ### 2026-10-23: Two viem copies break `instanceof` across packages
 - What happened: contract reverts from a client built in `contracts/` were not recognized as viem `BaseError` inside `@packout/sdk`.
 - Root cause: pnpm installed viem twice, once per peer-dependency context (zod). The versions match, but the class identities differ.

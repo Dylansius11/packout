@@ -22,3 +22,4 @@ Rows marked `owner: founder` are never decided by an agent. Close a row with the
 | D7 | Office hours application, closes 2026-10-27 12:00 UTC | founder | open | Lead drafts the questions. |
 | D8 | Visual references for DESIGN.md | founder | open | Not needed before check-in. Blocks BUILD-PLAN 8.1. |
 | D9 | F8 second replica location for envelopes | lead | open | Stretch, only after Phase 7. |
+| D10 | How the demo proves "Portaldot rejects the vendor's comeback write": a simulation revert (`NotWriter` from `eth_call`, no tx) or a mined reverted tx with a hash | lead | resolved | Both. The apps keep simulating first, so users see the `NotWriter` reason without paying for a doomed tx. The headless `pnpm demo:full` script force-sends one vendor append after takeover (gas taken from an earlier successful append), leaving a reverted tx on the explorer as public evidence. |

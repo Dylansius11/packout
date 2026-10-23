@@ -6,6 +6,8 @@
   "scripts": {
     "demo:checkin": "node --env-file-if-exists=../.env --import tsx demo-checkin.ts --network portaldotTestnet",
     "demo:local": "node --env-file-if-exists=../.env --import tsx demo-checkin.ts --network localhost",
+    "demo:full": "node --env-file-if-exists=../.env --import tsx demo-full.ts --network portaldotTestnet",
+    "demo:full:local": "node --env-file-if-exists=../.env --import tsx demo-full.ts --network localhost",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
