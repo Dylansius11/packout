@@ -25,8 +25,9 @@ const deploymentSchema = z.object({
     .transform((value): Address => value as Address),
   blockNumber: z.string().regex(/^\d+$/),
 });
+export type DemoDeployment = z.infer<typeof deploymentSchema>;
 
-export function parseDeployment(value: unknown, network: DemoNetwork) {
+export function parseDeployment(value: unknown, network: DemoNetwork): DemoDeployment {
   const result = deploymentSchema.safeParse(value);
   if (!result.success) {
     throw new Error(
@@ -55,6 +56,17 @@ export function parseTestnetEnv(value: unknown) {
       `Set a valid ${result.error.issues[0].path.join('.')} in the root .env file. No transaction was sent.`,
     );
   }
+  return result.data;
+}
+
+const localEnvSchema = z.object({
+  LOCAL_RPC_URL: z.url({ protocol: /^https?$/ }).default('http://127.0.0.1:8545'),
+  PACKOUT_DEPLOYMENTS_DIR: z.string().min(1).optional(),
+});
+export function parseLocalEnv(value: unknown): z.infer<typeof localEnvSchema> {
+  const result = localEnvSchema.safeParse(value);
+  if (!result.success)
+    throw new Error(`Set a valid ${result.error.issues[0].path.join('.')} in the environment.`);
   return result.data;
 }
 
