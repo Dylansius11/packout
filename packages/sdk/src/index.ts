@@ -6,6 +6,20 @@ export {
   serializeBundle,
 } from './bundle.ts';
 export { canonicalJson, type JsonValue } from './canonical.ts';
+export { packoutRegistryAbi } from './chain/abi.ts';
+export { describeRegistryError, RegistryError, type RegistryErrorReason } from './chain/errors.ts';
+export {
+  createRegistryReader,
+  type RegistryReader,
+  type RegistryReaderOptions,
+} from './chain/reader.ts';
+export {
+  createRegistryWriter,
+  type RegistryWriter,
+  type RegistryWriterOptions,
+  type SubmissionOptions,
+  type TxResult,
+} from './chain/writer.ts';
 export type { AppendedEvent, ChainReader, WorkspaceOnChain } from './chain-reader.ts';
 export {
   ENVELOPE_VERSION,
