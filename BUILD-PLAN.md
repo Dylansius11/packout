@@ -75,7 +75,7 @@ Goal: one real core flow on Portaldot testnet, honestly documented. Breadth come
 ## Phase 7: Real testnet demo (target 2026-11-03)
 
 - [ ] **7.1 Full demo on Portaldot testnet** with hosted Vendor A, hosted Client B and hosted vendor API (hosting per OPEN-DECISIONS D5). Record tx hashes for every step in SMART-CONTRACT.md.
-- [ ] **7.2 Proof view (F6, P1).** Read-only workspace proof page: owner, writers, count, head, recent appends with explorer links.
+- [x] **7.2 Proof view (F6, P1).** Read-only workspace proof page: owner, writers, count, head, recent appends with explorer links.
 - [ ] **7.3 Backup recording** of the full real run.
 - [ ] **7.4 Headless full demo.** `pnpm demo:full` runs PRD section 4 without a browser: restore and verify, `rotateEpoch(wsId, [])`, owner write at the next index, vendor write refused by simulation and then mined as a reverted tx (OPEN-DECISIONS D10), old export refused as stale. Local rehearsal passes (`pnpm demo:full:local`); tick after the testnet run is recorded in SMART-CONTRACT.md.
 

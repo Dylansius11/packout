@@ -17,6 +17,8 @@ import {
 } from './domain/storage';
 import { ContinueScreen } from './features/continue/continue-screen';
 import { type ImportDraft, ImportScreen } from './features/import/import-screen';
+import { ProofPage } from './features/proof/proof-screen';
+import { proofHref, useProofRoute } from './features/proof/route';
 import { TakeoverScreen } from './features/takeover/takeover-screen';
 import { VerifyScreen } from './features/verify/verify-screen';
 import { useVerification } from './hooks/use-verification';
@@ -24,6 +26,19 @@ import { describeFailure } from './lib/errors';
 
 /** Client B: restore a workspace from a bundle, take it over, keep writing. No code path to any vendor. */
 export function App() {
+  const proofRoute = useProofRoute();
+  return (
+    <>
+      {proofRoute !== null ? <ProofPage wsIdText={proofRoute} /> : null}
+      {/* Stays mounted behind the proof page, so an import in progress survives a look at the proof. */}
+      <div hidden={proofRoute !== null}>
+        <RestoreApp />
+      </div>
+    </>
+  );
+}
+
+function RestoreApp() {
   const session = useLiveQuery(loadSession, []);
   const verification = useVerification();
   const { verify, reset: resetVerification } = verification;
@@ -188,6 +203,7 @@ export function App() {
         hasWorkspace={workspace !== null}
         onSelect={setView}
         onForget={() => void forget()}
+        proofHref={workspace ? proofHref(workspace.wsId) : undefined}
       />
       <main id="main" className="px-4 py-8 lg:px-12 lg:py-12">
         <div className="mx-auto max-w-3xl space-y-6">

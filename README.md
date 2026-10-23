@@ -90,6 +90,7 @@ pnpm smoke:testnet         # same full flow; requires the committed testnet depl
 | Portaldot testnet deployment | Waiting for test tokens |
 | Vendor A API and web app | Done on a local chain; Playwright covers onboarding, member writes, anchoring and export |
 | Client B restore app | Done on a local chain: import, six-check verification, takeover with `rotateEpoch`, continued writes and stale-bundle refusal (`pnpm client-b`, port 5174). Playwright runs the whole exit story with the vendor process stopped |
+| Public workspace proof | Client B `#/proof/<wsId>`: owner, epoch, writers, every append and the access timeline, read only from Portaldot events. No key or wallet needed |
 
 Progress is tracked box by box in [BUILD-PLAN.md](BUILD-PLAN.md); open questions and blockers in [OPEN-DECISIONS.md](OPEN-DECISIONS.md); surprises and fixes in [LESSONS.md](LESSONS.md).
 

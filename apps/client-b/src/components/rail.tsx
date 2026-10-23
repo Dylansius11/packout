@@ -22,12 +22,15 @@ export function Rail({
   hasWorkspace,
   onSelect,
   onForget,
+  proofHref,
 }: {
   view: View;
   steps: Record<View, StepState>;
   hasWorkspace: boolean;
   onSelect: (view: View) => void;
   onForget: () => void;
+  /** Public proof page of the workspace on this device; absent until one is known. */
+  proofHref?: string;
 }) {
   const [confirming, setConfirming] = useState(false);
   return (
@@ -99,6 +102,14 @@ export function Rail({
           <br />
           <span className="font-mono">{rpcHost}</span>
         </p>
+        {proofHref ? (
+          <a
+            href={proofHref}
+            className="inline-block text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+          >
+            Public proof page
+          </a>
+        ) : null}
         {hasWorkspace ? (
           confirming ? (
             <div className="space-y-2 text-xs" role="alert">
