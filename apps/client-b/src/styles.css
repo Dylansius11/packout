@@ -1,0 +1,131 @@
+@import "tailwindcss";
+@import "@fontsource-variable/ibm-plex-sans";
+@import "@fontsource/ibm-plex-mono/400.css";
+@import "@fontsource/ibm-plex-mono/500.css";
+
+/*
+ * Client B is a graphite instrument panel, deliberately unlike Vendor A's light journal:
+ * dark neutral surfaces, one gold accent, square corners, mono for every hash and address.
+ * Green, orange and red appear only as state colors and always come with a word.
+ */
+@theme {
+  --font-sans: "IBM Plex Sans Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  --color-background: #0f1011;
+  --color-rail: #131416;
+  --color-surface: #18191b;
+  --color-raised: #212326;
+  --color-foreground: #ecebe6;
+  --color-muted-foreground: #a6a59d;
+  --color-border: #2b2d31;
+  --color-input: #70747b;
+  --color-primary: #e8b04a;
+  --color-primary-hover: #f1c26b;
+  --color-primary-foreground: #17130a;
+  --color-ring: #f1c26b;
+
+  --color-success: #7ee2a8;
+  --color-success-soft: #0e2218;
+  --color-success-line: #21573a;
+  --color-warning: #fdba74;
+  --color-warning-soft: #261a0e;
+  --color-warning-line: #6b4421;
+  --color-danger: #fca5a5;
+  --color-danger-soft: #2a1214;
+  --color-danger-line: #702529;
+
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 4px;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    color-scheme: dark;
+  }
+  body {
+    margin: 0;
+    background: var(--color-background);
+    color: var(--color-foreground);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+    letter-spacing: -0.02em;
+  }
+  p {
+    text-wrap: pretty;
+  }
+  ::selection {
+    background: color-mix(in oklab, var(--color-primary) 35%, transparent);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-ring);
+    outline-offset: 2px;
+  }
+  button,
+  [role="button"],
+  summary,
+  a {
+    touch-action: manipulation;
+  }
+  code,
+  kbd {
+    font-family: var(--font-mono);
+    font-size: 0.88em;
+  }
+  textarea,
+  input,
+  select {
+    font: inherit;
+  }
+}
+
+@layer utilities {
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  /* Entrance for a state that just appeared (a check finishing, a notice arriving). */
+  .state-in {
+    animation: state-in 200ms var(--ease-out) both;
+  }
+  .spin {
+    animation: spin 900ms linear infinite;
+  }
+}
+
+@keyframes state-in {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+}
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .state-in {
+    animation: none;
+  }
+  .spin {
+    animation-duration: 3s;
+  }
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms;
+    scroll-behavior: auto;
+  }
+}
