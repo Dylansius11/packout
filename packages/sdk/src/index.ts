@@ -25,6 +25,7 @@ export {
   type OpAuthor,
   type OpBody,
 } from './op.ts';
+export { type Issue, type JournalState, reduceJournal } from './reducer.ts';
 export {
   EVM_DECIMALS,
   evmToNative,
