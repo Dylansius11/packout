@@ -1,0 +1,97 @@
+# PACKOUT
+
+[![CI](https://github.com/Dylansius11/packout/actions/workflows/ci.yml/badge.svg)](https://github.com/Dylansius11/packout/actions/workflows/ci.yml)
+
+**Move your workspace to another app, with its history intact and your control unchanged.**
+
+Built for Portaldot Hacker House 2026, Modular Cloud & Middleware track.
+
+## The problem
+
+Teams put months of decisions, issues and comments into hosted tools. The vendor holds three things at once: the data, the authority to write, and the official version of history. When the vendor shuts down, raises prices or gets acquired, the team gets an export file at best. That file is dead: nobody can prove it is complete and in order, the permissions stay behind, and no other app can continue the same workspace.
+
+## What PACKOUT does
+
+PACKOUT is an exit kit for shared workspaces: a Portaldot contract, a TypeScript SDK, an open bundle format and a restore client.
+
+- **Plaintext never leaves the team's devices.** Every change is encrypted on the device (XChaCha20-Poly1305). The vendor stores and relays ciphertext it cannot read.
+- **Portaldot is the referee, not the database.** The `PackoutRegistry` contract stores only the owner, the current writers, an operation count and a running hash of every admitted operation. Each change is anchored as a 32-byte digest in an event.
+- **Anyone can verify an export.** A bundle is checked step by step against Portaldot: format, envelopes, hash chain, anchored head, completeness, decryption. A missing, altered, reordered or stale operation is caught and named.
+- **The owner can leave.** One `rotateEpoch` transaction revokes the vendor's write access. A different app continues the same workspace, and the old vendor's next write is rejected on-chain.
+
+**Why a chain at all?** Several independent apps must agree on who owns the workspace, who may write now, and the exact ordered history, without trusting the vendor. Put those facts in the vendor's database and the vendor again decides. For a static personal backup, plain encrypted storage is simpler, and PACKOUT is not for that.
+
+## How it works
+
+```mermaid
+flowchart LR
+  subgraph Devices["Team devices (plaintext stays here)"]
+    VA["Vendor A app"]
+    CB["Client B app"]
+  end
+  API["Vendor A API<br/>stores ciphertext"]
+  REG["PackoutRegistry<br/>on Portaldot"]
+  F[["bundle.json"]]
+  VA -- "encrypted ops" --> API
+  API -- "appendBatch (vendor writer)" --> REG
+  VA -- "export" --> F
+  F -- "import + verify" --> CB
+  CB -- "rotateEpoch, appendBatch (owner)" --> REG
+```
+
+The contract keeps a hash chain: `head_i = keccak256(abi.encode(HEAD_DOMAIN, wsId, i, head_(i-1), digest_i))`. Every append must quote the current count and head, so a stale or forked writer is refused. Details: [ARCHITECTURE.md](docs/technical/ARCHITECTURE.md), [SMART-CONTRACT.md](docs/technical/SMART-CONTRACT.md).
+
+## Deployment (Portaldot testnet v3, chain id 420420777)
+
+Not deployed yet: the deploy keys are waiting for testnet tokens (tracked as B1 in [OPEN-DECISIONS.md](OPEN-DECISIONS.md)). The deploy and demo commands below are ready, and this section will list the registry address, transaction hashes and explorer links from real receipts. Network details are in [INTEGRATIONS.md](docs/technical/INTEGRATIONS.md).
+
+## Run it
+
+Requirements: Node 24, pnpm 12.
+
+```bash
+pnpm install
+pnpm check                 # Biome, TypeScript 7, Vitest
+pnpm test:contracts        # Hardhat 3 contract tests
+```
+
+Rehearse the check-in flow on a local chain:
+
+```bash
+pnpm --filter @packout/contracts exec hardhat node          # terminal 1
+pnpm --filter @packout/contracts deploy:localhost           # terminal 2
+pnpm demo:local
+```
+
+Run it on Portaldot testnet (needs funded keys in `.env`, see [INTEGRATIONS.md](docs/technical/INTEGRATIONS.md)):
+
+```bash
+cp .env.example .env       # fill DEPLOYER_PRIVATE_KEY and VENDOR_WRITER_PRIVATE_KEY
+pnpm demo:checkin
+```
+
+## Status
+
+| Area | State |
+| --- | --- |
+| `PackoutRegistry` contract | Done. 22 contract tests plus 10 SDK-client integration tests on a local chain |
+| `@packout/sdk` | Done: canonical ops, encrypted envelopes, head chain, bundle v1, 6-step verifier, reducer, viem client |
+| `pnpm demo:checkin` | Runs end to end on a local chain; the testnet run waits for funding |
+| Portaldot testnet deployment | Waiting for test tokens |
+| Vendor A API and web app | In progress |
+| Client B restore app, takeover, rejected vendor write | Planned (BUILD-PLAN phase 5) |
+
+Progress is tracked box by box in [BUILD-PLAN.md](BUILD-PLAN.md); open questions and blockers in [OPEN-DECISIONS.md](OPEN-DECISIONS.md); surprises and fixes in [LESSONS.md](LESSONS.md).
+
+## Repository layout
+
+```
+contracts/       PackoutRegistry (Solidity, Hardhat 3) and its tests
+packages/sdk/    @packout/sdk: encoding, encryption, head chain, bundle, verifier, reducer, chain client
+scripts/         demo:checkin
+docs/technical/  architecture, contract spec, Portaldot integration notes
+```
+
+## License
+
+MIT
