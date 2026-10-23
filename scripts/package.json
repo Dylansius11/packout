@@ -1,0 +1,19 @@
+{
+  "name": "@packout/scripts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "demo:checkin": "node --env-file-if-exists=../.env --import tsx demo-checkin.ts --network portaldotTestnet",
+    "demo:local": "node --env-file-if-exists=../.env --import tsx demo-checkin.ts --network localhost",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@packout/sdk": "workspace:*",
+    "viem": "2.57.10",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "tsx": "4.23.15"
+  }
+}
