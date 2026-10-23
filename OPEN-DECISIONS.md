@@ -14,7 +14,7 @@ Rows marked `owner: founder` are never decided by an agent. Close a row with the
 | Id | Item | Owner | Status | Resolution / commit |
 | --- | --- | --- | --- | --- |
 | D1 | Solidity version and EVM target that deploy on Portaldot | lead | open | Pin after the deploy spike (BUILD-PLAN 1.4). |
-| D2 | TypeScript 7 or fallback 5.9.3 (Hardhat, Vite, Vitest compatibility) | lead | open | Closed by BUILD-PLAN 1.1. |
+| D2 | TypeScript 7 or fallback 5.9.3 (Hardhat, Vite, Vitest compatibility) | lead | resolved | TypeScript 7.0.2 everywhere. Native `tsc` typechecks, Vitest 5 runs, Hardhat 3 compiles and runs viem tests (its loader uses `tsx`, not the TS compiler API). Vite app build not yet exercised. Resolved in `chore(repo): scaffold pnpm monorepo`. |
 | D3 | Workspace id: caller-chosen or derived | lead | resolved | Derived: `wsId = keccak256(abi.encode(owner, salt))` to stop front-run squatting. SMART-CONTRACT.md section 1. Same commit as this file. |
 | D4 | Who signs Client B writes after takeover: the owner wallet directly, or a Client B writer key authorized by `rotateEpoch` | lead | open | Default: owner wallet (always allowed, no extra key to fund). Decide by Phase 5. |
 | D5 | Hosting for vendor-api, vendor-a and client-b during the real testnet demo | founder | open | Needed by Phase 7. Paid services need founder approval. |

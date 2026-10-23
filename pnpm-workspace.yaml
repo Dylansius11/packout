@@ -1,0 +1,10 @@
+packages:
+  - contracts
+  - packages/*
+  - apps/*
+minimumReleaseAgeExclude:
+  - "@nomicfoundation/hardhat-utils@5.1.0"
+  - hardhat@3.21.0
+  - viem@2.57.10
+allowBuilds:
+  esbuild@0.28.2: true

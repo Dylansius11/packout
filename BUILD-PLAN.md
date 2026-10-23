@@ -10,7 +10,7 @@ Legend: P0 required for final demo, P1 strongly wanted, P2 stretch. Feature ids 
 - [x] Draft agent rules `CLAUDE.md`, `PRD.md`, this plan (written by the ideation session; lead reviews and owns them)
 - [x] `OPEN-DECISIONS.md`, `LESSONS.md`
 - [x] `docs/technical/ARCHITECTURE.md`, `SMART-CONTRACT.md`, `INTEGRATIONS.md`
-- [ ] Public GitHub repo `Dylansius11/packout` with `main` pushed
+- [x] Public GitHub repo `Dylansius11/packout` with `main` pushed
 
 AC: a fresh agent can read the docs and start Phase 1 without asking what the product is.
 
@@ -18,7 +18,7 @@ AC: a fresh agent can read the docs and start Phase 1 without asking what the pr
 
 Goal: one real core flow on Portaldot testnet, honestly documented. Breadth comes later.
 
-- [ ] **1.1 Monorepo scaffold.** pnpm 12 workspaces, Node 24 LTS pinned (`.nvmrc`, `engines`, `packageManager`), Biome 2.6, root Vitest 5 config, TypeScript 7.0 with fallback to 5.9.3, `pnpm check` (lint + typecheck + unit tests).
+- [x] **1.1 Monorepo scaffold.** pnpm 12 workspaces, Node 24 LTS pinned (`.nvmrc`, `engines`, `packageManager`), Biome 2.6, root Vitest 5 config, TypeScript 7.0 with fallback to 5.9.3, `pnpm check` (lint + typecheck + unit tests).
   - AC: `pnpm install && pnpm check` passes on a clean clone. TS 7 compatibility result (Hardhat, Vite, Vitest) recorded in LESSONS and the resulting choice closed in OPEN-DECISIONS D2.
 - [ ] **1.2 PackoutRegistry contract (F1).** Implements the spec in `docs/technical/SMART-CONTRACT.md` exactly.
   - AC: Hardhat 3 tests cover create (and duplicate revert), grant, revoke, rotateEpoch, append batch, stale count revert, stale head revert, unauthorized revert, revoked-writer revert, previous-epoch writer revert, batch size limit, events. Shared head vectors file passes.

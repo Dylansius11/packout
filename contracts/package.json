@@ -1,0 +1,16 @@
+{
+  "name": "@packout/contracts",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "node --env-file-if-exists=../.env ./node_modules/hardhat/dist/src/cli.js build",
+    "test": "node --env-file-if-exists=../.env ./node_modules/hardhat/dist/src/cli.js test",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-viem": "5.0.7",
+    "hardhat": "3.21.0",
+    "viem": "2.57.10"
+  }
+}

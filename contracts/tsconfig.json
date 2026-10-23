@@ -1,0 +1,4 @@
+{
+  "extends": "../tsconfig.base.json",
+  "include": ["hardhat.config.ts", "test/**/*.ts", "ignition/**/*.ts", "types/**/*.d.ts"]
+}
