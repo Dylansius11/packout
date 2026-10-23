@@ -1,0 +1,39 @@
+# Dependencies and build output
+node_modules/
+dist/
+build/
+.turbo/
+coverage/
+*.tsbuildinfo
+
+# Hardhat
+contracts/artifacts/
+contracts/cache/
+contracts/types/
+contracts/ignition/deployments/chain-31337/
+
+# Playwright
+test-results/
+playwright-report/
+blob-report/
+
+# Secrets and local state
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+data/
+*.sqlite
+*.sqlite-*
+
+# Agent tooling (restored from skills-lock.json)
+.claude/skills/
+scratch/
+
+# OS and editors
+.DS_Store
+Thumbs.db
+.vscode/*
+!.vscode/extensions.json
+.idea/

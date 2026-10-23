@@ -1,0 +1,26 @@
+# PACKOUT project settings for omp sessions started in this folder.
+# Arrays replace the global value, so this list is the complete skill allowlist here.
+skills:
+  includeSkills:
+    # Process (obra/superpowers, project .claude/skills)
+    - brainstorming
+    - writing-plans
+    - executing-plans
+    - subagent-driven-development
+    - test-driven-development
+    - systematic-debugging
+    - verification-before-completion
+    - requesting-code-review
+    # Architecture and review (mattpocock/skills, project .claude/skills)
+    - improve-codebase-architecture
+    - codebase-design
+    - code-review
+    # UI, UX and motion (global ~/.agents/skills)
+    - impeccable
+    - emil-design-eng
+    - design-taste-frontend
+    - motion
+    # Scope discipline, docs lookup, Orca control
+    - ponytail
+    - find-docs
+    - orca-cli
