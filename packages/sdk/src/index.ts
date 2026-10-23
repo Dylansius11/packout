@@ -1,4 +1,15 @@
+export { canonicalJson, type JsonValue } from './canonical.ts';
+export { PackoutError, type PackoutErrorCode } from './errors.ts';
 export { chainHeads, HEAD_DOMAIN, nextHead, ZERO_HEAD } from './head.ts';
+export {
+  createOp,
+  decodeOp,
+  encodeOp,
+  type IssueStatus,
+  type Op,
+  type OpAuthor,
+  type OpBody,
+} from './op.ts';
 export {
   EVM_DECIMALS,
   evmToNative,
