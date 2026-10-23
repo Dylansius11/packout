@@ -155,13 +155,13 @@ export async function verifyBundle(input: {
   if (onChain.count > count) {
     return fail(
       4,
-      `This bundle is stale: ${onChain.count - count} operations are missing from this file.`,
+      `This bundle is stale: ${operations(onChain.count - count)} ${onChain.count - count === 1n ? 'is' : 'are'} missing from this file.`,
     );
   }
   if (onChain.count < count) {
     return fail(
       4,
-      `The bundle claims ${count - onChain.count} operations Portaldot never admitted.`,
+      `The bundle claims ${operations(count - onChain.count)} that Portaldot never admitted.`,
     );
   }
   pass(4, `This file contains all ${count} operations currently admitted by Portaldot.`);
@@ -190,4 +190,8 @@ export async function verifyBundle(input: {
   report.state = reduceJournal(ops);
   report.ok = true;
   return report;
+}
+
+function operations(n: bigint): string {
+  return n === 1n ? '1 operation' : `${n} operations`;
 }
