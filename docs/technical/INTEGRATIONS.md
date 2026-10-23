@@ -13,7 +13,32 @@
 | Runtime | `portaldot-v3`, spec 3002, pallet-revive with eth-rpc proxy |
 | Official guide | https://github.com/ItsCogumellum/portaldot-v3-testnet-guide |
 
-Explorer URL templates and RPC limits (`eth_getLogs` range, supported tx types): filled in from the RPC probe and the first deploy (BUILD-PLAN 1.4).
+### 1.1 RPC behavior (read-only probe, 2026-10-23)
+
+Evidence: raw requests and responses kept under `scratch/research/` during the probe; summary here.
+
+| Topic | Observed | Consequence for PACKOUT |
+| --- | --- | --- |
+| Methods | `eth_chainId`, `eth_blockNumber`, `eth_getBlockByNumber` (`latest`, `safe`, `finalized`), `eth_gasPrice` (`0x83fe`), `eth_maxPriorityFeePerGas` (`0x0`), `eth_feeHistory`, `eth_estimateGas`, `eth_call`, `eth_getLogs`, `eth_getCode`, `net_version`, `eth_syncing` all answered | Standard viem clients work |
+| Bytecode | creation `eth_call` and `eth_estimateGas` succeed for solc 0.8.28 and 0.8.38 with `paris`, `cancun` (and `prague` on 0.8.38) | Plain EVM Hardhat tooling, not the PVM/resolc plugin |
+| Gas | estimates are huge scalars (about 3.4 × 10^15 for a small creation) that cover weight and storage deposit | Use the RPC estimate unchanged as `bigint`; never clamp to Ethereum gas limits |
+| Affordability | an unfunded sender can dry-run a creation; a storage-growing call fails with `StorageDepositNotEnoughFunds` | A passing dry run proves nothing about funding; check balance first |
+| Tx types | historical legacy (type 0) and EIP-1559 (type 2) receipts observed | Start with legacy txs at live `eth_gasPrice` |
+| Blocks | about 6 s; `finalized` trails `latest` by 2–3 blocks | Show "finalized" only after the receipt block is at or below `finalized` |
+| `eth_getLogs` | genesis to latest (156,714 blocks) returned 301 logs in 939 ms; no range rejection. Upstream eth-rpc silently caps a query at 10,000 rows (applicability to this build UNVERIFIED) | Always filter by address and topics from the deployment block; bisect any query that returns 10,000 rows |
+
+### 1.2 Explorer links
+
+The explorer is a native (Statescan-style) UI:
+
+| Target | URL template | Status |
+| --- | --- | --- |
+| Block | `https://scanner-testnet-v3.portaldot.dev/#/blocks/{decimalBlockNumber}` | verified |
+| Native account | `https://scanner-testnet-v3.portaldot.dev/#/accounts/{ss58}` | verified |
+| Extrinsic | `https://scanner-testnet-v3.portaldot.dev/#/extrinsics/{block}-{extrinsicIndex}` | verified for native txs |
+| EVM tx hash / H160 address | none | searching an EVM tx hash opens an empty account page |
+
+Until an EVM-tx route is proven, PACKOUT links each EVM tx to its block page and prints the tx hash next to it.
 
 ## 2. Funding an EVM key
 

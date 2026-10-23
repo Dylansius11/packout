@@ -2,6 +2,16 @@
 
 Read the headlines before starting work. Format: `### YYYY-MM-DD: headline`, then what happened, root cause, rule going forward. Newest on top.
 
+### 2026-10-23: On Portaldot, a passing dry run says nothing about funding, and gas numbers are not Ethereum gas
+- What happened: creation `eth_call` and `eth_estimateGas` succeeded from a zero-balance address, with estimates around 3.4 × 10^15. A storage-writing call from the same address failed with `StorageDepositNotEnoughFunds`.
+- Root cause: pallet-revive folds weight and storage deposit into one gas scalar and only charges the deposit on real execution.
+- Rule: check `eth_getBalance` before any testnet write, pass the RPC estimate through unchanged as `bigint`, and never hard-code an Ethereum-style gas limit.
+
+### 2026-10-23: The Portaldot explorer cannot open an EVM tx hash
+- What happened: searching a real EVM tx hash on scanner-testnet-v3 opened an empty account page.
+- Root cause: the explorer is a native Substrate UI keyed by block and extrinsic index.
+- Rule: link EVM txs to their block page and print the hash beside it; never present a hash search link as proof.
+
 ### 2026-10-23: TypeScript 7 works with Hardhat 3 and Vitest 5, but viem's types need DOM libs
 - What happened: `tsc` 7.0.2 failed on viem's `ox` dependency (`TS2749: 'CryptoKey' refers to a value`, missing `AuthenticatorAttestationResponse`).
 - Root cause: `ox` declarations reference WebCrypto and WebAuthn browser types; a Node-only `lib` does not have them.

@@ -13,12 +13,12 @@ Rows marked `owner: founder` are never decided by an agent. Close a row with the
 
 | Id | Item | Owner | Status | Resolution / commit |
 | --- | --- | --- | --- | --- |
-| D1 | Solidity version and EVM target that deploy on Portaldot | lead | open | Pin after the deploy spike (BUILD-PLAN 1.4). |
+| D1 | Solidity version and EVM target that deploy on Portaldot | lead | open | Read-only probe: 0.8.28 and 0.8.38 with `paris`, `cancun` and `prague` all pass creation dry runs. Working choice 0.8.28 + `cancun`; pin after the real deploy (BUILD-PLAN 1.4). |
 | D2 | TypeScript 7 or fallback 5.9.3 (Hardhat, Vite, Vitest compatibility) | lead | resolved | TypeScript 7.0.2 everywhere. Native `tsc` typechecks, Vitest 5 runs, Hardhat 3 compiles and runs viem tests (its loader uses `tsx`, not the TS compiler API). Vite app build not yet exercised. Resolved in `chore(repo): scaffold pnpm monorepo`. |
 | D3 | Workspace id: caller-chosen or derived | lead | resolved | Derived: `wsId = keccak256(abi.encode(owner, salt))` to stop front-run squatting. SMART-CONTRACT.md section 1. Same commit as this file. |
 | D4 | Who signs Client B writes after takeover: the owner wallet directly, or a Client B writer key authorized by `rotateEpoch` | lead | open | Default: owner wallet (always allowed, no extra key to fund). Decide by Phase 5. |
 | D5 | Hosting for vendor-api, vendor-a and client-b during the real testnet demo | founder | open | Needed by Phase 7. Paid services need founder approval. |
-| D6 | `eth_getLogs` strategy (range limits on Portaldot RPC) | lead | open | Pending RPC probe; fallback is per-index topic queries. |
+| D6 | `eth_getLogs` strategy (range limits on Portaldot RPC) | lead | resolved | Full-range queries filtered by address and topics from the deployment block; bisect any response of 10,000 rows (possible silent upstream cap). Evidence in INTEGRATIONS.md section 1.1. Resolved in `docs(integrations): record Portaldot RPC behavior`. |
 | D7 | Office hours application, closes 2026-10-27 12:00 UTC | founder | open | Lead drafts the questions. |
 | D8 | Visual references for DESIGN.md | founder | open | Not needed before check-in. Blocks BUILD-PLAN 8.1. |
 | D9 | F8 second replica location for envelopes | lead | open | Stretch, only after Phase 7. |
