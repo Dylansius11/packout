@@ -33,4 +33,5 @@ export {
   NATIVE_TO_ETH_RATIO,
   nativeToEvm,
 } from './units.ts';
+export { type StepId, type StepResult, type VerificationReport, verifyBundle } from './verify.ts';
 export { JOURNAL_SCHEMA, JOURNAL_SCHEMA_ID, workspaceId } from './workspace.ts';

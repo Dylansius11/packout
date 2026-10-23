@@ -35,7 +35,7 @@ Goal: one real core flow on Portaldot testnet, honestly documented. Breadth come
 
 - [x] **2.1 Bundle format v1 (F2).** Export/import per ARCHITECTURE section 5, Zod-validated.
   - AC: round-trip test; malformed bundle rejected with a specific error.
-- [ ] **2.2 Verifier (F2).** Ordered checks: format, digests, head recomputation, match against on-chain `Appended` event at index N-1, completeness against current on-chain count, decryption.
+- [x] **2.2 Verifier (F2).** Ordered checks: format, digests, head recomputation, match against on-chain `Appended` event at index N-1, completeness against current on-chain count, decryption.
   - AC: tamper tests (omit, alter byte, reorder, substitute workspace, wrong key, stale bundle) each fail at the right step with a human message.
 - [x] **2.3 Reducer (F2).** Ops to workspace state for schema `packout.journal/1`.
   - AC: deterministic state from any valid op sequence; unknown op type is a verifier error, not a silent skip.
