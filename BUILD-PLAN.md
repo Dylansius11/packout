@@ -68,7 +68,7 @@ Goal: one real core flow on Portaldot testnet, honestly documented. Breadth come
 
 ## Phase 6: CI and quality (target 2026-11-03)
 
-- [ ] **6.1 GitHub Actions.** On push: install, Biome, typecheck, Vitest, Hardhat tests, Playwright against a local chain; cache pnpm.
+- [x] **6.1 GitHub Actions.** On push: install, Biome, typecheck, Vitest, Hardhat tests, Playwright against a local chain; cache pnpm.
 - [ ] **6.2 Testnet smoke job.** Manual-dispatch workflow using repo secrets, mirroring `pnpm smoke:testnet`.
   - AC: CI green on `main`; README badge.
 
