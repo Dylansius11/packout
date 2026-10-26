@@ -2,6 +2,11 @@
 
 Read the headlines before starting work. Format: `### YYYY-MM-DD: headline`, then what happened, root cause, rule going forward. Newest on top.
 
+### 2026-10-26: Portaldot's default metadata is v14 and its type ids do not match v16
+- What happened: during the Succession prep, call decoding failed until the decoder switched to v16 metadata.
+- Root cause: `state_getMetadata` returns v14, while `@polkadot/api` initializes from `Metadata_metadata_at_version(16)`. The two portable registries number their types differently.
+- Rule: pin native metadata from `Metadata_metadata_at_version(16)`, record its blake2_256 hash, and never mix type ids across versions. For native dry runs, `ReviveApi_*` exists but `DryRunApi_dry_run_call` does not, so a nested Recovery → Revive dispatch can only be proven with a funded transaction.
+
 ### 2026-10-23: `child.kill('SIGTERM')` behaves differently on Windows and Linux
 - What happened: the browser demo passed on Windows but timed out on the Linux runner while stopping the vendor API.
 - Root cause: on Windows, `kill` terminates the process immediately. On Linux, SIGTERM runs vendor-api's graceful shutdown, where `server.close()` waited forever on Chromium's speculative preconnections: TCP sockets that never send an HTTP request, so Node never treats them as idle. A follow-up slip, `children.map(stopChild)`, also passed the array index in as the grace period.

@@ -97,7 +97,7 @@ Goal: one real core flow on Portaldot testnet, honestly documented. Breadth come
 
 This phase never delays Phase 1 (1.4, 1.5) or Phase 7. Only 10.0 runs before funding. 10.1 starts only after B1 funding lands and 1.4 is done. If 10.1's gate fails, Phases 1–9 are unaffected: cut Act 3 from PRD section 4, the video and the pitch, close 10.2 and 10.3 with a note, and record why in OPEN-DECISIONS and LESSONS. No core Succession commit lands after 2026-11-05 04:00.
 
-- [ ] **10.0 Read-only prep (no funds).**
+- [x] **10.0 Read-only prep (no funds).**
   - Pin the live metadata.
   - Decode the exact Recovery, `Revive.call` and Multisig call encodings.
   - Find how a native AccountId32 maps to its EVM-visible address, and dry-run the native caller where the RPC allows.
