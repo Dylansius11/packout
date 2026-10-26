@@ -93,6 +93,33 @@ Goal: one real core flow on Portaldot testnet, honestly documented. Breadth come
 - [ ] **9.4 Freeze checklist**: fresh-clone run, all links work, no secrets, no final core commits in the last 24 hours.
 - [ ] **9.5 Live demo script** rehearsed for 2026-11-08.
 
+## Phase 10: Succession (gated, PRD F9; target 2026-11-04)
+
+This phase never delays Phase 1 (1.4, 1.5) or Phase 7. Only 10.0 runs before funding. 10.1 starts only after B1 funding lands and 1.4 is done. If 10.1's gate fails, Phases 1–9 are unaffected: cut Act 3 from PRD section 4, the video and the pitch, close 10.2 and 10.3 with a note, and record why in OPEN-DECISIONS and LESSONS. No core Succession commit lands after 2026-11-05 04:00.
+
+- [ ] **10.0 Read-only prep (no funds).**
+  - Pin the live metadata.
+  - Decode the exact Recovery, `Revive.call` and Multisig call encodings.
+  - Find how a native AccountId32 maps to its EVM-visible address, and dry-run the native caller where the RPC allows.
+  - Check whether W can call `createWorkspace` through native `Revive.call` with no contract change.
+  - Compute the extra funding from metadata constants.
+  - AC: INTEGRATIONS.md section 6 "Native succession" documents all of this with [V]/[I]/[U] on every claim, and B1 carries the extra amount.
+- [ ] **10.1 Funded spike and gate (2–4 h, after B1 + 1.4).**
+  - AC, with real testnet tx hashes:
+    1. W, via native `Revive.call`, creates or appends, and the contract sees `msg.sender == H160(W) == owner`.
+    2. 2-of-3 backups approve, the delay elapses, and the inheritor's `control_inherited_account(W, Revive.call(rotateEpoch))` succeeds with the same `msg.sender`.
+    3. Failure paths: 1-of-3 approval cannot finish, dispatch before the delay fails (`NotYetInheritable`), W cancels an attempt, and the old vendor's append after rotation reverts `NotWriter`.
+  - Each step records the native origin, EVM caller, dispatch result and block in SMART-CONTRACT.md "Deployments" and in LESSONS.
+  - If AC 1 or 2 fails, Succession is killed (see the phase note).
+- [ ] **10.2 `pnpm demo:succession`.** A headless, testnet-only script (native pallets cannot be rehearsed on Hardhat; it says so) that prints every step with its explorer link, plus the encryption-key path chosen in D12.
+  - AC: one recorded testnet run; every tx hash appears in SMART-CONTRACT.md.
+- [ ] **10.3 Proof, README and video integration.**
+  - The proof view gains an "Authority" line: owner `H160(W)`, friend-group threshold, delay, current inheritor and last succession tx.
+  - Client B gets a read-only Succession panel.
+  - The README gets Act 3, the "why Portaldot" line and its honest boundary (a Safe plus recovery module can do something similar on other EVM chains).
+  - The video gets about 30 s for Act 3.
+  - AC: screenshots at 1280 and 390 px; README claims link to real tx hashes.
+
 ## Stretch (only after Phase 7)
 
 - [ ] F7 independent verifier CLI written from the format spec.
