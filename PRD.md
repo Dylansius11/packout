@@ -52,6 +52,8 @@ The commercial product is the **exit kit** (contract + SDK + open bundle format 
 
 The vendor is gone, the workspace continues, and the old vendor has lost control. That sequence is the product.
 
+**Act 3: Succession (gated on F9's spike; cut it if the gate fails).** The owner then loses their key as well. Two of three backup wallets approve a recovery; after a visible delay, the designated inheritor uses Portaldot's native Recovery pallet to act as the same workspace-authority account. That account rotates the epoch again under the **same** contract owner, the workspace continues, and the old vendor is still refused. Steps 1 to 7 stay the baseline and are never cut for Act 3.
+
 ## 5. Features
 
 Priority: P0 = required for the final demo, P1 = strongly wanted, P2 = stretch.
@@ -102,6 +104,15 @@ Priority: P0 = required for the final demo, P1 = strongly wanted, P2 = stretch.
 ### F8. Second replica (P2)
 - Mirror encrypted envelopes to a second owner-chosen location so restore does not depend on the owner's single device. Choice open in OPEN-DECISIONS.
 
+### F9. Succession (P1, gated)
+- The workspace owner is a dedicated native workspace-authority account W, never a personal funded wallet. The design relies on the contract seeing W's EVM-visible address `H160(W)` as `msg.sender` when W dispatches native `Revive.call`. This is UNVERIFIED until the 10.1 spike.
+- W configures a Recovery friend group: three backup wallets, 2 approvals needed, one inheritor and an inheritance delay (a short, on-screen-labelled test delay in the demo).
+- After 2-of-3 approval and the delay, the inheritor calls `Recovery.control_inherited_account(W, Revive.call(registry, rotateEpoch(wsId, [])))`. The owner identity does not change, so the contract needs no change and no ownership-transfer function.
+- Recovery restores **authority**, not the workspace encryption key. The inheritor gets the key through an explicit key path (OPEN-DECISIONS D12); a demo that silently copies the old key does not count.
+- Security story: one leaked backup is not enough (2-of-3); the real owner can cancel an attempt during the delay; the inheritor cannot rewrite the recovery configuration (`control_inherited_account` cannot dispatch Recovery calls).
+- Gate (BUILD-PLAN 10.1): real testnet tx hashes prove `msg.sender == H160(W) == owner` both for W directly and through `control_inherited_account`, plus the failure paths. If the gate fails, F9 is removed from the demo and pitch. It is never faked, and a contract-level recovery module is never presented as native.
+- Acceptance: `pnpm demo:succession` on testnet (native pallets cannot be rehearsed on a local Hardhat chain); the proof view shows the authority line.
+
 ## 6. Out of scope
 
 - Group purchasing or splitting paid bundles (that was BUNDLEBREAK, a different idea).
@@ -109,7 +120,13 @@ Priority: P0 = required for the final demo, P1 = strongly wanted, P2 = stretch.
 - Arbitrary SaaS import, attachments, rich text, real-time collaborative editing, accounts and billing.
 - Tokens, NFTs, bridges, iBridge, cross-VM calls, DaaS, AI features.
 - Trust-minimized light-client verification. Restore trusts a named Portaldot RPC endpoint and says so in the UI.
-- Key recovery and key rotation for already-copied plaintext. Revocation stops future writes; it cannot erase what a vendor already decrypted (Vendor A never holds the key, which limits this).
+- Key recovery and key rotation for already-copied plaintext. Revocation stops future writes; it cannot erase what a vendor already decrypted (Vendor A never holds the key, which limits this). F9 restores authority, and its key path hands the existing key to the inheritor. It does not re-key.
+- Any protocol fee, toll or profit share inside the contract. A toll in the exit path would contradict "the vendor cannot hold you hostage".
+- Scheduler-based automatic failover. It needs a privileged origin (the old source uses `EnsureRoot`), and no inactivity detector is promised.
+
+### Future (recorded, not built)
+
+- Owner passkey sign-in (WebAuthn) once a verified account-abstraction or P-256 path exists on Portaldot. There is currently no verified ERC-4337 EntryPoint, P-256 precompile or native passkey path on V3, and StableTap's passkey claim is UNVERIFIED. An app-side passkey unlock of the workspace key is possible without chain support. Members already need no wallet (F4).
 
 ## 7. What judges should see (rubric mapping)
 
@@ -118,13 +135,25 @@ Priority: P0 = required for the final demo, P1 = strongly wanted, P2 = stretch.
 | Technical feasibility (30%) | Deployed contract, real tx hashes, green CI, Playwright run of the full demo, continuous commit history |
 | Innovation (30%) | Authority transfer away from a vendor, not just export; contract enforces stale-write and revoked-writer refusal |
 | Ecosystem contribution (20%) | Reusable SDK + open bundle format + contract any Portaldot app can integrate; documented Portaldot deployment lessons |
-| Business potential (20%) | App builders pay for managed replicas, adapters and exit drills; open format stays free |
+| Business potential (20%) | Open core: contract, SDK and bundle format free (MIT); app builders pay per workspace for the services below |
+
+### Business model (open core)
+
+The contract, SDK and bundle format stay free under MIT, with no fee or profit share in the contract. App builders pay per workspace for:
+
+1. Managed independent replica and escrow hosting.
+2. Importers and adapters from existing tools.
+3. Exit drills and a signed "exit-readiness report" a buyer can show procurement.
+4. Succession setup and support (F9).
+
+Pricing and demand are UNVERIFIED.
 
 ## 8. Prior art and our delta
 
 - **PortalAnchor** (Portaldot entrant, Middleware): anchors Merkle roots of records as logs. No owner, permissions, canonical head or continued writing. Our delta: authority and continuation, not anchoring.
 - **Ceramic / ComposeDB, OrbitDB**: user-controlled streams and verifiable logs already exist. We do not claim to invent data ownership. Our delta: a small Portaldot-native exit kit demonstrated end to end, including a new accepted write after vendor shutdown.
 - **Ordinary export/backup**: preserves files, not authority.
+- **Safe plus a recovery module on other EVM chains** can do social recovery of a contract owner [inference]. Our F9 delta is reusing the chain's native Recovery authority across native and EVM apps, instead of a per-app recovery contract.
 
 ## 9. Risks
 
@@ -135,6 +164,7 @@ Priority: P0 = required for the final demo, P1 = strongly wanted, P2 = stretch.
 | `eth_getLogs` limits on Portaldot RPC | Spike in Phase 1; fall back to per-index reads if needed |
 | "Why blockchain" challenged | Show the replace-contract-with-database argument and the vendor rejection on stage |
 | Demo depends on perfect live network | Recorded backup run with real tx hashes; local-chain E2E for rehearsal |
+| F9 native origin does not reach the contract as `H160(W)`, or Recovery is filtered | Read-only prep first (BUILD-PLAN 10.0), then a funded gate (10.1) that runs only after 1.4. If the gate fails, cut Act 3. Acts 1 and 2 never depend on it |
 
 ## 10. Glossary
 
