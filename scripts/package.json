@@ -9,10 +9,15 @@
     "demo:full": "node --env-file-if-exists=../.env --import tsx demo-full.ts --network portaldotTestnet",
     "demo:full:local": "node --env-file-if-exists=../.env --import tsx demo-full.ts --network localhost",
     "smoke:testnet": "node --env-file-if-exists=../.env --import tsx demo-full.ts --network portaldotTestnet",
+    "succession:keys": "node --env-file-if-exists=../.env --import tsx succession-keys.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
     "@packout/sdk": "workspace:*",
+    "@polkadot/api": "17.0.2",
+    "@polkadot/keyring": "14.0.3",
+    "@polkadot/types": "17.0.2",
+    "@polkadot/util-crypto": "14.0.3",
     "viem": "2.57.10",
     "zod": "4.6.7"
   },

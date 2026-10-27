@@ -18,6 +18,7 @@
     "demo:full": "pnpm --filter @packout/scripts demo:full",
     "demo:full:local": "pnpm --filter @packout/scripts demo:full:local",
     "smoke:testnet": "pnpm --filter @packout/scripts smoke:testnet",
+    "succession:keys": "pnpm --filter @packout/scripts succession:keys",
     "vendor-api": "pnpm --filter @packout/vendor-api start",
     "vendor-a": "pnpm --filter @packout/vendor-a dev",
     "client-b": "pnpm --filter @packout/client-b dev",

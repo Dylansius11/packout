@@ -80,6 +80,8 @@ Copy `.env.example` to `.env` at the repo root. Never commit `.env`.
 | `VITE_PACKOUT_NETWORK`, `VITE_VENDOR_API_URL`, `VITE_LOCAL_RPC_URL` | vendor-a (client-b without the vendor URL) | build-time network, API URL and local chain URL |
 | `VITE_PACKOUT_DEPLOYMENT` | vendor-a | build-time deployment JSON that overrides `contracts/deployments/<network>.json` (used by E2E) |
 | `SUCCESSION_W_MNEMONIC` | F9 spike and `demo:succession` (BUILD-PLAN 10.1, 10.2) | sr25519 mnemonic of the dedicated workspace-authority account W (section 6). Testnet only, never a personal wallet |
+| `SUCCESSION_N_MNEMONIC`, `SUCCESSION_BACKUP_1_MNEMONIC` … `_3_` | same | the inheritor N and the three backups. `pnpm succession:keys` appends only the missing ones and prints addresses only |
+| `PORTALDOT_NATIVE_WSS` | succession scripts | native Substrate endpoint, default `wss://test-node-v3.portaldot.dev` |
 
 E2E (`pnpm e2e`) runs its own stack on ports 8645 (chain), 8887 (API) and 5273 (Vendor A), and never reads `.env`.
 
