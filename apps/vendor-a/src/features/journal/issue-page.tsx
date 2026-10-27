@@ -1,11 +1,12 @@
 import { ArrowLeft } from '@phosphor-icons/react';
 import { Link } from '@tanstack/react-router';
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, useRef, useState } from 'react';
 import type { Hex } from 'viem';
 import { Notice } from '@/components/notice';
 import { SyncBadge } from '@/components/sync-badge';
 import { Button } from '@/components/ui/button';
 import { Label, Select, Textarea } from '@/components/ui/input';
+import { useRestoreFocusWhenIdle } from '../../lib/focus';
 import { formatTime } from '../../lib/format';
 import { parseHex16 } from '../../lib/ids';
 import { IssueStatusLabel, STATUS_LABEL } from './issue-status';
@@ -18,6 +19,8 @@ function CommentForm({ issueId }: { issueId: Hex }) {
   const journal = useJournalContext();
   const [text, setText] = useState('');
   const [busy, setBusy] = useState(false);
+  const textRef = useRef<HTMLTextAreaElement>(null);
+  useRestoreFocusWhenIdle(busy, textRef);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -36,6 +39,7 @@ function CommentForm({ issueId }: { issueId: Hex }) {
         <Label htmlFor="comment-text">Comment</Label>
         <Textarea
           id="comment-text"
+          ref={textRef}
           required
           maxLength={5000}
           value={text}

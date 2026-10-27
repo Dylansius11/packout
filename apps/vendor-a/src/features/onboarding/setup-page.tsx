@@ -1,7 +1,7 @@
 import { createRegistryWriter } from '@packout/sdk';
 import { Link } from '@tanstack/react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { useState } from 'react';
+import { type RefObject, useEffect, useRef, useState } from 'react';
 import { type UseAccountReturnType, useAccount, useConnect, useDisconnect } from 'wagmi';
 import { getWalletClient, switchChain } from 'wagmi/actions';
 import { CopyButton } from '@/components/copy-button';
@@ -18,6 +18,7 @@ import { db } from '../../db/db';
 import type { SetupRecord, SetupStepState } from '../../db/types';
 import { buildInviteUrl, keyFromBase64Url } from '../../domain/invite';
 import { useNow } from '../../hooks/use-now';
+import { restoreFocus, useRestoreFocusWhenIdle } from '../../lib/focus';
 import { parseHex32 } from '../../lib/ids';
 import { cn } from '../../lib/utils';
 import { isSetupComplete, runSetup, SETUP_STEPS } from '../../onboarding/setup-runner';
@@ -106,7 +107,13 @@ function WalletPanel({ account }: { account: UseAccountReturnType }) {
   );
 }
 
-function InvitePanel({ record }: { record: SetupRecord }) {
+function InvitePanel({
+  record,
+  headingRef,
+}: {
+  record: SetupRecord;
+  headingRef: RefObject<HTMLHeadingElement | null>;
+}) {
   if (!record.wsId || !record.keyB64) return null;
   const link = buildInviteUrl(window.location.origin, record.wsId, keyFromBase64Url(record.keyB64));
   return (
@@ -114,7 +121,12 @@ function InvitePanel({ record }: { record: SetupRecord }) {
       aria-labelledby="invite-heading"
       className="state-in space-y-3 rounded-md border border-success-line bg-success-soft p-4"
     >
-      <h2 id="invite-heading" className="text-base font-semibold text-success">
+      <h2
+        id="invite-heading"
+        ref={headingRef}
+        tabIndex={-1}
+        className="text-base font-semibold text-success outline-none"
+      >
         Member invite link
       </h2>
       <Input
@@ -144,25 +156,42 @@ export function SetupPage({ salt }: { salt: string }) {
   const account = useAccount();
   const [running, setRunning] = useState(false);
   const now = useNow(running);
+  const startRef = useRef<HTMLButtonElement>(null);
+  const inviteHeading = useRef<HTMLHeadingElement>(null);
+  const complete = record ? isSetupComplete(record) : false;
+  const completedHere = useRef(complete);
+  // Connecting removes the Connect button and a running setup disables Start: keep keyboard focus on the next action.
+  useRestoreFocusWhenIdle(!account.isConnected, startRef);
+  useRestoreFocusWhenIdle(running, startRef);
+  useEffect(() => {
+    if (complete && !completedHere.current) restoreFocus(inviteHeading.current);
+    completedHere.current = complete;
+  }, [complete]);
 
   if (record === undefined)
     return <p className="text-sm text-muted-foreground">Reading this setup from the device…</p>;
   if (record === null) {
     return (
-      <Notice tone="danger" title="This setup is not on this device">
-        Setups are stored in the browser that started them.{' '}
-        <Link to="/new" className="underline">
-          Start a new one
-        </Link>
-        .
-      </Notice>
+      <div className="space-y-4">
+        <h1 className="text-2xl font-semibold">Set up a workspace</h1>
+        <Notice tone="danger" title="This setup is not on this device">
+          Setups are stored in the browser that started them.{' '}
+          <Link to="/new" className="underline">
+            Start a new one
+          </Link>
+          .
+        </Notice>
+      </div>
     );
   }
   if (!registryLookup.ok || !registryReader) {
     return (
-      <Notice tone="danger" title="Cannot set up a workspace">
-        {registryLookup.ok ? 'The registry reader is not available.' : registryLookup.message}
-      </Notice>
+      <div className="space-y-4">
+        <h1 className="text-2xl font-semibold">Set up a workspace</h1>
+        <Notice tone="danger" title="Cannot set up a workspace">
+          {registryLookup.ok ? 'The registry reader is not available.' : registryLookup.message}
+        </Notice>
+      </div>
     );
   }
   const reader = registryReader;
@@ -187,7 +216,6 @@ export function SetupPage({ salt }: { salt: string }) {
     }
   }
 
-  const complete = isSetupComplete(record);
   const failed = SETUP_STEPS.some((step) => record.steps[step.id].status === 'failed');
   const started = SETUP_STEPS.some((step) => record.steps[step.id].status !== 'pending');
   const wrongAccount =
@@ -229,10 +257,11 @@ export function SetupPage({ salt }: { salt: string }) {
       </ol>
 
       {complete ? (
-        <InvitePanel record={record} />
+        <InvitePanel record={record} headingRef={inviteHeading} />
       ) : (
         <div className="flex flex-wrap items-center gap-3">
           <Button
+            ref={startRef}
             onClick={() => start(record)}
             disabled={running || !account.isConnected || wrongAccount}
           >

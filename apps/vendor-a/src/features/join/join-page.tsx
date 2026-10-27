@@ -23,6 +23,7 @@ export function JoinPage() {
   if (!parsed.ok) {
     return (
       <div className="mx-auto max-w-xl space-y-4">
+        <h1 className="text-2xl font-semibold">Join a workspace</h1>
         <Notice tone="danger" title="This invite link cannot be used">
           {parsed.message} Ask the workspace owner to send the link again, and copy all of it,
           including the part after #.
@@ -57,6 +58,7 @@ export function JoinPage() {
   if (existing && !saving) {
     return (
       <div className="mx-auto max-w-xl space-y-4">
+        <h1 className="text-2xl font-semibold">Join a workspace</h1>
         <Notice tone="info" title="You already joined this workspace on this device">
           You are <strong>{existing.displayName}</strong> here. Your key and name are stored in this
           browser.

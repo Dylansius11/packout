@@ -1,8 +1,9 @@
 import { Link } from '@tanstack/react-router';
-import { type FormEvent, useState } from 'react';
+import { type FormEvent, useRef, useState } from 'react';
 import { SyncBadge } from '@/components/sync-badge';
 import { Button } from '@/components/ui/button';
 import { Input, Label, Textarea } from '@/components/ui/input';
+import { useRestoreFocusWhenIdle } from '../../lib/focus';
 import { ExportPanel } from '../export/export-panel';
 import { IssueStatusLabel } from './issue-status';
 import { useJournalContext } from './journal-context';
@@ -23,6 +24,9 @@ function NewIssueForm() {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
   const [busy, setBusy] = useState(false);
+  const titleRef = useRef<HTMLInputElement>(null);
+  // The submit button disables while it runs, which drops keyboard focus: bring it back to the field.
+  useRestoreFocusWhenIdle(busy, titleRef);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
@@ -47,6 +51,7 @@ function NewIssueForm() {
         <Label htmlFor="issue-title">Title</Label>
         <Input
           id="issue-title"
+          ref={titleRef}
           required
           maxLength={200}
           value={title}

@@ -15,13 +15,11 @@ function OpenWorkspace({ workspace }: { workspace: WorkspaceRecord }) {
     <JournalContext.Provider value={journal}>
       <div className="space-y-6">
         <header className="space-y-1">
-          <Link
-            to="/w/$wsId"
-            params={{ wsId: workspace.wsId }}
-            className="break-words text-2xl font-semibold hover:underline"
-          >
-            {workspace.label}
-          </Link>
+          <h1 className="break-words text-2xl font-semibold">
+            <Link to="/w/$wsId" params={{ wsId: workspace.wsId }} className="hover:underline">
+              {workspace.label}
+            </Link>
+          </h1>
           <p className="text-sm text-muted-foreground">
             {workspace.role === 'owner' ? 'You own this workspace' : 'You are a member'} · writing
             as <strong className="font-medium text-foreground">{workspace.displayName}</strong> ·{' '}
@@ -46,13 +44,16 @@ export function WorkspaceLayout({ wsId }: { wsId: string }) {
   }
   if (workspace === null) {
     return (
-      <Notice tone="danger" title="This workspace is not on this device">
-        Open the invite link you were sent to join it, or go back to your{' '}
-        <Link to="/" className="underline">
-          workspaces
-        </Link>
-        .
-      </Notice>
+      <div className="space-y-4">
+        <h1 className="text-2xl font-semibold">Workspace not found</h1>
+        <Notice tone="danger" title="This workspace is not on this device">
+          Open the invite link you were sent to join it, or go back to your{' '}
+          <Link to="/" className="underline">
+            workspaces
+          </Link>
+          .
+        </Notice>
+      </div>
     );
   }
   return <OpenWorkspace workspace={workspace} />;

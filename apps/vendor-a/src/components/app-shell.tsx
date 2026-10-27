@@ -1,8 +1,14 @@
-import { Link, Outlet } from '@tanstack/react-router';
+import { Link, Outlet, useRouterState } from '@tanstack/react-router';
+import { useRef } from 'react';
 import { chain, registryLookup, rpcHost } from '../config/env';
+import { useFocusOnChange } from '../lib/focus';
 import { Notice } from './notice';
 
 export function AppShell() {
+  const main = useRef<HTMLElement>(null);
+  const pathname = useRouterState({ select: (state) => state.location.pathname });
+  // A new page replaces the control the user just used: start them at the top of it.
+  useFocusOnChange(pathname, main);
   return (
     <div className="flex min-h-dvh flex-col">
       <a
@@ -22,7 +28,12 @@ export function AppShell() {
           </span>
         </div>
       </header>
-      <main id="main" className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 sm:px-6">
+      <main
+        id="main"
+        ref={main}
+        tabIndex={-1}
+        className="mx-auto w-full max-w-5xl flex-1 px-4 py-8 outline-none sm:px-6"
+      >
         {registryLookup.ok ? null : (
           <Notice tone="danger" title="This build has no registry address" className="mb-6">
             {registryLookup.message}

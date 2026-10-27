@@ -1,6 +1,6 @@
 import type { VerificationReport } from '@packout/sdk';
 import { DownloadSimple } from '@phosphor-icons/react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { CopyButton } from '@/components/copy-button';
 import { Notice } from '@/components/notice';
 import { StepRow } from '@/components/step-row';
@@ -16,6 +16,7 @@ import { STALL_MS } from '../../domain/sync-state';
 import { useNow } from '../../hooks/use-now';
 import { downloadText } from '../../lib/download';
 import { describeFailure } from '../../lib/errors';
+import { useRestoreFocusWhenIdle } from '../../lib/focus';
 import { syncWorkspace } from '../../sync/engine';
 import { useJournalContext } from '../journal/journal-context';
 
@@ -40,6 +41,8 @@ export function ExportPanel() {
   const [state, setState] = useState<ExportState>({ phase: 'idle' });
   const running = state.phase === 'collecting' || state.phase === 'verifying';
   const now = useNow(running);
+  const exportButton = useRef<HTMLButtonElement>(null);
+  useRestoreFocusWhenIdle(running, exportButton);
 
   async function runExport() {
     const reader = registryReader;
@@ -125,7 +128,7 @@ export function ExportPanel() {
         match. It is checked against Portaldot with your key before you can download it.
       </p>
       {registryLookup.ok ? (
-        <Button onClick={runExport} disabled={running}>
+        <Button ref={exportButton} onClick={runExport} disabled={running}>
           <DownloadSimple size={16} weight="bold" aria-hidden />
           {running ? 'Checking…' : 'Export bundle'}
         </Button>
