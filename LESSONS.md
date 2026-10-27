@@ -2,6 +2,11 @@
 
 Read the headlines before starting work. Format: `### YYYY-MM-DD: headline`, then what happened, root cause, rule going forward. Newest on top.
 
+### 2026-10-27: Portaldot's v16 metadata hash changes without a runtime upgrade
+- What happened: the succession preflight refused the live chain because the raw blake2_256 of v16 metadata no longer matched the 2026-10-26 pin, while spec 3002 and transaction version 2 were unchanged.
+- Root cause: comparing the pinned and live metadata found exactly one difference, the storage `fallback` of `Revive.EthBlockBuilderIR`, which embeds block-builder state.
+- Rule: pin the snapshot hash and the runtime versions, then compare live metadata structurally while excluding only that named fallback. Never weaken the pin to "spec version only". Pass `tx.toU8a()`, not a hex string, to the decorated `queryInfo` runtime call; the hex form traps in WASM.
+
 ### 2026-10-26: Portaldot's default metadata is v14 and its type ids do not match v16
 - What happened: during the Succession prep, call decoding failed until the decoder switched to v16 metadata.
 - Root cause: `state_getMetadata` returns v14, while `@polkadot/api` initializes from `Metadata_metadata_at_version(16)`. The two portable registries number their types differently.

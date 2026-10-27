@@ -10,6 +10,7 @@
     "demo:full:local": "node --env-file-if-exists=../.env --import tsx demo-full.ts --network localhost",
     "smoke:testnet": "node --env-file-if-exists=../.env --import tsx demo-full.ts --network portaldotTestnet",
     "succession:keys": "node --env-file-if-exists=../.env --import tsx succession-keys.ts",
+    "succession:preflight": "node --env-file-if-exists=../.env --import tsx succession-preflight.ts",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
