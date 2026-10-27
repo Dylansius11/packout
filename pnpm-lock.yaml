@@ -385,6 +385,9 @@ importers:
       '@noble/hashes':
         specifier: 2.4.0
         version: 2.4.0
+      shamir-secret-sharing:
+        specifier: 0.0.4
+        version: 0.0.4
       viem:
         specifier: 2.57.10
         version: 2.57.10(typescript@7.0.2)(zod@4.6.7)
@@ -1926,6 +1929,9 @@ packages:
     resolution: {integrity: sha512-FU+LUkmDzWNsJ6oubZFN3dGPKny53DRhPJG6nftEaXDL8MIn19+kEE1Gvc+63Go+qPOwVUlKIdKhsu2HN6tksw==}
     engines: {node: '>=20'}
 
+  shamir-secret-sharing@0.0.4:
+    resolution: {integrity: sha512-ui8u/cIg2j16b9on/LH3V/glL6wHdwiTo/Iajzqx0STniBvuOzl6VYUxhrow3waF0dggovJfYiBZSWfTAN4XLQ==}
+
   sisteransi@1.0.5:
     resolution: {integrity: sha512-bLGGlR1QxBcynn2d5YmDX4MGjlZvy2MRBDRNHLJ8VI6l6+9FUiyTFNJ0IveOSP0bcXgVDPRcfGqA0pjaqUpfVg==}
 
@@ -3404,6 +3410,8 @@ snapshots:
       seroval: 1.7.0
 
   seroval@1.7.0: {}
+
+  shamir-secret-sharing@0.0.4: {}
 
   sisteransi@1.0.5: {}
 

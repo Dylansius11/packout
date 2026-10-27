@@ -93,6 +93,28 @@ The AAD binds a ciphertext to its workspace, so an envelope copied from another 
 
 The owner's browser generates the key. Invite link: `https://<app>/join#ws=<wsId>&k=<base64url key>`. The fragment never reaches a server. The vendor relays and anchors ciphertext it cannot read.
 
+### 4.4 Succession key shares (D12)
+
+`splitWorkspaceKey(key)` in `@packout/sdk` splits a 32-byte workspace key into
+exactly three shares; any two recover it with `combineWorkspaceKey(shares)`.
+This is separate from native Recovery, which restores authority, not decryption.
+The primitive uses pinned `shamir-secret-sharing@0.0.4` from Privy; its
+[README](https://github.com/privy-io/shamir-secret-sharing#security-considerations)
+identifies independent audits by [Cure53](https://cure53.de/audit-report_privy-sss-library.pdf)
+and [Zellic](https://github.com/Zellic/publications/blob/master/Privy_Shamir_Secret_Sharing_-_Zellic_Audit_Report.pdf).
+
+Each PACKOUT share is 50 raw bytes: `0x01 || keccak256(key)[0:16] || payload`.
+The 33-byte library payload is 32 Shamir evaluation bytes followed by its nonzero
+GF(256) x-coordinate. Combine requires two or three distinct coordinates, the
+supported version and exact length, identical commitments, and a reconstructed
+key matching that commitment. Mismatched, duplicate or damaged shares raise a
+user-legible `PackoutError`, never a key presented as recovered.
+The 128-bit commitment is an integrity check, not backup authentication; it
+reveals key equality and permits offline guesses, so keys must be uniformly
+random (`generateWorkspaceKey`), not passwords. Keep shares private and distribute
+one per backup; never put them in the bundle, vendor API or on-chain.
+Share delivery and the recorded Succession run remain open in BUILD-PLAN 10.2.
+
 ## 5. Bundle format v1 and verification
 
 ```json

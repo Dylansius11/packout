@@ -4,7 +4,9 @@ export type PackoutErrorCode =
   | 'workspace-mismatch'
   | 'unknown-op-type'
   | 'invalid-op'
-  | 'invalid-bundle';
+  | 'invalid-bundle'
+  | 'invalid-workspace-key'
+  | 'invalid-key-shares';
 
 export class PackoutError extends Error {
   constructor(

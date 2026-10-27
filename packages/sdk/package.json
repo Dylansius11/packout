@@ -12,6 +12,7 @@
   "dependencies": {
     "@noble/ciphers": "2.4.0",
     "@noble/hashes": "2.4.0",
+    "shamir-secret-sharing": "0.0.4",
     "viem": "2.57.10",
     "zod": "4.6.7"
   }

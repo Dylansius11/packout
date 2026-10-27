@@ -30,6 +30,7 @@ export {
 } from './envelope.ts';
 export { PackoutError, type PackoutErrorCode } from './errors.ts';
 export { chainHeads, HEAD_DOMAIN, nextHead, ZERO_HEAD } from './head.ts';
+export { combineWorkspaceKey, splitWorkspaceKey } from './key-shares.ts';
 export {
   createOp,
   decodeOp,
