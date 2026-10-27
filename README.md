@@ -91,6 +91,7 @@ pnpm smoke:testnet         # same full flow; requires the committed testnet depl
 | Vendor A API and web app | Done on a local chain; Playwright covers onboarding, member writes, anchoring and export |
 | Client B restore app | Done on a local chain: import, six-check verification, takeover with `rotateEpoch`, continued writes and stale-bundle refusal (`pnpm client-b`, port 5174). Playwright runs the whole exit story with the vendor process stopped |
 | Public workspace proof | Client B `#/proof/<wsId>`: owner, epoch, writers, every append and the access timeline, read only from Portaldot events. No key or wallet needed |
+| Succession (gated, PRD F9) | Native Recovery path written and checked read-only against the live testnet: `pnpm succession:preflight` decodes every planned call from pinned metadata and quotes its fee. A live dry run shows the EVM sees the native workspace-authority account W as `H160(W)`. SDK tests show that any 2 of 3 backup shares restore the workspace key. The funded gate (`pnpm spike:succession`) has not run yet; Act 3 is cut if it fails |
 
 Progress is tracked box by box in [BUILD-PLAN.md](BUILD-PLAN.md); open questions and blockers in [OPEN-DECISIONS.md](OPEN-DECISIONS.md); surprises and fixes in [LESSONS.md](LESSONS.md).
 
@@ -98,8 +99,12 @@ Progress is tracked box by box in [BUILD-PLAN.md](BUILD-PLAN.md); open questions
 
 ```
 contracts/       PackoutRegistry (Solidity, Hardhat 3) and its tests
-packages/sdk/    @packout/sdk: encoding, encryption, head chain, bundle, verifier, reducer, chain client
-scripts/         demo:checkin
+packages/sdk/    @packout/sdk: encoding, encryption, head chain, bundle, verifier, reducer, chain client, 2-of-3 key shares
+apps/vendor-api/ Vendor A's API: stores ciphertext, batches anchors to the registry
+apps/vendor-a/   Vendor A web app (the SaaS being left)
+apps/client-b/   Client B: independent restore, takeover and proof app (never imports Vendor A code)
+scripts/         demo:checkin, demo:full, smoke:testnet, succession preflight/spike/demo
+e2e/             Playwright: the whole exit story with the vendor stopped
 docs/technical/  architecture, contract spec, Portaldot integration notes
 ```
 
