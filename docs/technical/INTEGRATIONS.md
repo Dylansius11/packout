@@ -152,7 +152,7 @@ The workspace-authority account W for the spike was generated on 2026-10-26 into
 | [I] | W's workspace storage | 4 new slots (owner/epoch/count, schemaId, head, one writer flag) at 64 bytes × 0.06 + 0.15 = 15.96 tPOT, a conservative upper bound until measured |
 | [V] | Multisig inheritor | 5.43 + 1.92 × 2 = 9.27 tPOT held per pending operation |
 
-**Extra funding (single-key inheritor, D11): 18.5 tPOT to W** (`5D5Qw6HsJ7wK4APZF9TfqTSP5omBtLE1uF9YFgYyk1jLj9zE`).
+**Extra funding (single-key inheritor, D11): 23 tPOT to W** (`5D5Qw6HsJ7wK4APZF9TfqTSP5omBtLE1uF9YFgYyk1jLj9zE`). The spike needs 18.5. The extra 4.5 covers the later `demo:succession` run, which reuses the spike's workspace and needs 4.5 tPOT plus any recipient shortfalls (6.7) even if the create deposit hits its 16 tPOT cap.
 
 | Account | Allocation |
 | --- | --- |
@@ -167,6 +167,7 @@ This is a conservative plan with about 2× fee headroom, not a measured cost. A 
 
 - [V] Blocks are 6 s: `Babe.ExpectedBlockTime` 6000 ms, and 6000.2 ms was measured over 10 blocks.
 - [V] Recovery delays count blocks from `Recovery.provided_block_number`, which matched the native block number.
+- [V] Finality lags the best block by 2 blocks (three samples on 2026-10-27), so each finalized step of the spike takes about 3 blocks.
 - [I] Upstream allows `inheritance_delay = 0` and requires `cancel_delay ≥ 1`.
 - Working demo value (D13): 10 blocks (~60 s) each, labelled on screen as a test delay.
 - W can cancel an attempt at any time.
@@ -175,9 +176,21 @@ This is a conservative plan with about 2× fee headroom, not a measured cost. A 
 
 All of the following are [U]:
 
-- AutoMap installs `OriginalAccount(H160(W)) = W` on funding.
+- AutoMap installs `OriginalAccount(H160(W)) = W`, either on W's first signed extrinsic or on its first `Revive.call`. The spike records the state after funding and requires the mapping after W's create and grant.
 - A real `Signed(W)` `Revive.call` to `createWorkspace` / `appendBatch` finalizes with owner `H160(W)`.
 - The 2-of-3 → delay → `finish_attempt` → `control_inherited_account(W, Revive.call(rotateEpoch))` path finalizes, the inner result succeeds and the epoch changes.
 - The failure paths behave as expected: 1-of-3 gives `NotApproved`, early dispatch gives `NotYetInheritable`, W cancels, and the vendor gets `NotWriter`.
 - The real holds and fees, and who pays the storage deposit (W or N) on an inherited call.
 - The live runtime's limits on friend groups and delays.
+
+### 6.7 Running the spike
+
+These scripts are **testnet-only**: native Recovery and Revive pallets cannot be rehearsed on Hardhat. Run `pnpm succession:keys` once to append only missing N/backup mnemonics to the gitignored root `.env`; it prints SS58 addresses only. W must already be configured. Then run `pnpm succession:preflight` (read-only), `pnpm spike:succession` (negative paths and authority gate), and `pnpm demo:succession` (narrative plus D12 key reconstruction). The last two refuse to sign unless their own preflight passes. Both accept `--delay-blocks N` and label it **TEST DELAY: N blocks (~N×6 s)**. The default is 24 blocks for the spike and 10 for the demo. The spike's one-approval finish, second approval and early finish each wait for finality (about 3 blocks each), so 10 blocks would expire before the early-finish check. The spike stops rather than pretend an early failure was observed. Every native `Revive.call` is capped at the funded budget: weight 10^12/10^6 and 16 tPOT of storage deposit.
+
+[V] On 2026-10-27 the live preflight derives all five configured accounts, quotes all 20 planned extrinsic envelopes with `TransactionPaymentApi_query_info`, reaches `ReviveApi.call`, and fails on W's zero balance and the missing deployment. Without the registry, the destination `...0001` is explicitly a fee-only precompile encoding/probe, **not** a registry create dry-run. Once deployment exists, the native W create is dry-run with required weight and maximum storage-deposit bounds; every real native EVM call is estimated again against its actual preceding state. Fee quotations are not paid fees or evidence of call validity; the vendor `eth_transact` quotation uses fabricated signature components, not the vendor key.
+
+[V] The raw live v16 metadata hash changes despite spec 3002: comparison against the original finalized block found the sole difference in `Revive.EthBlockBuilderIR`'s storage fallback. Preflight verifies the bundled pinned snapshot against the original blake2_256 hash, prints the live raw hash, and compares every metadata field except that one named state-dependent fallback. Calls, type IDs, constants, other defaults and runtime versions remain pinned. It never mixes v14 and v16. [V] `query_info` must receive `tx.toU8a()`; passing the hex string through the decorated runtime API produced a WASM decode trap.
+
+[I] The retained upstream source (not proven to be the deployed runtime revision) distinguishes **early finish** (`NotYetInheritable`) from **control before inheritance** (`NoInheritor`). `finish_attempt` accepts any signed fee payer, counts delay from `init_block` (not the last approval), and does not wait for `cancel_delay`. W can cancel immediately; only the initiating backup may also cancel, and only after `last_approval_block + cancel_delay` (`NotCanceller` / `NotYetCancelable` otherwise). Initiation is approval one. The spike asserts these expected errors and inspects the inner `RecoveredAccountControlled.call_result`, not merely outer success. All funded behavior remains [U] until real receipts exist.
+
+Public run evidence goes to `out/succession/<timestamp>/evidence.json`: origin, EVM caller, inner/outer dispatch, finalized block/hash, extrinsic/tx hash, explorer block link, fee event and balance/hold deltas. The reusable workspace, ciphertext and owner key are stored separately in **private**, gitignored `out/succession/workspace.json` (0600 where supported; restrict Windows ACLs). Never publish that file. A subsequent demo verifies/reuses this workspace rather than paying a second create deposit, explicitly has W revoke a prior rehearsal inheritor, and forwards only recipient shortfalls. Reuse budgets W at 4 tPOT for the new epoch's vendor-writer slot + 0.5 tPOT ED/fee allowance + those shortfalls; additional rehearsals may require top-ups. D12 splits the original key 2-of-3 before succession, discards the in-memory owner key, reconstructs from two backup shares afterwards, verifies/decrypts complete history, and encrypts the continuation with that recovered key. This headless rehearsal holds shares on this device; it does not claim independent backup-wallet custody. Keys/shares are never printed or included in public evidence, only fingerprints.

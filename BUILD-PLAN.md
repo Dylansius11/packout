@@ -109,11 +109,13 @@ This phase never delays Phase 1 (1.4, 1.5) or Phase 7. Only 10.0 runs before fun
   - AC, with real testnet tx hashes:
     1. W, via native `Revive.call`, creates or appends, and the contract sees `msg.sender == H160(W) == owner`.
     2. 2-of-3 backups approve, the delay elapses, and the inheritor's `control_inherited_account(W, Revive.call(rotateEpoch))` succeeds with the same `msg.sender`.
-    3. Failure paths: 1-of-3 approval cannot finish, dispatch before the delay fails (`NotYetInheritable`), W cancels an attempt, and the old vendor's append after rotation reverts `NotWriter`.
+    3. Failure paths: 1-of-3 approval cannot finish (`NotApproved`), finishing before the delay fails (`NotYetInheritable`), dispatching as W before an inheritor is installed fails (`NoInheritor`), W cancels an attempt, and the old vendor's append after rotation reverts `NotWriter`.
   - Each step records the native origin, EVM caller, dispatch result and block in SMART-CONTRACT.md "Deployments" and in LESSONS.
   - If AC 1 or 2 fails, Succession is killed (see the phase note).
+  - 2026-10-27: `pnpm spike:succession` is written and runs these steps in order. It refuses to sign until `pnpm succession:preflight` passes (INTEGRATIONS 6.7). Waiting for B1 and 1.4.
 - [ ] **10.2 `pnpm demo:succession`.** A headless, testnet-only script (native pallets cannot be rehearsed on Hardhat; it says so) that prints every step with its explorer link, plus the encryption-key path chosen in D12.
   - AC: one recorded testnet run; every tx hash appears in SMART-CONTRACT.md.
+  - 2026-10-27: the script is written. It reuses the spike's workspace, so there is no second create deposit, and uses the SDK 2-of-3 key shares for D12. Waiting for the 10.1 gate.
 - [ ] **10.3 Proof, README and video integration.**
   - The proof view gains an "Authority" line: owner `H160(W)`, friend-group threshold, delay, current inheritor and last succession tx.
   - Client B gets a read-only Succession panel.

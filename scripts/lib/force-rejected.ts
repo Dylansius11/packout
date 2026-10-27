@@ -57,7 +57,10 @@ export type RejectedAppendResult = TxResult & {
 };
 
 export async function forceRejectedAppend(
-  session: DemoSession,
+  session: Pick<
+    DemoSession,
+    'client' | 'vendorAddress' | 'vendorWallet' | 'vendor' | 'chain' | 'deployment'
+  >,
   input: RejectedAppendRequest,
 ): Promise<RejectedAppendResult> {
   const args = [input.wsId, input.expectedCount, input.expectedHead, input.digests] as const;

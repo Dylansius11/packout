@@ -20,6 +20,8 @@
     "smoke:testnet": "pnpm --filter @packout/scripts smoke:testnet",
     "succession:keys": "pnpm --filter @packout/scripts succession:keys",
     "succession:preflight": "pnpm --filter @packout/scripts succession:preflight",
+    "spike:succession": "pnpm --filter @packout/scripts spike:succession",
+    "demo:succession": "pnpm --filter @packout/scripts demo:succession",
     "vendor-api": "pnpm --filter @packout/vendor-api start",
     "vendor-a": "pnpm --filter @packout/vendor-a dev",
     "client-b": "pnpm --filter @packout/client-b dev",
