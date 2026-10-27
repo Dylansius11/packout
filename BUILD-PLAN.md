@@ -71,6 +71,7 @@ Goal: one real core flow on Portaldot testnet, honestly documented. Breadth come
 - [x] **6.1 GitHub Actions.** On push: install, Biome, typecheck, Vitest, Hardhat tests, Playwright against a local chain; cache pnpm.
 - [ ] **6.2 Testnet smoke job.** Manual-dispatch workflow using repo secrets, mirroring `pnpm smoke:testnet`.
   - AC: CI green on `main`; README badge.
+  - 2026-10-27: repository secrets `DEPLOYER_PRIVATE_KEY` and `VENDOR_WRITER_PRIVATE_KEY` are set with the founder's approval. The first dispatch waits for the committed testnet deployment from 1.4; tick after a green run.
 
 ## Phase 7: Real testnet demo (target 2026-11-03)
 
