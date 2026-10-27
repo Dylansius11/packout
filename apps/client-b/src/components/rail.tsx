@@ -1,6 +1,7 @@
 import { Check } from '@phosphor-icons/react';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { networkLabel, rpcHost } from '../config/env';
+import { restoreFocus } from '../lib/focus';
 import { cn } from '../lib/utils';
 import { Button } from './ui/button';
 
@@ -33,6 +34,15 @@ export function Rail({
   proofHref?: string;
 }) {
   const [confirming, setConfirming] = useState(false);
+  const trigger = useRef<HTMLButtonElement>(null);
+  const cancel = useRef<HTMLButtonElement>(null);
+  const wasConfirming = useRef(false);
+  // The confirmation replaces the button that opened it: land on the safe choice, and come back afterwards.
+  useEffect(() => {
+    if (confirming) cancel.current?.focus();
+    else if (wasConfirming.current) restoreFocus(trigger.current);
+    wasConfirming.current = confirming;
+  }, [confirming]);
   return (
     <aside className="flex flex-col gap-6 border-b border-border bg-rail px-4 py-4 lg:sticky lg:top-0 lg:h-dvh lg:border-r lg:border-b-0 lg:px-6 lg:py-8">
       <div>
@@ -105,7 +115,7 @@ export function Rail({
         {proofHref ? (
           <a
             href={proofHref}
-            className="inline-block text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
+            className="block w-fit text-xs text-muted-foreground underline underline-offset-2 hover:text-foreground"
           >
             Public proof page
           </a>
@@ -128,13 +138,14 @@ export function Rail({
                 >
                   Forget it
                 </Button>
-                <Button size="sm" variant="ghost" onClick={() => setConfirming(false)}>
+                <Button size="sm" variant="ghost" ref={cancel} onClick={() => setConfirming(false)}>
                   Cancel
                 </Button>
               </div>
             </div>
           ) : (
             <Button
+              ref={trigger}
               size="sm"
               variant="ghost"
               className="-ml-3 h-auto min-h-8 whitespace-normal py-1.5 text-left text-xs font-normal text-muted-foreground hover:text-foreground"

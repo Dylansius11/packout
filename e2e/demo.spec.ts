@@ -58,6 +58,8 @@ test('the workspace continues after vendor shutdown and Portaldot rejects the ve
       .getByRole('button', { name: 'Check this bundle against Portaldot', exact: true })
       .click();
     await expect(page.getByRole('heading', { name: 'Verified', exact: true })).toBeVisible();
+    // The Check button vanished with the import form: a keyboard user lands on the result, not on <body>.
+    await expect(page.getByRole('heading', { name: 'Verified', exact: true })).toBeFocused();
     const checks = page.getByRole('list', { name: 'Verification steps' }).getByRole('listitem');
     await expect(checks).toHaveCount(6);
     for (const step of await checks.all())
@@ -169,6 +171,9 @@ test('the workspace continues after vendor shutdown and Portaldot rejects the ve
     await expect(
       page.getByRole('heading', { name: 'Verification failed', exact: true }),
     ).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Verification failed', exact: true }),
+    ).toBeFocused();
     const complete = page
       .getByRole('list', { name: 'Verification steps' })
       .getByRole('listitem')

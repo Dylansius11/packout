@@ -1,6 +1,6 @@
 import type { AppendedEvent } from '@packout/sdk';
 import { ArrowLeft, Check, CircleNotch, Copy } from '@phosphor-icons/react';
-import { type ReactNode, useMemo, useRef, useState } from 'react';
+import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import type { Address, Hex } from 'viem';
 import { Notice } from '@/components/notice';
 import { TxRef } from '@/components/tx-ref';
@@ -9,6 +9,7 @@ import { cn } from '@/lib/utils';
 import { publicClient, registryReader } from '../../chain/clients';
 import { registryLookup, rpcHost } from '../../config/env';
 import { useNow } from '../../hooks/use-now';
+import { restoreFocus } from '../../lib/focus';
 import { shortHex } from '../../lib/format';
 import { buildTimeline, currentWriters, parseWorkspaceId, type TimelineEntry } from './history';
 import type { ProofData, ProofSource } from './load-proof';
@@ -280,6 +281,18 @@ function Loaded({ wsId, source: s }: { wsId: Hex; source: ProofSource }) {
   const { state, reload } = useProof(s, wsId);
   const loading = state.phase === 'loading';
   const now = useNow(loading);
+  const retryButton = useRef<HTMLButtonElement>(null);
+  const retried = useRef(false);
+  // Reading again replaces the button that asked for it; hand focus to the one that replaces it.
+  useEffect(() => {
+    if (loading || !retried.current) return;
+    retried.current = false;
+    restoreFocus(retryButton.current);
+  }, [loading]);
+  function retry() {
+    retried.current = true;
+    reload();
+  }
 
   if (state.phase === 'loading') {
     return (
@@ -293,7 +306,7 @@ function Loaded({ wsId, source: s }: { wsId: Hex; source: ProofSource }) {
             Portaldot at {rpcHost} is slow or unreachable. Nothing has been shown because nothing
             has been read. You can keep waiting or try again.
             <div className="mt-3">
-              <Button size="sm" variant="outline" onClick={reload}>
+              <Button ref={retryButton} size="sm" variant="outline" onClick={retry}>
                 Try again
               </Button>
             </div>
@@ -307,7 +320,7 @@ function Loaded({ wsId, source: s }: { wsId: Hex; source: ProofSource }) {
       <Notice tone="danger" title={`Portaldot via ${rpcHost} could not be read`}>
         {state.message} Nothing was shown because nothing could be verified.
         <div className="mt-3">
-          <Button size="sm" variant="outline" onClick={reload}>
+          <Button ref={retryButton} size="sm" variant="outline" onClick={retry}>
             Try again
           </Button>
         </div>
@@ -330,8 +343,9 @@ function Loaded({ wsId, source: s }: { wsId: Hex; source: ProofSource }) {
       <p className="text-xs text-muted-foreground">
         Read up to block {String(state.data.latestBlock)}.{' '}
         <button
+          ref={retryButton}
           type="button"
-          onClick={reload}
+          onClick={retry}
           className="underline underline-offset-2 hover:text-foreground"
         >
           Read again
@@ -371,7 +385,12 @@ export function ProofPage({ wsIdText }: { wsIdText: string }) {
           </a>
         </div>
       </header>
-      <main ref={main} tabIndex={-1} className="px-4 py-8 outline-none lg:px-12 lg:py-12">
+      <main
+        id="proof-main"
+        ref={main}
+        tabIndex={-1}
+        className="px-4 py-8 outline-none lg:px-12 lg:py-12"
+      >
         <div className="mx-auto max-w-3xl space-y-6">
           <div className="space-y-2">
             <h1 className="text-2xl font-semibold">Workspace proof</h1>

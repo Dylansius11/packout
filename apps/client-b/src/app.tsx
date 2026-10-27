@@ -23,10 +23,19 @@ import { TakeoverScreen } from './features/takeover/takeover-screen';
 import { VerifyScreen } from './features/verify/verify-screen';
 import { useVerification } from './hooks/use-verification';
 import { describeFailure } from './lib/errors';
+import { useFocusOnChange } from './lib/focus';
 
 /** Client B: restore a workspace from a bundle, take it over, keep writing. No code path to any vendor. */
 export function App() {
   const proofRoute = useProofRoute();
+  const onProof = proofRoute !== null;
+  const previous = useRef<boolean | undefined>(undefined);
+  // Switching pages hides the link that was used: start at the top of the page that appeared.
+  useEffect(() => {
+    const changed = previous.current !== undefined && previous.current !== onProof;
+    previous.current = onProof;
+    if (changed) document.getElementById(onProof ? 'proof-main' : 'main')?.focus();
+  }, [onProof]);
   return (
     <>
       {proofRoute !== null ? <ProofPage wsIdText={proofRoute} /> : null}
@@ -47,6 +56,9 @@ function RestoreApp() {
   const [storedError, setStoredError] = useState<string | null>(null);
   const draft = useRef<ImportDraft | null>(null);
   const booted = useRef(false);
+  const main = useRef<HTMLElement>(null);
+  /** Why the last write was refused. The re-check that follows may replace the screen that showed it. */
+  const [writeFailure, setWriteFailure] = useState<string | null>(null);
 
   async function verifyDevice(current: Session | null) {
     if (!current) return;
@@ -64,6 +76,7 @@ function RestoreApp() {
 
   async function verifyDraft(next: ImportDraft) {
     draft.current = next;
+    setWriteFailure(null);
     setView('verify');
     const report = await verify({ bundle: next.text, key: next.key }, 'file');
     if (report?.ok && draft.current === next) {
@@ -116,7 +129,17 @@ function RestoreApp() {
     active = g.takeoverScreen.open ? 'takeover' : 'verify';
   }
 
+  // A new screen replaces the control the user just used: start them at its heading.
+  const screenKey =
+    view === null
+      ? null
+      : active === 'verify'
+        ? `verify:${verification.state.phase}`
+        : `${active}:${takenOver}`;
+  useFocusOnChange(screenKey, main, 'h1');
+
   function rerun() {
+    setWriteFailure(null);
     if (draft.current) void verifyDraft(draft.current);
     else void verifyDevice(session ?? null);
   }
@@ -130,6 +153,7 @@ function RestoreApp() {
     draft.current = null;
     resetVerification();
     setStoredError(null);
+    setWriteFailure(null);
     setView('import');
   }
 
@@ -170,7 +194,10 @@ function RestoreApp() {
           views={deviceViews}
           onChain={onChain}
           action={g.writeAction}
-          onWriteAttempt={() => void refreshDevice()}
+          onWriteAttempt={(failure) => {
+            setWriteFailure(failure);
+            void refreshDevice();
+          }}
         />
       );
     }
@@ -181,7 +208,10 @@ function RestoreApp() {
         registry={registryLookup.registry.address}
         takenOver={takenOver}
         hasDevice={workspace !== null}
-        onUseDevice={() => void verifyDevice(session ?? null)}
+        onUseDevice={() => {
+          setWriteFailure(null);
+          void verifyDevice(session ?? null);
+        }}
         onRecheck={rerun}
         onChooseAnother={() => setView('import')}
         onNext={() => setView(takenOver ? 'continue' : 'takeover')}
@@ -205,11 +235,16 @@ function RestoreApp() {
         onForget={() => void forget()}
         proofHref={workspace ? proofHref(workspace.wsId) : undefined}
       />
-      <main id="main" className="px-4 py-8 lg:px-12 lg:py-12">
+      <main id="main" ref={main} tabIndex={-1} className="px-4 py-8 outline-none lg:px-12 lg:py-12">
         <div className="mx-auto max-w-3xl space-y-6">
           {storedError ? (
             <Notice tone="danger" title="The workspace on this device cannot be read">
               {storedError}
+            </Notice>
+          ) : null}
+          {writeFailure && active !== 'continue' ? (
+            <Notice tone="danger" title="Your last write was not anchored">
+              {writeFailure}
             </Notice>
           ) : null}
           {renderScreen()}

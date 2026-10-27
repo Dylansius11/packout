@@ -1,5 +1,5 @@
 import type { IssueStatus, OpBody, WorkspaceOnChain } from '@packout/sdk';
-import { type FormEvent, useId, useState } from 'react';
+import { type FormEvent, useId, useRef, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { connectedWriter } from '@/chain/wallet';
 import { ChainFacts } from '@/components/chain-facts';
@@ -15,6 +15,8 @@ import type { IssueView } from '../../domain/journal-view';
 import { sessionKey } from '../../domain/storage';
 import { appendOwnerOp } from '../../domain/write-op';
 import { txPending, useTx } from '../../hooks/use-tx';
+import { describeFailure } from '../../lib/errors';
+import { useRestoreFocusWhenIdle } from '../../lib/focus';
 import { ExportPanel } from '../export/export-panel';
 import { IssueList, STATUS_LABEL } from '../workspace/issue-list';
 
@@ -25,17 +27,26 @@ function NewIssueForm({ write, disabled }: { write: WriteFn; disabled: boolean }
   const [description, setDescription] = useState('');
   const titleId = useId();
   const descriptionId = useId();
+  const [busy, setBusy] = useState(false);
+  const titleRef = useRef<HTMLInputElement>(null);
+  // The submit button disables while the write runs, which drops keyboard focus: bring it back.
+  useRestoreFocusWhenIdle(busy, titleRef);
 
   async function submit(event: FormEvent) {
     event.preventDefault();
     if (title.trim() === '') return;
-    const ok = await write({
-      type: 'issue.create',
-      body: { title: title.trim(), description: description.trim() },
-    });
-    if (ok) {
-      setTitle('');
-      setDescription('');
+    setBusy(true);
+    try {
+      const ok = await write({
+        type: 'issue.create',
+        body: { title: title.trim(), description: description.trim() },
+      });
+      if (ok) {
+        setTitle('');
+        setDescription('');
+      }
+    } finally {
+      setBusy(false);
     }
   }
 
@@ -52,6 +63,7 @@ function NewIssueForm({ write, disabled }: { write: WriteFn; disabled: boolean }
         <Label htmlFor={titleId}>Title</Label>
         <Input
           id={titleId}
+          ref={titleRef}
           value={title}
           maxLength={200}
           onChange={(event) => setTitle(event.target.value)}
@@ -87,6 +99,19 @@ function IssueActions({
   const [comment, setComment] = useState('');
   const statusId = useId();
   const commentId = useId();
+  const [busy, setBusy] = useState<'status' | 'comment' | null>(null);
+  const statusRef = useRef<HTMLSelectElement>(null);
+  const commentRef = useRef<HTMLInputElement>(null);
+  useRestoreFocusWhenIdle(busy === 'status', statusRef);
+  useRestoreFocusWhenIdle(busy === 'comment', commentRef);
+  async function run(kind: 'status' | 'comment', body: OpBody): Promise<boolean> {
+    setBusy(kind);
+    try {
+      return await write(body);
+    } finally {
+      setBusy(null);
+    }
+  }
   const issueId = view.issue.id;
 
   return (
@@ -96,6 +121,7 @@ function IssueActions({
         <div className="flex gap-2">
           <Select
             id={statusId}
+            ref={statusRef}
             value={status}
             onChange={(event) => setStatus(event.target.value as IssueStatus)}
             disabled={disabled}
@@ -109,7 +135,9 @@ function IssueActions({
           <Button
             variant="outline"
             disabled={disabled || status === view.issue.status}
-            onClick={() => void write({ type: 'issue.setStatus', body: { issueId, status } })}
+            onClick={() =>
+              void run('status', { type: 'issue.setStatus', body: { issueId, status } })
+            }
           >
             Anchor status
           </Button>
@@ -121,13 +149,15 @@ function IssueActions({
           event.preventDefault();
           const text = comment.trim();
           if (text === '') return;
-          if (await write({ type: 'comment.add', body: { issueId, text } })) setComment('');
+          if (await run('comment', { type: 'comment.add', body: { issueId, text } }))
+            setComment('');
         }}
       >
         <Label htmlFor={commentId}>Comment</Label>
         <div className="flex gap-2">
           <Input
             id={commentId}
+            ref={commentRef}
             value={comment}
             maxLength={5000}
             onChange={(event) => setComment(event.target.value)}
@@ -150,7 +180,7 @@ export function ContinueScreen(props: {
   onChain: WorkspaceOnChain;
   action: Access;
   /** Re-checks the history against Portaldot after every attempt, so stale state shows up at once. */
-  onWriteAttempt: () => void;
+  onWriteAttempt: (failure: string | null) => void;
 }) {
   const { workspace, action } = props;
   const account = useAccount();
@@ -172,6 +202,7 @@ export function ContinueScreen(props: {
       return false;
     }
     setNameError(null);
+    let failure: string | null = null;
     const result = await tx.run((progress) =>
       appendOwnerOp({
         workspace,
@@ -182,10 +213,13 @@ export function ContinueScreen(props: {
         reader,
         writer: () => connectedWriter(account.chainId),
         progress,
+      }).catch((error: unknown) => {
+        failure = describeFailure(error);
+        throw error;
       }),
     );
     if (result) setLastWrite(result.stored);
-    props.onWriteAttempt();
+    props.onWriteAttempt(failure);
     return result !== null;
   };
 

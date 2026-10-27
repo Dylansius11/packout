@@ -1,6 +1,6 @@
 import { serializeBundle, type VerificationReport, verifyBundle } from '@packout/sdk';
 import { DownloadSimple } from '@phosphor-icons/react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Notice } from '@/components/notice';
 import { Button } from '@/components/ui/button';
 import { registryReader } from '../../chain/clients';
@@ -8,6 +8,7 @@ import type { StoredOp, WorkspaceRecord } from '../../db/types';
 import { bundleFromSession, sessionKey } from '../../domain/storage';
 import { downloadText } from '../../lib/download';
 import { describeFailure } from '../../lib/errors';
+import { useRestoreFocusWhenIdle } from '../../lib/focus';
 
 type ExportState =
   | { phase: 'idle' }
@@ -19,6 +20,8 @@ type ExportState =
 /** The workspace can move again: export what this device holds, but only after it verifies afresh. */
 export function ExportPanel({ workspace, ops }: { workspace: WorkspaceRecord; ops: StoredOp[] }) {
   const [state, setState] = useState<ExportState>({ phase: 'idle' });
+  const exportButton = useRef<HTMLButtonElement>(null);
+  useRestoreFocusWhenIdle(state.phase === 'checking', exportButton);
 
   async function run() {
     if (!registryReader) return;
@@ -57,7 +60,12 @@ export function ExportPanel({ workspace, ops }: { workspace: WorkspaceRecord; op
         Saves every operation this device holds as a new bundle, so the workspace can move again. It
         is checked against Portaldot first; nothing unverified is offered.
       </p>
-      <Button variant="outline" onClick={run} disabled={state.phase === 'checking'}>
+      <Button
+        ref={exportButton}
+        variant="outline"
+        onClick={run}
+        disabled={state.phase === 'checking'}
+      >
         <DownloadSimple size={16} aria-hidden />
         {state.phase === 'checking' ? 'Checking…' : 'Verify and export'}
       </Button>

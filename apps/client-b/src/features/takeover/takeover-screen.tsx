@@ -1,6 +1,6 @@
 import type { WorkspaceOnChain } from '@packout/sdk';
 import { ArrowRight, ShieldCheck } from '@phosphor-icons/react';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { connectedWriter } from '@/chain/wallet';
 import { ChainFacts } from '@/components/chain-facts';
@@ -14,6 +14,7 @@ import type { WorkspaceRecord } from '../../db/types';
 import type { Access } from '../../domain/gating';
 import { takeOverWorkspace } from '../../domain/takeover';
 import { txPending, useTx } from '../../hooks/use-tx';
+import { useRestoreFocusWhenIdle } from '../../lib/focus';
 
 /** Step 3: one `rotateEpoch` transaction that ends the old vendor's write access. */
 export function TakeoverScreen(props: {
@@ -49,6 +50,10 @@ export function TakeoverScreen(props: {
   }
 
   const pending = txPending(tx.state);
+  const takeOverButton = useRef<HTMLButtonElement>(null);
+  // Connecting removes the Connect button and sending disables this one: keep keyboard focus on the action.
+  useRestoreFocusWhenIdle(pending, takeOverButton);
+  useRestoreFocusWhenIdle(!account.isConnected, takeOverButton);
 
   if (taken) {
     return (
@@ -110,7 +115,7 @@ export function TakeoverScreen(props: {
           Sends <code>rotateEpoch</code> with no new writers: the epoch goes from {onChain.epoch} to{' '}
           {onChain.epoch + 1}. You, as owner, can always write.
         </p>
-        <Button onClick={takeOver} disabled={!action.open || pending}>
+        <Button ref={takeOverButton} onClick={takeOver} disabled={!action.open || pending}>
           {pending ? 'Taking over…' : 'Take over this workspace'}
         </Button>
         <TxStatus
