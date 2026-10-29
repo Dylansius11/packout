@@ -1,6 +1,6 @@
 # PACKOUT
 
-[![CI](https://github.com/Dylansius11/packout/actions/workflows/ci.yml/badge.svg)](https://github.com/Dylansius11/packout/actions/workflows/ci.yml)
+[![CI](https://github.com/Dylansius11/packout/actions/workflows/ci.yml/badge.svg)](https://github.com/Dylansius11/packout/actions/workflows/ci.yml) [![Testnet smoke](https://github.com/Dylansius11/packout/actions/workflows/testnet-smoke.yml/badge.svg)](https://github.com/Dylansius11/packout/actions/workflows/testnet-smoke.yml)
 
 **Move your workspace to another app, with its history intact and your control unchanged.**
 

@@ -71,9 +71,9 @@ Goal: one real core flow on Portaldot testnet, honestly documented. Breadth come
 ## Phase 6: CI and quality (target 2026-11-03)
 
 - [x] **6.1 GitHub Actions.** On push: install, Biome, typecheck, Vitest, Hardhat tests, Playwright against a local chain; cache pnpm.
-- [ ] **6.2 Testnet smoke job.** Manual-dispatch workflow using repo secrets, mirroring `pnpm smoke:testnet`.
+- [x] **6.2 Testnet smoke job.** Manual-dispatch workflow using repo secrets, mirroring `pnpm smoke:testnet`.
   - AC: CI green on `main`; README badge.
-  - 2026-10-27: repository secrets `DEPLOYER_PRIVATE_KEY` and `VENDOR_WRITER_PRIVATE_KEY` are set with the founder's approval. The first dispatch waits for the committed testnet deployment from 1.4; tick after a green run.
+  - 2026-10-29: the first dispatch passed (run 40873778243). It ran the full exit story against the committed deployment: workspace `0xedd3f7ea…df4f`, blocks 238247 to 238262, ending in the vendor's reverted `NotWriter`. The README carries the workflow badge.
 
 ## Phase 7: Real testnet demo (target 2026-11-03)
 
