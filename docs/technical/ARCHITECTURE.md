@@ -190,6 +190,7 @@ Known v1 limits, stated in the UI and README:
 contracts/            @packout/contracts  Hardhat 3: PackoutRegistry, tests, deploy scripts
 packages/sdk/         @packout/sdk        encoding, crypto, head chain, bundle, verifier, reducer, chain client
   test/vectors/       head-chain.json, shared with contract tests
+packages/verify/      @packout/verify     independent six-step CLI, no runtime SDK or app dependency
 apps/vendor-api/      Hono API: envelope store, batcher with vendor writer key
 apps/vendor-a/        Vite SPA: hosted issue journal
 apps/client-b/        Vite SPA: independent restore and continue client
@@ -197,3 +198,48 @@ e2e/                  Playwright demo flow against a local chain
 scripts/              deploy, smoke:testnet, demo:checkin
 docs/technical/       ARCHITECTURE (this file), SMART-CONTRACT, INTEGRATIONS
 ```
+
+### Spec gaps found by the independent verifier
+
+`packages/verify` implements PRD F7 without runtime SDK or app dependencies.
+`pnpm verify bundle.json [--key key.txt] [--rpc https://…] [--json]` runs the
+six checks in order, stops at the first failure and labels subsequent checks
+`not checked`. Without a key, decryption is `skipped`, never passed. Exit codes
+are 0 for successful requested checks, 1 for verification failure and 2 for
+invalid CLI arguments. It names the trusted RPC; light-client verification is
+not claimed. Node 24+ is required. `pnpm --filter @packout/verify build` emits
+the JavaScript `packout-verify` bin; prepack builds it for distribution.
+
+The initial prose left these interoperability details unspecified. Resolutions
+below were checked with shared head vectors and public SDK calls **in tests**,
+not by consulting SDK implementation source. Characterizations live in
+`packages/verify/test/verify.test.ts`.
+
+- **Wire validation:** objects reject unknown fields, including the checkpoint
+  and nested operation objects. JSON numbers are safe integers; chain id is
+  positive, and count, block number and timestamp are nonnegative. Byte ids,
+  heads and envelope hex require lowercase `0x` hex (whole bytes for envelopes);
+  registry addresses accept either hex case and compare case-insensitively.
+  Operation and member ids are 16 bytes; workspace ids and heads are 32 bytes.
+- **Journal field limits:** author name is 1–64 characters, title 1–200,
+  description 0–5000, and comment text 1–5000. The three operation bodies are
+  strict, and status is exactly `open`, `in_progress` or `done`. Strings are
+  measured as JavaScript UTF-16 code units. Unknown types or schemas cannot
+  pass the decrypt/read step.
+- **Encoding versus decoding:** canonical ordering and no whitespace describe
+  writers. Readers accept authenticated, otherwise-valid JSON with different
+  key order or whitespace; they reject invalid UTF-8 and workspace mismatches.
+- **Empty history:** count zero uses the zero genesis head and has no admission
+  event to fetch. An existing empty workspace must also have a zero head; an
+  empty export of a populated workspace fails completeness.
+- **Checkpoint and count ordering:** `checkpoint.blockNumber` is validated
+  metadata, not a trusted event-query bound. Check admissions against observed
+  chain state, even when that metadata is zero. A bundle ahead of the current
+  count fails completeness; no nonexistent final event is required first.
+  The independent RPC adapter reads workspace and logs at one observed block.
+- **Key-file convention:** the CLI takes a separate, unpadded base64url encoding
+  of exactly 32 bytes, with surrounding whitespace allowed, matching section
+  4.3's invite-key encoding. No file encoding was originally specified; this
+  CLI convention is also exercised against the real exported testnet key.
+  Neither plaintext nor the key is included in human or JSON reports.
+

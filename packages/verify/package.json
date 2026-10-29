@@ -1,0 +1,28 @@
+{
+  "name": "@packout/verify",
+  "version": "0.0.0",
+  "type": "module",
+  "description": "Independent PACKOUT bundle v1 verifier",
+  "bin": {
+    "packout-verify": "./dist/cli.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "prepack": "pnpm build",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@noble/ciphers": "2.4.0",
+    "viem": "2.57.10",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@packout/sdk": "workspace:*"
+  }
+}
