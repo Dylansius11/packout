@@ -93,6 +93,16 @@ pnpm demo:full
 pnpm smoke:testnet         # same full flow; requires the committed testnet deployment, never deploys
 ```
 
+Check any bundle with the independent verifier. It shares no code with `@packout/sdk` and was written only from the format spec:
+
+```bash
+pnpm verify bundle.json                         # five checks; decryption reported as skipped
+pnpm verify bundle.json --key workspace-key.txt # all six checks, decrypting on this machine
+pnpm verify bundle.json --json                  # machine-readable report (--rpc <url> to pick the endpoint)
+```
+
+The key file holds the 32-byte workspace key as unpadded base64url. Exit codes: `0` passed, `1` verification failed, `2` bad arguments. On 2026-10-29 it passed all six checks on the testnet check-in bundle. On `demo:full`'s pre-takeover export it failed "Completeness" (1 operation missing), the same verdict the SDK gives.
+
 ## Status
 
 | Area | State |
@@ -113,6 +123,7 @@ Progress is tracked box by box in [BUILD-PLAN.md](BUILD-PLAN.md); open questions
 ```
 contracts/       PackoutRegistry (Solidity, Hardhat 3) and its tests
 packages/sdk/    @packout/sdk: encoding, encryption, head chain, bundle, verifier, reducer, chain client, 2-of-3 key shares
+packages/verify/ @packout/verify: independent bundle verifier CLI, written from the spec (no SDK code)
 apps/vendor-api/ Vendor A's API: stores ciphertext, batches anchors to the registry
 apps/vendor-a/   Vendor A web app (the SaaS being left)
 apps/client-b/   Client B: independent restore, takeover and proof app (never imports Vendor A code)

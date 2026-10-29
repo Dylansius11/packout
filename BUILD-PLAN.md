@@ -30,7 +30,8 @@ Goal: one real core flow on Portaldot testnet, honestly documented. Breadth come
 - [ ] **1.5 Check-in demo.** `pnpm demo:checkin` script against testnet: create workspace, encrypt three ops, append via a writer key, export a bundle, verify it against the chain, print a readable report.
   - 2026-10-29: the script ran end to end on testnet (SMART-CONTRACT.md 9.1): six checks passed and both tampered copies were refused. Still open: the 3-minute screen recording of it plus the explorer (founder).
   - AC: script runs end to end on testnet; a 3-minute-max screen recording shows it plus the explorer; nothing simulated is presented as real.
-- [ ] **1.6 README v1.** One-liner, problem, how it works, mermaid architecture diagram, deployment info (address, tx hashes, explorer), how to run, honest status (works now vs planned), license (MIT).
+- [x] **1.6 README v1.** One-liner, problem, how it works, mermaid architecture diagram, deployment info (address, tx hashes, explorer), how to run, honest status (works now vs planned), license (MIT).
+  - 2026-10-29: every item is present, including the live address and the recorded tx hashes. The founder submitted the check-in (B2 resolved).
   - AC: README answers every check-in field; founder submits the check-in on DoraHacks (founder action, track in OPEN-DECISIONS).
 
 ## Phase 2: Protocol complete (target 2026-10-27)
@@ -131,5 +132,6 @@ This phase never delays Phase 1 (1.4, 1.5) or Phase 7. Only 10.0 runs before fun
 
 ## Stretch (only after Phase 7)
 
-- [ ] F7 independent verifier CLI written from the format spec.
+- [x] F7 independent verifier CLI written from the format spec.
+  - 2026-10-29: `@packout/verify` (`pnpm verify`) passes all six checks on the testnet check-in bundle and refuses the stale `demo:full` export, agreeing with the SDK. It is not published to npm.
 - [ ] F8 second replica for encrypted envelopes.

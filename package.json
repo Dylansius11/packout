@@ -13,6 +13,7 @@
     "typecheck": "pnpm -r typecheck",
     "test": "vitest run",
     "test:contracts": "pnpm --filter @packout/contracts test",
+    "verify": "node packages/verify/src/cli.ts",
     "demo:checkin": "pnpm --filter @packout/scripts demo:checkin",
     "demo:local": "pnpm --filter @packout/scripts demo:local",
     "demo:full": "pnpm --filter @packout/scripts demo:full",
