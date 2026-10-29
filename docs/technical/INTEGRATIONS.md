@@ -26,6 +26,7 @@ Evidence: raw requests and responses kept under `scratch/research/` during the p
 | Tx types | historical legacy (type 0) and EIP-1559 (type 2) receipts observed | Start with legacy txs at live `eth_gasPrice` |
 | Blocks | about 6 s; `finalized` trails `latest` by 2–3 blocks | Show "finalized" only after the receipt block is at or below `finalized` |
 | `eth_getLogs` | genesis to latest (156,714 blocks) returned 301 logs in 939 ms; no range rejection. Upstream eth-rpc silently caps a query at 10,000 rows (applicability to this build UNVERIFIED) | Always filter by address and topics from the deployment block; bisect any query that returns 10,000 rows |
+| Outages | The chain produced no block for 13 h 24 min: block #232,115 at 2026-10-28 12:45:54 UTC, then #232,116 at 2026-10-29 02:09:54 UTC, 8,040 BABE slots later (epoch 388 to 402). The runtime stayed at spec 3002. Block #232,116 carried the staking election and `session.NewSession`, so the two block authors (2 BABE authorities, 2 session validators) were offline and the gap was not a runtime upgrade. Signed txs waited in the pool and landed in #232,117 (for example, extrinsic 232117-5) | Every chain wait has a timeout message. A resubmitted tx with the same nonce and tip fails with `1014 Priority is too low`; that means the first copy is already queued, not that it failed. Keep the backup recording (7.3), because a live demo cannot survive an outage like this |
 
 ### 1.2 Explorer links
 
@@ -42,13 +43,18 @@ Until an EVM-tx route is proven, PACKOUT links each EVM tx to its block page and
 
 ## 2. Funding an EVM key
 
-Portaldot pays EVM gas and storage deposits from the native account mapped to the H160 address. With `AutoMap = true` the mapped account is the H160 followed by twelve `0xEE` bytes, shown as SS58 with prefix 42. Do not call legacy `map_account`.
+Portaldot pays EVM gas and storage deposits from the native account mapped to the H160 address. For an EVM key, AutoMap makes that account the H160 followed by twelve `0xEE` bytes, shown as SS58 with prefix 42. Do not call legacy `map_account`.
 
 1. Derive the mapped address. Either use the node console (**Developer → Runtime calls → reviveApi → accountId**), or compute `ss58(42, h160 ‖ 0xEE×12)`. The computed form matches the guide's example (`0xf7eC…4142` → `5Hfmuhj1…to8Y`, checked 2026-10-23).
 2. Send tPOT to that `5…` address from a funded native account (node console → Accounts → Send).
 3. Confirm with `eth_getBalance(<h160>, "latest")`, which reports EVM units (wei, 18 decimals).
 
-Test tokens come from the organizer to the native `5…` address registered for the hackathon. If none arrived, open a Portaldot Discord support ticket with a screenshot of the hackathon registration and the native address (Discord admin `@titus242471`, DoraHacks `@Stella707827`).
+**Native sr25519 accounts work the other way round** (observed 2026-10-29):
+- A faucet-funded native account already had `OriginalAccount(H160(acct)) = acct` before it ever signed. That H160 is `keccak256(AccountId32)[12..]`.
+- An EVM transfer of 25 tPOT from the deployer to that H160 (tx `0x469c73d064127a952a6cbc146279ef80e39a3c5ded88c7d269c12f093be41441`) credited the native account itself.
+- An unmapped native account, such as W before its first funding, has no `OriginalAccount`. An EVM transfer to its H160 would credit the `H160 ‖ 0xEE×12` fallback account instead. **Fund W natively (node console → Send), never through its H160.**
+
+Test tokens come from the organizer to the native `5…` address registered for the hackathon. If none arrived, open a Portaldot Discord support ticket with a screenshot of the hackathon registration and the native address (Discord admin `@titus242471`, DoraHacks `@Stella707827`). On 2026-10-29 the founder's faucet wallet sent 500 tPOT natively to the deployer; the lead then sent 30 tPOT by EVM transfer to the vendor writer (`0x477d5e75865b595c314baddbcb8795492f6ab5b8470c7960455a1f8492460bbb`).
 
 Project keys (addresses only; private keys live in `.env`):
 
@@ -176,7 +182,7 @@ This is a conservative plan with about 2× fee headroom, not a measured cost. A 
 
 All of the following are [U]:
 
-- AutoMap installs `OriginalAccount(H160(W)) = W`, either on W's first signed extrinsic or on its first `Revive.call`. The spike records the state after funding and requires the mapping after W's create and grant.
+- AutoMap installs `OriginalAccount(H160(W)) = W` for W itself. A faucet-funded native wallet was observed already mapped before its first signed tx (section 2), so mapping on funding is expected [I]. The spike records the state after funding and requires the mapping after W's create and grant.
 - A real `Signed(W)` `Revive.call` to `createWorkspace` / `appendBatch` finalizes with owner `H160(W)`.
 - The 2-of-3 → delay → `finish_attempt` → `control_inherited_account(W, Revive.call(rotateEpoch))` path finalizes, the inner result succeeds and the epoch changes.
 - The failure paths behave as expected: 1-of-3 gives `NotApproved`, early dispatch gives `NotYetInheritable`, W cancels, and the vendor gets `NotWriter`.

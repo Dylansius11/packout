@@ -24,9 +24,11 @@ Goal: one real core flow on Portaldot testnet, honestly documented. Breadth come
   - AC: Hardhat 3 tests cover create (and duplicate revert), grant, revoke, rotateEpoch, append batch, stale count revert, stale head revert, unauthorized revert, revoked-writer revert, previous-epoch writer revert, batch size limit, events. Shared head vectors file passes.
 - [x] **1.3 SDK core (F2 subset).** Canonical op encoding, envelope encryption, digest, head chain.
   - AC: Vitest passes; SDK reproduces every head vector the contract tests use (`packages/sdk/test/vectors/head-chain.json` shared with contracts).
-- [ ] **1.4 Testnet deploy spike.** Blocked by OPEN-DECISIONS B1 (funded keys). Steps in INTEGRATIONS.md.
+- [x] **1.4 Testnet deploy spike.** Blocked by OPEN-DECISIONS B1 (funded keys). Steps in INTEGRATIONS.md.
+  - 2026-10-29: `PackoutRegistry` is at `0xA76ae793b3a648b87F512aacbf7C4cE2eeac61E0` (block 238168, solc 0.8.28 `cancun`). createWorkspace, grantWriter and a vendor append are real, and `eth_getLogs` returned the `Appended` events. Costs and hashes are in SMART-CONTRACT.md sections 8 and 9.
   - AC: contract deployed to Portaldot testnet; real txs for createWorkspace, grantWriter and one append batch; `eth_getLogs` returns the `Appended` event; compiler version and EVM target pinned; address, tx hashes, explorer links and measured deposit/gas written to SMART-CONTRACT.md "Deployments". Every surprise logged in LESSONS.
 - [ ] **1.5 Check-in demo.** `pnpm demo:checkin` script against testnet: create workspace, encrypt three ops, append via a writer key, export a bundle, verify it against the chain, print a readable report.
+  - 2026-10-29: the script ran end to end on testnet (SMART-CONTRACT.md 9.1): six checks passed and both tampered copies were refused. Still open: the 3-minute screen recording of it plus the explorer (founder).
   - AC: script runs end to end on testnet; a 3-minute-max screen recording shows it plus the explorer; nothing simulated is presented as real.
 - [ ] **1.6 README v1.** One-liner, problem, how it works, mermaid architecture diagram, deployment info (address, tx hashes, explorer), how to run, honest status (works now vs planned), license (MIT).
   - AC: README answers every check-in field; founder submits the check-in on DoraHacks (founder action, track in OPEN-DECISIONS).
@@ -78,7 +80,8 @@ Goal: one real core flow on Portaldot testnet, honestly documented. Breadth come
 - [ ] **7.1 Full demo on Portaldot testnet** with hosted Vendor A, hosted Client B and hosted vendor API (hosting per OPEN-DECISIONS D5). Record tx hashes for every step in SMART-CONTRACT.md.
 - [x] **7.2 Proof view (F6, P1).** Read-only workspace proof page: owner, writers, count, head, recent appends with explorer links.
 - [ ] **7.3 Backup recording** of the full real run.
-- [ ] **7.4 Headless full demo.** `pnpm demo:full` runs PRD section 4 without a browser: restore and verify, `rotateEpoch(wsId, [])`, owner write at the next index, vendor write refused by simulation and then mined as a reverted tx (OPEN-DECISIONS D10), old export refused as stale. Local rehearsal passes (`pnpm demo:full:local`); tick after the testnet run is recorded in SMART-CONTRACT.md.
+- [x] **7.4 Headless full demo.** `pnpm demo:full` runs PRD section 4 without a browser: restore and verify, `rotateEpoch(wsId, [])`, owner write at the next index, vendor write refused by simulation and then mined as a reverted tx (OPEN-DECISIONS D10), old export refused as stale. Local rehearsal passes (`pnpm demo:full:local`); tick after the testnet run is recorded in SMART-CONTRACT.md.
+  - 2026-10-29: the testnet run passed every step, including the vendor's reverted `NotWriter` tx `0xda10f18e…8838` in block 238210. All six hashes are in SMART-CONTRACT.md 9.1.
 
 ## Phase 8: Design and UX pass (target 2026-11-04)
 

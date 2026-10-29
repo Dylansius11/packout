@@ -1,0 +1,14 @@
+{
+  "network": "portaldotTestnet",
+  "chainId": 420420777,
+  "address": "0xA76ae793b3a648b87F512aacbf7C4cE2eeac61E0",
+  "deployTx": "0xb6031694794e71df4706ebb41962d3333f1f31e6c60349598f0c45e385c4969d",
+  "blockNumber": "238168",
+  "gasUsed": "9168649114419060",
+  "compiler": {
+    "version": "0.8.28",
+    "evmVersion": "cancun",
+    "optimizerRuns": 200
+  },
+  "deployedAt": "2026-10-29T12:22:48.466Z"
+}

@@ -2,6 +2,16 @@
 
 Read the headlines before starting work. Format: `### YYYY-MM-DD: headline`, then what happened, root cause, rule going forward. Newest on top.
 
+### 2026-10-29: The Portaldot testnet can stop producing blocks for hours
+- What happened: the founder's 500 tPOT transfer sat "pending" for over 13 hours, and a resubmit failed with `1014 Priority is too low`.
+- Root cause: no block was authored between #232,115 (2026-10-28 12:45:54 UTC) and #232,116 (2026-10-29 02:09:54 UTC), 8,040 slots and 14 BABE epochs later. The runtime was unchanged (spec 3002). The testnet has only 2 block authors, and the first block after the gap ran the staking election and a new session. The tx stayed in the pool and landed in #232,117. The 1014 error only meant an identical copy (same nonce, same tip) was already queued.
+- Rule: before blaming a wallet or a script, compare the best block's timestamp with the wall clock. Never resubmit while the first copy is pending. Keep the recorded backup run (BUILD-PLAN 7.3), because the live demo cannot survive an outage like this.
+
+### 2026-10-29: Most of the testnet cost is storage deposit, and it is all paid once
+- What happened: the deploy cost 252.73 tPOT (252.41 of it code deposit, quoted exactly by a `ReviveApi_instantiate` dry run). createWorkspace cost 7.70, grantWriter 3.86 and the first append 3.88, while later appends and `rotateEpoch` cost 0.02 to 0.03.
+- Root cause: pallet-revive charges the deposit inside the gas figure when a call creates storage; updating existing slots only pays the fee.
+- Rule: quote a funding request from a dry run's `storageDeposit`, not from per-byte arithmetic. The earlier "about 600 tPOT" guess was more than double the real cost.
+
 ### 2026-10-27: Portaldot's v16 metadata hash changes without a runtime upgrade
 - What happened: the succession preflight refused the live chain because the raw blake2_256 of v16 metadata no longer matched the 2026-10-26 pin, while spec 3002 and transaction version 2 were unchanged.
 - Root cause: comparing the pinned and live metadata found exactly one difference, the storage `fallback` of `Revive.EthBlockBuilderIR`, which embeds block-builder state.
