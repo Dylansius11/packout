@@ -20,11 +20,10 @@ import { createDemoOperations } from '../operations.ts';
 import { createDemoActions, printVerification, requireVerifiedRestore } from '../runtime.ts';
 import { executionBounds } from './bounds.ts';
 import { buildCalls, nativeCall, reviveCall, STORAGE_LIMIT, WEIGHT } from './calls.ts';
-import { decodeNativeAppends } from './events.ts';
 import { json } from './model.ts';
 import { type NativeEvidence, sendNative, waitUntilBlock } from './native.ts';
 import { preflight } from './preflight.ts';
-import { saveWorkspace } from './workspace.ts';
+import { exportSuccessionBundle, saveWorkspace } from './workspace.ts';
 
 export async function runSuccession(spike: boolean, delayBlocks: number) {
   const session = await preflight(delayBlocks);
@@ -172,7 +171,7 @@ export async function runSuccession(spike: boolean, delayBlocks: number) {
     if (!initial || initial.owner.toLowerCase() !== owner.toLowerCase())
       throw new Error('Registry owner is not H160(W). Native caller gate failed.');
     let key = session.savedWorkspace?.key ?? generateWorkspaceKey();
-    const nativeBlocks = [...(session.savedWorkspace?.nativeBlocks ?? [])];
+    const nativeBlocks = session.nativeBlocks;
     const checkpoint = (committed: Hex[]) =>
       saveWorkspace({
         registry: deployment.address,
@@ -264,14 +263,6 @@ export async function runSuccession(spike: boolean, delayBlocks: number) {
       );
       nativeBlocks.push(receipt.blockHash as Hex);
       await checkpoint(envelopes.slice(0, index + 1).map((envelope) => bytesToHex(envelope)));
-      session.nativeAppends.push(
-        ...decodeNativeAppends(
-          deployment.address,
-          receipt.events,
-          BigInt(receipt.blockNumber),
-          receipt.extrinsicHash as Hex,
-        ),
-      );
       const event = await reader.getAppended(wsId, BigInt(index));
       if (
         !event ||
@@ -409,6 +400,16 @@ export async function runSuccession(spike: boolean, delayBlocks: number) {
     if (final?.count !== initial.count + 3n || final.head !== current.head)
       throw new Error('Rejected vendor changed the canonical history.');
     await checkpoint(envelopes.map((envelope) => bytesToHex(envelope)));
+    await exportSuccessionBundle(
+      {
+        registry: deployment.address,
+        wsId,
+        envelopes: envelopes.map((envelope) => bytesToHex(envelope)),
+        nativeBlocks,
+      },
+      Number(await session.client.getBlockNumber()),
+      directory,
+    );
     key.fill(0);
     report.complete = true;
     report.claims = 'Observed by this live testnet run; RPC-trusted state and finalized receipts.';

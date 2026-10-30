@@ -3,7 +3,6 @@ import { readFile } from 'node:fs/promises';
 import { gunzipSync } from 'node:zlib';
 import {
   createBundle,
-  createRegistryReader,
   createRegistryWriter,
   EVM_DECIMALS,
   JOURNAL_SCHEMA_ID,
@@ -11,6 +10,7 @@ import {
   verifyBundle,
   workspaceId,
 } from '@packout/sdk';
+import { createNativeRegistryReader } from '@packout/sdk/native';
 import { ApiPromise, WsProvider } from '@polkadot/api';
 import { Metadata } from '@polkadot/types';
 import { blake2AsHex } from '@polkadot/util-crypto';
@@ -30,7 +30,6 @@ import { type DemoDeployment, parseDeployment } from '../demo.ts';
 import { loadAccounts } from './accounts.ts';
 import { executionBounds } from './bounds.ts';
 import { buildCalls, nativeCall, STORAGE_LIMIT, WEIGHT } from './calls.ts';
-import { loadNativeAppends, successionReader } from './events.ts';
 import { type Check, fundingPlan, PIN, preflightReady } from './model.ts';
 import { metadataFingerprint } from './pin.ts';
 import { loadWorkspace } from './workspace.ts';
@@ -214,21 +213,17 @@ export async function preflight(delayBlocks: number) {
         index: '0x1e01',
         call: nativeCall(api.registry, '0x1e01', []),
       });
-    const nativeAppends =
-      savedWorkspace && deployment
-        ? await loadNativeAppends(api, deployment.address, savedWorkspace.nativeBlocks)
-        : [];
+    const nativeBlocks = [...(savedWorkspace?.nativeBlocks ?? [])];
+    const reader = await createNativeRegistryReader({
+      client,
+      registry: destination,
+      fromBlock: BigInt(deployment?.blockNumber ?? '0'),
+      nativeApi: api,
+      blockHashes: nativeBlocks,
+    });
     if (savedWorkspace) {
       console.log(
         `INFO Reusing workspace ${savedWorkspace.wsId}; no second workspace deposit. Prior inheritor: ${priorInheritor ? 'W will explicitly revoke during setup' : 'none'}.`,
-      );
-      const reusedReader = successionReader(
-        createRegistryReader({
-          client,
-          registry: destination,
-          fromBlock: BigInt(deployment?.blockNumber ?? '0'),
-        }),
-        nativeAppends,
       );
       const bundle = createBundle({
         chainId: 420420777,
@@ -238,8 +233,8 @@ export async function preflight(delayBlocks: number) {
         envelopes: savedWorkspace.envelopes,
         checkpoint: { blockNumber: Number(await client.getBlockNumber()) },
       });
-      const verified = await verifyBundle({ bundle, key: savedWorkspace.key, chain: reusedReader });
-      const state = await reusedReader.getWorkspace(wsId);
+      const verified = await verifyBundle({ bundle, key: savedWorkspace.key, chain: reader });
+      const state = await reader.getWorkspace(wsId);
       check(
         savedWorkspace.registry.toLowerCase() === destination.toLowerCase() &&
           verified.ok &&
@@ -332,15 +327,8 @@ export async function preflight(delayBlocks: number) {
       chain,
       vendor,
       vendorWallet,
-      nativeAppends,
-      reader: successionReader(
-        createRegistryReader({
-          client,
-          registry,
-          fromBlock: BigInt(deployment?.blockNumber ?? '0'),
-        }),
-        nativeAppends,
-      ),
+      nativeBlocks,
+      reader,
       vendorWriter: createRegistryWriter({ client, registry, wallet: vendorWallet }),
       dryRun,
       weight: WEIGHT,

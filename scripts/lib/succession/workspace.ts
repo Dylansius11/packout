@@ -1,4 +1,5 @@
 import { chmod, mkdir, readFile, writeFile } from 'node:fs/promises';
+import { createBundle, JOURNAL_SCHEMA_ID } from '@packout/sdk';
 import { z } from 'zod';
 
 const stateFile = new URL('../../../out/succession/workspace.json', import.meta.url);
@@ -60,5 +61,29 @@ export async function saveWorkspace(state: SavedWorkspace) {
   await chmod(stateFile, 0o600);
   console.log(
     'Workspace ciphertext and owner key saved separately from public evidence in gitignored out/succession/workspace.json (mode 0600 where supported; restrict Windows ACLs). Never publish this private rehearsal file.',
+  );
+}
+
+export async function exportSuccessionBundle(
+  state: Pick<SavedWorkspace, 'registry' | 'wsId' | 'envelopes' | 'nativeBlocks'>,
+  blockNumber: number,
+  directory: URL,
+) {
+  const bundle = createBundle({
+    chainId: 420420777,
+    registry: state.registry as `0x${string}`,
+    wsId: state.wsId,
+    schemaId: JOURNAL_SCHEMA_ID,
+    envelopes: state.envelopes,
+    checkpoint: { blockNumber },
+  });
+  await mkdir(directory, { recursive: true });
+  await writeFile(new URL('bundle.json', directory), `${JSON.stringify(bundle, null, 2)}\n`);
+  await writeFile(
+    new URL('native-blocks.json', directory),
+    `${JSON.stringify(state.nativeBlocks, null, 2)}\n`,
+  );
+  console.log(
+    `Public bundle and native-blocks.json exported to ${directory.pathname}; key remains separate in the private rehearsal checkpoint.`,
   );
 }
