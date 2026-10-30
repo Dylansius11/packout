@@ -2,6 +2,21 @@
 
 Read the headlines before starting work. Format: `### YYYY-MM-DD: headline`, then what happened, root cause, rule going forward. Newest on top.
 
+### 2026-10-30: Native history needs a reliable transport and real cancellation
+- What happened: the compiled verifier initialized over native HTTP, then received nginx HTTP 503 on valid historical header, block and event-storage reads. Single raw, standard-provider and bounded-provider block requests succeeded.
+- Root cause: the gateway returned HTML errors; its underlying availability fault is UNVERIFIED. The library's HTTP provider does not bound or abort fetch, and its WebSocket disconnect starts a graceful close rather than forcing termination. Both can leave accepted-but-stalled I/O alive.
+- Rule: default to established native WSS with an instance-owned Node socket, force termination and awaited closure; retain explicit HTTP with AbortController cancellation. Use real-clock stalled-upgrade, silent-open-peer and request tests. Raw test peers must acknowledge TCP EOF without acknowledging the WebSocket close handshake. Never silently retry/switch endpoints or report a deadline while leaving its socket alive.
+
+### 2026-10-30: Mixed-source proof must bind the stored head and keep its cache private
+- What happened: review found that equal operation counts could pass despite a stored-head contradiction, and mutating a returned native admission could alter subsequent cached proof. Regression tests reproduced both before the fixes.
+- Root cause: completeness checked counts but not the equal-count head; the reader returned a reference owned by its verified-block cache.
+- Rule: a complete bundle's recomputed head, final admission and current stored head must agree. Copy flat native admission values when exposing them; test mutation of both point and range results.
+
+### 2026-10-30: Native API lookup augmentation belongs in each TypeScript project
+- What happened: moving native reads into the SDK exposed missing Polkadot lookup declarations and typed `system.events` as a non-iterable generic Codec.
+- Root cause: the old script project imported `@polkadot/api/augment`, but that ambient type setup did not automatically belong to the SDK's separate compilation.
+- Rule: import the API augmentation in the native entry's type graph, keep native implementation out of the core SDK barrel, and never use `skipLibCheck` or unsafe event casts to conceal missing metadata types.
+
 ### 2026-10-30: Native Recovery preserves the contract owner across inherited EVM dispatch
 - What happened: the funded Succession spike passed both gates and every required negative path. Native origins, EVM callers, dispatch results and finalized blocks/hashes for every step are recorded in SMART-CONTRACT section 9.2.
 - Mechanism: W creates/appends as `H160(W)`; after 2-of-3 approval and the 24-block test delay, N's inherited rotate/append still execute as W. The inner Recovery result is Ok, the owner does not change, and the old vendor's mined comeback reverts `NotWriter`.
