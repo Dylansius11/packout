@@ -2,6 +2,11 @@
 
 Read the headlines before starting work. Format: `### YYYY-MM-DD: headline`, then what happened, root cause, rule going forward. Newest on top.
 
+### 2026-10-30: Native Recovery preserves the contract owner across inherited EVM dispatch
+- What happened: the funded Succession spike passed both gates and every required negative path. Native origins, EVM callers, dispatch results and finalized blocks/hashes for every step are recorded in SMART-CONTRACT section 9.2.
+- Mechanism: W creates/appends as `H160(W)`; after 2-of-3 approval and the 24-block test delay, N's inherited rotate/append still execute as W. The inner Recovery result is Ok, the owner does not change, and the old vendor's mined comeback reverts `NotWriter`.
+- Rule: keep authority recovery separate from key recovery. The successful native authority path does not prove decryption, independent share custody, production-safe delays, or browser support.
+
 ### 2026-10-30: Gitignored output is not automatically excluded from Biome
 - What happened: `pnpm check` tried formatting `out/succession/workspace.json`, printing the private rehearsal key in its diagnostic. This is test-only data; never reuse that workspace key for real data.
 - Root cause: root Biome includes `**` without VCS integration, so `.gitignore` alone does not exclude generated output.

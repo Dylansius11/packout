@@ -103,6 +103,18 @@ pnpm verify bundle.json --json                  # machine-readable report (--rpc
 
 The key file holds the 32-byte workspace key as unpadded base64url. Exit codes: `0` passed, `1` verification failed, `2` bad arguments. On 2026-10-29 it passed all six checks on the testnet check-in bundle. On `demo:full`'s pre-takeover export it failed "Completeness" (1 operation missing), the same verdict the SDK gives.
 
+Native Succession (headless, **testnet only**; configured native keys and funding required):
+
+```bash
+pnpm succession:preflight  # read only: runtime pin, balances, registry and saved history
+pnpm spike:succession     # paid: authority gates and negative paths; 24-block test delay
+pnpm demo:succession      # paid: reuse workspace, 2-of-3 recovery and key reconstruction; 10-block test delay
+```
+
+**Act 3, verified on 2026-10-30:** native Recovery let an inheritor rotate the epoch and continue as the same workspace owner; two backup shares recovered the encryption key, and the old vendor was refused. All hashes: [authority gate](docs/technical/SMART-CONTRACT.md#92-native-succession-gate-2026-10-30), [key-recovery demo](docs/technical/SMART-CONTRACT.md#93-key-recovery-succession-demo-2026-10-30). Portaldot's native authority crosses into EVM execution without a per-app recovery contract. A Safe plus a recovery module can provide a similar outcome on other EVM chains [inference]; the delta here is reusing native runtime authority.
+
+This is not a production recovery setup: all keys/shares are on one rehearsal machine, the private owner-key checkpoint is retained, and the short delays are test settings. Native contract events are absent from Ethereum logs, so only these scripts currently combine native and EVM evidence; the ordinary browser/CLI readers and the Succession proof panel are not integrated yet. UI/design remains deferred.
+
 ## Status
 
 | Area | State |
@@ -114,7 +126,7 @@ The key file holds the 32-byte workspace key as unpadded base64url. Exit codes: 
 | Vendor A API and web app | Done on a local chain; Playwright covers onboarding, member writes, anchoring and export |
 | Client B restore app | Done on a local chain: import, six-check verification, takeover with `rotateEpoch`, continued writes and stale-bundle refusal (`pnpm client-b`, port 5174). Playwright runs the whole exit story with the vendor process stopped |
 | Public workspace proof | Client B `#/proof/<wsId>`: owner, epoch, writers, every append and the access timeline, read only from Portaldot events. No key or wallet needed |
-| Succession (gated, PRD F9) | Native Recovery path written and checked read-only against the live testnet: `pnpm succession:preflight` decodes every planned call from pinned metadata and quotes its fee. A live dry run shows the EVM sees the native workspace-authority account W as `H160(W)`. SDK tests show that any 2 of 3 backup shares restore the workspace key. The funded gate (`pnpm spike:succession`) has not run yet; Act 3 is cut if it fails |
+| Succession (PRD F9) | Both authority gates and the key-recovery demo passed on Portaldot testnet (2026-10-30): same owner, epoch 2/count 6, two-share reconstruction/decryption, mined vendor refusal. Headless scripts only; native-history browser/CLI support and proof-panel/video integration remain open |
 
 Progress is tracked box by box in [BUILD-PLAN.md](BUILD-PLAN.md); open questions and blockers in [OPEN-DECISIONS.md](OPEN-DECISIONS.md); surprises and fixes in [LESSONS.md](LESSONS.md).
 

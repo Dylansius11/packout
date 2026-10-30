@@ -99,7 +99,7 @@ Trigger the manual-only smoke with `gh workflow run testnet-smoke.yml`: it runs 
 
 ## 6. Native succession (PRD F9, BUILD-PLAN 10.0)
 
-Read-only prep, 2026-10-26. Labels: [V] observed (raw requests and responses are kept in the gitignored `scratch/research/succession/`, with the full report in `scratch/research/succession-prep.md`), [I] inference, [U] unverified until the funded spike (10.1). Nothing below has been signed or submitted.
+Read-only prep began 2026-10-26; the funded gate passed 2026-10-30 (SMART-CONTRACT section 9.2). Labels: [V] observed, [I] inference, [U] unverified. Original prep requests/responses are in gitignored `scratch/research/succession/`; live run evidence is in `out/succession/`. Historical dry-run findings below are distinguished from finalized proof in section 6.6.
 
 ### 6.1 Pin
 
@@ -136,10 +136,10 @@ Three Recovery facts change the flow:
 | --- | --- |
 | [V] | For a non-eth-derived AccountId32, `ReviveApi_address(W)` equals `keccak256(W)[12..32]`. Checked by the prep run and again by the lead with a random account at block #199677. |
 | [V] | **Decisive dry run.** `ReviveApi_instantiate` with origin = a native account and initcode `0x335f5260205ffd` (CALLER, PUSH0, MSTORE, PUSH1 0x20, PUSH0, REVERT) reverts with exactly `H160(origin)` left-padded. Seen in 8 prep runs, plus the lead's independent run with a fresh random account. The EVM `msg.sender` of a native-origin Revive execution is `H160(W)`. |
-| [V] | The reverse lookup `ReviveApi_account_id(H160(W))` returns `H160(W) ‖ 0xEE×12`, not W, while `OriginalAccount(H160(W))` is empty. Never send funds to that EE-padded account for W. |
-| [I] | AutoMap should insert `OriginalAccount(H160(W)) = W` once W is funded. Dry runs map in an overlay, so they cannot rule out an `AccountUnmapped` refusal on a real extrinsic: [U] until 10.1. |
+| [V] | At the unfunded prep snapshot, reverse lookup returned `H160(W) ‖ 0xEE×12` while `OriginalAccount(H160(W))` was empty. Never fund that fallback for an unmapped W. |
+| [V] | After W's real create/grant on 2026-10-30, AutoMap resolves `H160(W)` back to W. The exact installation trigger was not isolated. A later EVM top-up reached W's native balance only after this mapping was checked. |
 | [V] | `DryRunApi_dry_run_call` is not exported by this runtime, so the nested Recovery → Revive dispatch cannot be simulated. |
-| [I] | Consequence: W can call `createWorkspace` through native `Revive.call` and becomes owner `H160(W)` with no contract change and no ownership transfer. This holds only if the real dispatch behaves like the dry run: [U] until 10.1. |
+| [V] | Funded gate: W created the workspace through native `Revive.call` as owner `H160(W)`; N later rotated and appended through Recovery under the same owner (SMART-CONTRACT 9.2). No contract change or ownership-transfer function was needed. |
 
 The workspace-authority account W for the spike was generated on 2026-10-26 into `.env` as `SUCCESSION_W_MNEMONIC`:
 
@@ -178,16 +178,14 @@ This is a conservative plan with about 2× fee headroom, not a measured cost. A 
 - Working demo value (D13): 10 blocks (~60 s) each, labelled on screen as a test delay.
 - W can cancel an attempt at any time.
 
-### 6.6 What only the funded spike can prove
+### 6.6 Funded gate results (2026-10-30)
 
-All of the following are [U]:
-
-- AutoMap installs `OriginalAccount(H160(W)) = W` for W itself. A faucet-funded native wallet was observed already mapped before its first signed tx (section 2), so mapping on funding is expected [I]. The spike records the state after funding and requires the mapping after W's create and grant.
-- A real `Signed(W)` `Revive.call` to `createWorkspace` / `appendBatch` finalizes with owner `H160(W)`.
-- The 2-of-3 → delay → `finish_attempt` → `control_inherited_account(W, Revive.call(rotateEpoch))` path finalizes, the inner result succeeds and the epoch changes.
-- The failure paths behave as expected: 1-of-3 gives `NotApproved`, early dispatch gives `NotYetInheritable`, W cancels, and the vendor gets `NotWriter`.
-- The real holds and fees, and who pays the storage deposit (W or N) on an inherited call.
-- The live runtime's limits on friend groups and delays.
+- [V] After W's direct create/grant, `OriginalAccount(H160(W)) = W` and reverse lookup returns W's public key. The installation trigger (funding versus first signed call) was not isolated.
+- [V] Direct native `createWorkspace` and `appendBatch` finalized with owner/author `H160(W)` (SMART-CONTRACT 9.2, blocks 248378/248387).
+- [V] The 2-of-3 → 24-block delay → finish → inherited `rotateEpoch` path succeeded. Both the outer dispatch and inner `RecoveredAccountControlled` result were Ok; epoch became 1, owner stayed W, and an inherited append continued at index 2.
+- [V] One approval produced `NotApproved`; an early finish produced `NotYetInheritable`; control before inheritance produced `NoInheritor`; W canceled an attempt; vendor simulation and a mined reverted transaction both produced `NotWriter`.
+- [V] No Recovery hold was observed in this run. W paid direct create/grant storage; N paid the inherited rotation/append fees while W's balance stayed unchanged. [U] Nonzero inherited storage allocation was not exercised, so its payer is not established.
+- [V] A three-friend group, threshold 2, inheritance/cancel delays of 24 blocks were accepted. [U] Other runtime limits and minimum production-safe delays were not tested.
 
 ### 6.7 Running the spike
 
@@ -197,7 +195,7 @@ These scripts are **testnet-only**: native Recovery and Revive pallets cannot be
 
 [V] The raw live v16 metadata hash changes despite spec 3002: comparison against the original finalized block found the sole difference in `Revive.EthBlockBuilderIR`'s storage fallback. Preflight verifies the bundled pinned snapshot against the original blake2_256 hash, prints the live raw hash, and compares every metadata field except that one named state-dependent fallback. Calls, type IDs, constants, other defaults and runtime versions remain pinned. It never mixes v14 and v16. [V] `query_info` must receive `tx.toU8a()`; passing the hex string through the decorated runtime API produced a WASM decode trap.
 
-[I] The retained upstream source (not proven to be the deployed runtime revision) distinguishes **early finish** (`NotYetInheritable`) from **control before inheritance** (`NoInheritor`). `finish_attempt` accepts any signed fee payer, counts delay from `init_block` (not the last approval), and does not wait for `cancel_delay`. W can cancel immediately; only the initiating backup may also cancel, and only after `last_approval_block + cancel_delay` (`NotCanceller` / `NotYetCancelable` otherwise). Initiation is approval one. The spike asserts these expected errors and inspects the inner `RecoveredAccountControlled.call_result`, not merely outer success. All funded behavior remains [U] until real receipts exist.
+[V] The funded spike confirmed the distinction between early finish (`NotYetInheritable`) and control before inheritance (`NoInheritor`), initiation as approval one, and W's immediate cancellation. It also checked the inner `RecoveredAccountControlled.call_result`. [I] Retained upstream source (not proven to be the deployed revision) says any signed payer may finish, time counts from `init_block`, and an initiating backup can cancel only after `last_approval_block + cancel_delay`. Only N was exercised as finish payer; backup cancellation remains untested.
 
 Public run evidence goes to `out/succession/<timestamp>/evidence.json`: origin, EVM caller, inner/outer dispatch, finalized block/hash, extrinsic/tx hash, explorer block link, fee event and balance/hold deltas. The reusable workspace, ciphertext and owner key are stored separately in **private**, gitignored `out/succession/workspace.json` (0600 where supported; restrict Windows ACLs). Never publish that file. A subsequent demo verifies/reuses this workspace rather than paying a second create deposit, explicitly has W revoke a prior rehearsal inheritor, and forwards only recipient shortfalls. Reuse budgets W at 4 tPOT for the new epoch's vendor-writer slot + 0.5 tPOT ED/fee allowance + those shortfalls; additional rehearsals may require top-ups. D12 splits the original key 2-of-3 before succession, discards the in-memory owner key, reconstructs from two backup shares afterwards, verifies/decrypts complete history, and encrypts the continuation with that recovered key. This headless rehearsal holds shares on this device; it does not claim independent backup-wallet custody. Keys/shares are never printed or included in public evidence, only fingerprints.
 

@@ -113,7 +113,12 @@ The 128-bit commitment is an integrity check, not backup authentication; it
 reveals key equality and permits offline guesses, so keys must be uniformly
 random (`generateWorkspaceKey`), not passwords. Keep shares private and distribute
 one per backup; never put them in the bundle, vendor API or on-chain.
-Share delivery and the recorded Succession run remain open in BUILD-PLAN 10.2.
+The 2026-10-30 headless testnet demo reconstructed the key from two shares,
+passed all six verification/decryption checks, and continued the workspace
+(SMART-CONTRACT section 9.3). Shares and account keys stayed on one rehearsal
+machine; private checkpoint retention is disclosed. Independent delivery/custody
+remains open in D12. Native-write event support in browser/CLI readers remains
+open in BUILD-PLAN 10.3.
 
 ## 5. Bundle format v1 and verification
 
