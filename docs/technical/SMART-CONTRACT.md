@@ -217,7 +217,24 @@ Funding: W received 25 tPOT from the founder (observed before the first spike) a
 
 Public evidence: gitignored `out/succession/2026-10-30T05-35-43.091Z/evidence.json`, `keyPath = {threshold:2, backups:3, verified:true}`. Key reconstruction is local and has no transaction; its table row pairs it with the resulting continuation, not a claim of an on-chain key operation.
 
-**Security boundary:** all backup keys/shares are on one machine for this headless rehearsal; independent custody/delivery has not been demonstrated. The in-memory owner key is cleared before recovery, but the private rehearsal checkpoint retains a copy and is not used for reconstruction. A Biome diagnostic exposed this test-only workspace key before `out` was excluded (`79ea018`); never use it for private data. No production key-loss or independent-custodian claim is made. The default browser/CLI Ethereum-only readers do not verify this native-written history yet (INTEGRATIONS 6.8).
+**Security boundary:** all backup keys/shares are on one machine for this headless rehearsal; independent custody/delivery has not been demonstrated. The in-memory owner key is cleared before recovery, but the private rehearsal checkpoint retains a copy and is not used for reconstruction. A Biome diagnostic exposed this test-only workspace key before `out` was excluded (`79ea018`); never use it for private data. No production key-loss or independent-custodian claim is made. Browser native-history integration remains open; opt-in SDK/CLI support is verified below.
 
 Read-only follow-up at native finalized block 248509 confirmed owner `H160(W)`, epoch 2, count 6, head `0x5f1a4e891cb58d394ac4fa6c96e6a64ee3383fcb7164e1ed9f434e81f928a612`, `canWrite(vendor) = false`, inheritor N and the 2-of-3 friend group with both delays set to 10. A fresh `pnpm succession:preflight` re-fetched native block events and verified the complete saved ciphertext/key; W had 5.70457338301402 tPOT spendable, enough for its quoted 4.5 tPOT reuse budget. No additional funding was sent.
+
+### 9.4 Independent native-history verification (2026-10-30)
+
+Read-only verification of workspace `0x006a543a453f1cefd62b7e48e18ddfc232d199ee9fef2725727adb613d373d6b` passed in both `@packout/sdk/native` and the compiled independent CLI. Each verified all six checks, including decryption, on the six-operation history at epoch 2. No transaction was signed or submitted and no tPOT was spent.
+
+The public bundle remains `packout.bundle/1`. Its native lookup sidecar references the real append blocks [248387](https://scanner-testnet-v3.portaldot.dev/#/blocks/248387), [248434](https://scanner-testnet-v3.portaldot.dev/#/blocks/248434), [248453](https://scanner-testnet-v3.portaldot.dev/#/blocks/248453) and [248479](https://scanner-testnet-v3.portaldot.dev/#/blocks/248479). Both implementations re-fetch canonical finalized node events and combine them with EVM admissions; sidecar contents are not accepted as event proof. Protocol, genesis pin and RPC trust boundary: INTEGRATIONS 6.9.
+
+| Live scenario | SDK verdict | Compiled CLI verdict / exit |
+| --- | --- | --- |
+| Complete six-operation history and correct key | All six pass | All six pass / 0 |
+| No key | Not exercised in this SDK smoke | Decryption SKIPPED / 0 |
+| Wrong key | Decryption fails | Decryption fails / 1 |
+| Last native block hint omitted | Anchored check fails | Anchored check fails / 1 |
+| Stale five-operation bundle | Completeness fails | Completeness fails / 1 |
+| Altered ciphertext | Head-chain check fails | Head-chain check fails / 1 |
+
+Evidence: gitignored `out/native-verification/sdk-evidence.json` and `cli-evidence.json`; public `bundle.json` and `native-blocks.json` were exported through the production Succession helper. CLI verification used its default native WSS endpoint and each process exited on its own. Native HTTP returned intermittent gateway 503 errors during earlier probes and remains explicitly selectable, without automatic fallback. Local real-socket regressions cover HTTP abort, stalled WebSocket upgrade, an established silent peer and per-request cancellation. Wrong-network, noncanonical/future references, conflicting admissions, cache mutation and equal-count stored-head contradictions are covered by deterministic regressions. No Solidity or browser behavior changed.
 
