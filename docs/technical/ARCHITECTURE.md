@@ -117,8 +117,12 @@ The 2026-10-30 headless testnet demo reconstructed the key from two shares,
 passed all six verification/decryption checks, and continued the workspace
 (SMART-CONTRACT section 9.3). Shares and account keys stayed on one rehearsal
 machine; private checkpoint retention is disclosed. Independent delivery/custody
-remains open in D12. Native-write event support in browser/CLI readers remains
-open in BUILD-PLAN 10.3.
+remains open in D12. Native-write history is supported by the optional
+`@packout/sdk/native` reader and independent CLI with public block-hash hints
+(INTEGRATIONS 6.9); the core SDK entry remains EVM-only. The caller owns the SDK
+API connection; the CLI owns bounded native HTTP/WS transports and disconnects
+on success or failure. Both trust their selected RPCs, not light-client proofs.
+Browser native-history and Succession panels remain open in BUILD-PLAN 10.3.
 
 ## 5. Bundle format v1 and verification
 

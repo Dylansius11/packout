@@ -1,8 +1,10 @@
 import { xchacha20poly1305 } from '@noble/ciphers/chacha.js';
+import type { ApiPromise } from '@polkadot/api';
 import { type Hex, hexToBytes, keccak256, stringToHex } from 'viem';
 import { type ChainReader, DEFAULT_RPC, readChain } from './chain.ts';
 import { type Bundle, bundleSchema, opSchema } from './format.ts';
 import { nextHead, ZERO_HEAD } from './head.ts';
+import { connectNative, DEFAULT_NATIVE_RPC, type NativeOptions } from './native.ts';
 
 export const STEP_NAMES = {
   format: 'Format',
@@ -32,12 +34,15 @@ export async function verifyBundle(input: {
   keyError?: string;
   rpc?: string;
   chain?: ChainReader;
+  native?: NativeOptions;
 }): Promise<Report> {
   const rpc = input.rpc ?? DEFAULT_RPC;
   const report: Report = {
     ok: false,
     rpc,
-    trust: `Trusts RPC ${rpc} for chain identity, registry state and admission events; this is not light-client verification.`,
+    trust: input.native
+      ? `Trusts RPC ${rpc} and native RPC ${input.native.rpc ?? DEFAULT_NATIVE_RPC} for chain identity, registry state and finalized admission events; this is not light-client verification.`
+      : `Trusts RPC ${rpc} for chain identity, registry state and admission events; this is not light-client verification.`,
     steps: (Object.keys(STEP_NAMES) as StepId[]).map((id) => ({
       id,
       status: 'not checked',
@@ -45,6 +50,7 @@ export async function verifyBundle(input: {
     })),
   };
   let current = 0;
+  let ownedNative: ApiPromise | undefined;
   try {
     let value = input.bundle;
     if (typeof value === 'string') {
@@ -102,7 +108,12 @@ export async function verifyBundle(input: {
         'Recomputed envelope digests and the ordered head chain match the claimed checkpoint.',
     };
 
-    const chain = input.chain ?? (await readChain(bundle, rpc));
+    let native = input.native;
+    if (native && !native.nativeApi) {
+      ownedNative = await connectNative(native.rpc ?? DEFAULT_NATIVE_RPC);
+      native = { ...native, nativeApi: ownedNative };
+    }
+    const chain = input.chain ?? (await readChain(bundle, rpc, native));
     if (chain.chainId !== bundle.chainId)
       throw new Error(
         `RPC chain id ${chain.chainId} does not match bundle chain id ${bundle.chainId}.`,
@@ -127,10 +138,16 @@ export async function verifyBundle(input: {
         event.digest.toLowerCase() !== lastDigest
       ) {
         throw new Error(
-          `Portaldot has no matching admission at operation ${count}: this history is not the one that was anchored.`,
+          input.native
+            ? `The supplied native block hints and EVM snapshot contain no matching admission at operation ${count}. Missing hints do not prove that the chain never admitted it.`
+            : `Portaldot has no matching admission at operation ${count}: this history is not the one that was anchored.`,
         );
       }
     }
+    if (count === workspace.count && workspace.head.toLowerCase() !== head)
+      throw new Error(
+        'The on-chain workspace head contradicts this history at the same operation count.',
+      );
     report.steps[current++] = {
       id: 'anchored',
       status: 'pass',
@@ -207,6 +224,8 @@ export async function verifyBundle(input: {
       message:
         error instanceof Error ? error.message : 'Verification failed with an unknown error.',
     };
+  } finally {
+    if (ownedNative) await ownedNative.disconnect();
   }
   return report;
 }
