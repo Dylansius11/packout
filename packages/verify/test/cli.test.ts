@@ -197,11 +197,57 @@ describe('packout-verify executable', () => {
       ['bundle.json', '--unknown'],
       ['bundle.json', '--key'],
       ['bundle.json', '--rpc', 'file:///private'],
+      ['bundle.json', '--rpc', 'wss://node.test'],
       ['bundle.json', 'extra.json'],
     ].map((args) => ({ args })),
   )('rejects invalid arguments %#', async ({ args }) => {
     const result = await run(args);
     expect(result.code).toBe(2);
     expect(result.stderr).toMatch(/Usage:/);
+  });
+  it.each([
+    { name: 'invalid JSON', content: 'PRIVATE_SIDECAR_CONTENT' },
+    {
+      name: 'receipt object',
+      content: JSON.stringify({ blocks: [wsId], private: 'PRIVATE_SIDECAR_CONTENT' }),
+    },
+    { name: 'non-string hash', content: '[123]' },
+    { name: 'short hash', content: '["0x1234"]' },
+    { name: 'non-hex hash', content: `["0x${'zz'.repeat(32)}"]` },
+    { name: 'too many hashes', content: JSON.stringify(Array(4097).fill(wsId)) },
+  ])(
+    'rejects $name native sidecar as input error without leaking its contents',
+    async ({ content }) => {
+      const path = join(directory, 'invalid-native.json');
+      await writeFile(path, content);
+      const result = await run(['bundle.json', '--native-blocks', path, '--rpc', rpc, '--json']);
+      expect(result.code).toBe(2);
+      expect(result.stderr).toMatch(/native|sidecar|block/i);
+      expect(`${result.stdout}${result.stderr}`).not.toContain('PRIVATE_SIDECAR_CONTENT');
+      expect(`${result.stdout}${result.stderr}`).not.toContain(content);
+    },
+  );
+  it('reports unreadable native sidecar as input error', async () => {
+    const result = await run([
+      'bundle.json',
+      '--native-blocks',
+      'missing-native.json',
+      '--rpc',
+      rpc,
+    ]);
+    expect(result.code).toBe(2);
+    expect(result.stderr).toMatch(/native|sidecar|block/i);
+  });
+  it.each([
+    ['bundle.json', '--native-rpc', 'http://127.0.0.1:1'],
+    ['bundle.json', '--native-blocks'],
+    ['bundle.json', '--native-blocks', 'blocks.json', '--native-rpc'],
+    ['bundle.json', '--native-blocks', 'blocks.json', '--native-rpc', 'ftp://node.test'],
+    ['bundle.json', '--native-blocks', 'blocks.json', '--native-rpc', 'file:///private'],
+    ['bundle.json', '--native-blocks', 'blocks.json', '--native-rpc', 'not a URL'],
+  ])('rejects invalid native arguments %#', async (...args) => {
+    const result = await run(args);
+    expect(result.code).toBe(2);
+    expect(result.stderr).toContain('Usage:');
   });
 });

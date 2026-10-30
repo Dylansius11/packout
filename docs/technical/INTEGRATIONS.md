@@ -207,7 +207,7 @@ The Succession scripts now use the optional `@packout/sdk/native` reader for bot
 
 Checkpoints now persist the key before the first encrypted write and committed ciphertext after each finalized append. The first run predated these checkpoints and stopped after index 1; its in-memory random key was lost. Workspace `0xb74ce764f52242e4c97c2bcb179777324a02883826fb436c14e3680c098ee48f` is an abandoned spike, not a recoverable demo. It must not be presented as one.
 
-**Boundary:** `@packout/sdk/native` provides the opt-in native-event reader described below; the ordinary SDK entry remains EVM-only. The independent CLI and browser proof view still need their native integration. Do not claim the default Ethereum-only readers verify this native Succession history.
+**Boundary:** `@packout/sdk/native` and the independent CLI's `--native-blocks` mode verify native/EVM history as described below; the ordinary SDK entry and CLI without native flags remain EVM-only. Both opt-in readers passed the real six-operation Succession history (SMART-CONTRACT 9.4). Browser native-history and Succession proof-panel integration remain open; independent backup-device custody is not demonstrated.
 
 [V] Native and Ethereum block hashes also differ at the same height: top-up block 248354 has native hash `0x1b4718708497d74ffd9b027e92357ab9f56cdab5e08c3592030560adbb1b1197` and EVM hash `0x2b68535f02a9af97f3050478896215760ace72646bfe8232b6856d507c2b340d`. Resolve a height with `chain_getBlockHash` before `api.at`; never pass an EVM receipt's block hash to the native API.
 
