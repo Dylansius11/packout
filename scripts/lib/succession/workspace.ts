@@ -16,12 +16,14 @@ const stateSchema = z.object({
       .regex(/^0x(?:[\da-fA-F]{2})+$/)
       .transform((value): `0x${string}` => value as `0x${string}`),
   ),
+  nativeBlocks: z.array(hex32),
 });
 export interface SavedWorkspace {
   registry: string;
   wsId: `0x${string}`;
   key: Uint8Array;
   envelopes: `0x${string}`[];
+  nativeBlocks: `0x${string}`[];
 }
 export async function loadWorkspace(): Promise<SavedWorkspace | undefined> {
   let text: string;

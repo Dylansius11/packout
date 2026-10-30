@@ -2,6 +2,16 @@
 
 Read the headlines before starting work. Format: `### YYYY-MM-DD: headline`, then what happened, root cause, rule going forward. Newest on top.
 
+### 2026-10-30: Gitignored output is not automatically excluded from Biome
+- What happened: `pnpm check` tried formatting `out/succession/workspace.json`, printing the private rehearsal key in its diagnostic. This is test-only data; never reuse that workspace key for real data.
+- Root cause: root Biome includes `**` without VCS integration, so `.gitignore` alone does not exclude generated output.
+- Rule: strongly exclude `out` in Biome before running checks on demo workspaces. Never format private output just to make lint green.
+
+### 2026-10-30: Native Revive writes need native event proofs
+- What happened: W's append finalized successfully, but the Succession script stopped because the Ethereum RPC returned no log. The first run's random encryption key was only in memory and was lost on exit.
+- Root cause: native `Revive.call` emits `revive.ContractEmitted` without an Ethereum-indexed receipt/log; EVM and native block hashes can also differ at the same height.
+- Rule: decode the real native events and verify canonical finalized block references on reuse. Persist private key/ciphertext checkpoints before/after writes; never retry a paid workspace creation just because Ethereum indexing is empty. The script-only adapter does not make browser/CLI support complete.
+
 ### 2026-10-29: An independent reader exposes gaps that shared implementation tests miss
 - What happened: the spec-only verifier initially accepted uppercase envelope bytes that the SDK rejects, and the prose omitted strict-object rules, journal field limits and empty-history behavior.
 - Root cause: shared head vectors pin the cryptographic formula, but do not fully specify the JSON reader contract.

@@ -20,6 +20,7 @@ import { createDemoOperations } from '../operations.ts';
 import { createDemoActions, printVerification, requireVerifiedRestore } from '../runtime.ts';
 import { executionBounds } from './bounds.ts';
 import { buildCalls, nativeCall, reviveCall, STORAGE_LIMIT, WEIGHT } from './calls.ts';
+import { decodeNativeAppends } from './events.ts';
 import { json } from './model.ts';
 import { type NativeEvidence, sendNative, waitUntilBlock } from './native.ts';
 import { preflight } from './preflight.ts';
@@ -170,6 +171,17 @@ export async function runSuccession(spike: boolean, delayBlocks: number) {
     const initial = await reader.getWorkspace(wsId);
     if (!initial || initial.owner.toLowerCase() !== owner.toLowerCase())
       throw new Error('Registry owner is not H160(W). Native caller gate failed.');
+    let key = session.savedWorkspace?.key ?? generateWorkspaceKey();
+    const nativeBlocks = [...(session.savedWorkspace?.nativeBlocks ?? [])];
+    const checkpoint = (committed: Hex[]) =>
+      saveWorkspace({
+        registry: deployment.address,
+        wsId,
+        key,
+        envelopes: committed,
+        nativeBlocks,
+      });
+    await checkpoint(session.savedWorkspace?.envelopes ?? []);
     await direct(grant.call, 'W grants vendor');
     const mapped = await mapping();
     report.mapping = mapped;
@@ -180,7 +192,6 @@ export async function runSuccession(spike: boolean, delayBlocks: number) {
     const startIndex = Number(initial.count);
     if (!Number.isSafeInteger(startIndex))
       throw new Error('Workspace history exceeds the headless demo index limit.');
-    let key = session.savedWorkspace?.key ?? generateWorkspaceKey();
     const shares = spike ? [] : await splitWorkspaceKey(key);
     const fingerprint = (bytes: Uint8Array) =>
       createHash('sha256').update(bytes).digest('hex').slice(0, 16);
@@ -232,6 +243,7 @@ export async function runSuccession(spike: boolean, delayBlocks: number) {
     console.log(
       `Vendor accepted append: dispatch Ok; block hash ${vendorBlock.hash}; native payer ${vendorNative}; balance delta ${vendorAfter.free - vendorBefore.free}.`,
     );
+    await checkpoint(envelopes.slice(0, startIndex + 1).map((envelope) => bytesToHex(envelope)));
     const appendNative = async (index: number, inherited: boolean) => {
       const state = await reader.getWorkspace(wsId);
       if (!state || state.count !== BigInt(index))
@@ -245,10 +257,20 @@ export async function runSuccession(spike: boolean, delayBlocks: number) {
           args: [wsId, state.count, state.head, [envelopeDigest(envelopes[index])]],
         }),
       );
-      await direct(
+      const receipt = await direct(
         call,
         inherited ? 'N continues as W at next index' : 'W appends natively',
         inherited,
+      );
+      nativeBlocks.push(receipt.blockHash as Hex);
+      await checkpoint(envelopes.slice(0, index + 1).map((envelope) => bytesToHex(envelope)));
+      session.nativeAppends.push(
+        ...decodeNativeAppends(
+          deployment.address,
+          receipt.events,
+          BigInt(receipt.blockNumber),
+          receipt.extrinsicHash as Hex,
+        ),
       );
       const event = await reader.getAppended(wsId, BigInt(index));
       if (
@@ -262,7 +284,7 @@ export async function runSuccession(spike: boolean, delayBlocks: number) {
     if (!spike) {
       key.fill(0);
       console.log(
-        'Owner key discarded locally before succession. Only backup shares can restore it.',
+        'In-memory owner key cleared before succession. Reconstruction uses only two backup shares; the private rehearsal checkpoint is retained, not used.',
       );
     }
     await execute('configure');
@@ -386,12 +408,7 @@ export async function runSuccession(spike: boolean, delayBlocks: number) {
     const final = await reader.getWorkspace(wsId);
     if (final?.count !== initial.count + 3n || final.head !== current.head)
       throw new Error('Rejected vendor changed the canonical history.');
-    await saveWorkspace({
-      registry: deployment.address,
-      wsId,
-      key,
-      envelopes: envelopes.map((envelope) => bytesToHex(envelope)),
-    });
+    await checkpoint(envelopes.map((envelope) => bytesToHex(envelope)));
     key.fill(0);
     report.complete = true;
     report.claims = 'Observed by this live testnet run; RPC-trusted state and finalized receipts.';

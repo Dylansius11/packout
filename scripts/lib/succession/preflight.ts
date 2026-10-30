@@ -30,6 +30,7 @@ import { type DemoDeployment, parseDeployment } from '../demo.ts';
 import { loadAccounts } from './accounts.ts';
 import { executionBounds } from './bounds.ts';
 import { buildCalls, nativeCall, STORAGE_LIMIT, WEIGHT } from './calls.ts';
+import { loadNativeAppends, successionReader } from './events.ts';
 import { type Check, fundingPlan, PIN, preflightReady } from './model.ts';
 import { metadataFingerprint } from './pin.ts';
 import { loadWorkspace } from './workspace.ts';
@@ -213,15 +214,22 @@ export async function preflight(delayBlocks: number) {
         index: '0x1e01',
         call: nativeCall(api.registry, '0x1e01', []),
       });
+    const nativeAppends =
+      savedWorkspace && deployment
+        ? await loadNativeAppends(api, deployment.address, savedWorkspace.nativeBlocks)
+        : [];
     if (savedWorkspace) {
       console.log(
         `INFO Reusing workspace ${savedWorkspace.wsId}; no second workspace deposit. Prior inheritor: ${priorInheritor ? 'W will explicitly revoke during setup' : 'none'}.`,
       );
-      const reusedReader = createRegistryReader({
-        client,
-        registry: destination,
-        fromBlock: BigInt(deployment?.blockNumber ?? '0'),
-      });
+      const reusedReader = successionReader(
+        createRegistryReader({
+          client,
+          registry: destination,
+          fromBlock: BigInt(deployment?.blockNumber ?? '0'),
+        }),
+        nativeAppends,
+      );
       const bundle = createBundle({
         chainId: 420420777,
         registry: destination,
@@ -324,11 +332,15 @@ export async function preflight(delayBlocks: number) {
       chain,
       vendor,
       vendorWallet,
-      reader: createRegistryReader({
-        client,
-        registry,
-        fromBlock: BigInt(deployment?.blockNumber ?? '0'),
-      }),
+      nativeAppends,
+      reader: successionReader(
+        createRegistryReader({
+          client,
+          registry,
+          fromBlock: BigInt(deployment?.blockNumber ?? '0'),
+        }),
+        nativeAppends,
+      ),
       vendorWriter: createRegistryWriter({ client, registry, wallet: vendorWallet }),
       dryRun,
       weight: WEIGHT,

@@ -127,6 +127,7 @@ This phase never delays Phase 1 (1.4, 1.5) or Phase 7. Only 10.0 runs before fun
   - The proof view gains an "Authority" line: owner `H160(W)`, friend-group threshold, delay, current inheritor and last succession tx.
   - Client B gets a read-only Succession panel.
   - The README gets Act 3, the "why Portaldot" line and its honest boundary (a Safe plus recovery module can do something similar on other EVM chains).
+  - Native-event support is also required for proof/restore consumers: Portaldot's Ethereum RPC omits native `Revive.call` logs (INTEGRATIONS 6.8). The script adapter alone does not make SDK/browser/independent-CLI verification of these histories complete.
   - The video gets about 30 s for Act 3.
   - AC: screenshots at 1280 and 390 px; README claims link to real tx hashes.
 
