@@ -16,6 +16,7 @@ export type AppendedEvent = {
   digest: Hex;
   head: Hex;
   blockNumber: bigint;
+  /** Ethereum transaction hash, or native extrinsic hash for a native admission. */
   txHash: Hex;
 };
 

@@ -4,7 +4,8 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./native": "./src/native.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit -p tsconfig.json"
@@ -12,6 +13,7 @@
   "dependencies": {
     "@noble/ciphers": "2.4.0",
     "@noble/hashes": "2.4.0",
+    "@polkadot/api": "17.0.2",
     "shamir-secret-sharing": "0.0.4",
     "viem": "2.57.10",
     "zod": "4.6.7"

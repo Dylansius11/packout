@@ -143,6 +143,12 @@ export async function verifyBundle(input: {
         `Portaldot has no matching history at operation ${count}: this is not the history that was anchored.`,
       );
     }
+    if (onChain.count === count && onChain.head !== head) {
+      return fail(
+        3,
+        'The current Portaldot head disagrees with the final admission of this complete bundle.',
+      );
+    }
     pass(3, `Portaldot confirms the history and encrypted content through operation ${count}.`);
   } else {
     // No final event can exist yet; report the exact excess in the completeness step.

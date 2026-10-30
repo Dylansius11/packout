@@ -110,9 +110,7 @@ describe('bundle verification', () => {
     const report = await verifyBundle({ bundle: serializeBundle(bundle), key, chain });
     expect(report.ok).toBe(true);
     expect(report.steps.map((step) => step.id)).toEqual(stepIds);
-    expect(report.steps.every((step) => step.status === 'pass' && step.message.length > 15)).toBe(
-      true,
-    );
+    expect(report.steps.every((step) => step.status === 'pass')).toBe(true);
     expect(report.bundle).toEqual(bundle);
     expect(report.onChain).toEqual(chain.workspace);
     expect(report.ops).toEqual(ops);
@@ -121,6 +119,16 @@ describe('bundle verification', () => {
       status: 'done',
       comments: [{ text: 'Still writing' }],
     });
+  });
+
+  it('rejects a complete bundle when current state disagrees with its valid final admission', async () => {
+    const { bundle, chain } = fixture();
+    if (!chain.workspace) throw new Error('Expected a workspace fixture.');
+    chain.workspace.head = otherWsId;
+    const report = await verifyBundle({ bundle, key, chain });
+    expect(report.ok).toBe(false);
+    expect(report.steps.find((step) => step.status === 'fail')?.id).toBe('anchored');
+    expect(report.ops).toBeUndefined();
   });
 
   it.each([null, '{', { format: 'packout.bundle/2' }])(

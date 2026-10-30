@@ -19,10 +19,13 @@
   },
   "dependencies": {
     "@noble/ciphers": "2.4.0",
+    "@polkadot/api": "17.0.2",
     "viem": "2.57.10",
+    "ws": "8.22.0",
     "zod": "4.6.7"
   },
   "devDependencies": {
-    "@packout/sdk": "workspace:*"
+    "@packout/sdk": "workspace:*",
+    "@types/ws": "8.18.2"
   }
 }
