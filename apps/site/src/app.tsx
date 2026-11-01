@@ -1,4 +1,6 @@
+import { ExitMoves } from './sections/exit-moves';
 import { Hero } from './sections/hero';
+import { LeftBehind } from './sections/left-behind';
 
 export function App() {
   return (
@@ -10,7 +12,10 @@ export function App() {
         Skip to content
       </a>
       <Hero />
-      <main id="main" />
+      <main id="main">
+        <LeftBehind />
+        <ExitMoves />
+      </main>
     </>
   );
 }

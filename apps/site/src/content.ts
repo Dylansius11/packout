@@ -23,3 +23,55 @@ export const demoRun = {
   ownerAppend: 238207,
   refusal: 238210,
 } as const;
+
+export interface Move {
+  title: string;
+  body: string;
+  vendor: string;
+  workspace: string;
+}
+
+export const moves: Move[] = [
+  {
+    title: 'Work like normal',
+    body: 'Members write issues and comments in Vendor A with no wallet. Each change is encrypted on their device before the vendor ever sees it, then anchored on Portaldot.',
+    vendor: 'online, writing',
+    workspace: 'ops #0 to #2 anchored',
+  },
+  {
+    title: 'Export',
+    body: 'One file of ciphertext and a checkpoint. The key never goes in it, so the file is safe to keep anywhere.',
+    vendor: 'online',
+    workspace: 'bundle.json saved',
+  },
+  {
+    title: 'Pull the plug',
+    body: 'We stop the vendor API process. A real outage, the kind you get when a startup runs out of runway.',
+    vendor: 'offline',
+    workspace: 'on your device',
+  },
+  {
+    title: 'Restore somewhere else',
+    body: 'Packout Restore has no code path to the vendor. It checks the file against Portaldot six ways before it shows you a single issue.',
+    vendor: 'offline',
+    workspace: 'verified, 6 of 6',
+  },
+  {
+    title: 'Take over',
+    body: 'The owner signs one transaction. From that block on, every old writer, the vendor included, is out.',
+    vendor: 'access revoked',
+    workspace: 'epoch 1',
+  },
+  {
+    title: 'Keep writing',
+    body: 'The next change lands as operation #3 of the same history. Not a copy, not a fork. The same workspace.',
+    vendor: 'access revoked',
+    workspace: 'op #3 anchored',
+  },
+  {
+    title: 'The vendor comes back',
+    body: 'It tries to write. The contract refuses with NotWriter, and the reverted transaction sits on the explorer for anyone to check.',
+    vendor: 'refused on-chain',
+    workspace: 'still yours',
+  },
+];
