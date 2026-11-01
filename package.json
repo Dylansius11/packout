@@ -26,6 +26,7 @@
     "vendor-api": "pnpm --filter @packout/vendor-api start",
     "vendor-a": "pnpm --filter @packout/vendor-a dev",
     "client-b": "pnpm --filter @packout/client-b dev",
+    "site": "pnpm --filter @packout/site dev",
     "e2e": "pnpm --filter @packout/e2e test"
   },
   "devDependencies": {
