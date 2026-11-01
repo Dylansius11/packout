@@ -4,7 +4,7 @@ import { gutter, SectionHeading } from '../ui';
 const kit = [
   {
     name: 'PackoutRegistry',
-    what: 'One small Solidity contract: owner, writers per epoch, and the head of each workspace’s hash chain. Nothing else is stored.',
+    what: 'One small Solidity contract: per workspace, the owner, epoch, writers, operation count, schema and the head of its hash chain. Workspace contents never go on-chain.',
   },
   {
     name: '@packout/sdk',

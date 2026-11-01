@@ -20,6 +20,12 @@ interface Layer {
   shade: number; // 0..255
 }
 
+/** Portrait ink for every brightness level, built once so drawing a frame allocates no colour strings. */
+const INK = Array.from(
+  { length: 256 },
+  (_, shade) => `rgb(${shade},${shade},${Math.max(0, shade - 4)})`,
+);
+
 let faceCells: Uint16Array | undefined;
 
 /** Set bits of the portrait as (column, row) pairs, decoded once per page. */
@@ -115,13 +121,16 @@ export function DustField({
         }
       }
       const ink = Math.max(1, cell * 0.84);
+      let lastShade = -1;
       const flickerBucket = Math.floor(clock * 6);
       for (let index = 0; index < count; index += 1) {
         // A one-percent CRT flicker: cells drop out for a sixth of a second, then return.
         if (moving && ((index * 2654435761 + flickerBucket * 40503) >>> 0) % 113 === 0) continue;
-        const level = Math.min(1, intensity + glow[index] * 0.62);
-        const shade = Math.round(level * 255);
-        context.fillStyle = `rgb(${shade},${shade},${Math.max(0, shade - 4)})`;
+        const shade = Math.round(Math.min(1, intensity + glow[index] * 0.62) * 255);
+        if (shade !== lastShade) {
+          context.fillStyle = INK[shade];
+          lastShade = shade;
+        }
         context.fillRect(
           Math.round(originX + face[index * 2] * cell + offset[index * 2]),
           Math.round(originY + face[index * 2 + 1] * cell + offset[index * 2 + 1]),
@@ -175,6 +184,7 @@ export function DustField({
     };
 
     const onPointer = (event: PointerEvent) => {
+      if (!visible || still.matches) return;
       const box = canvas.getBoundingClientRect();
       pointerX = event.clientX - box.left;
       pointerY = event.clientY - box.top;

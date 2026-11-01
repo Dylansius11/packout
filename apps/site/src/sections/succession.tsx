@@ -19,8 +19,8 @@ export function Succession() {
             about the workspace has to change.
           </p>
           <p className="prose-ash mt-6">
-            On most EVM chains you would deploy a Safe and a recovery module for every workspace.
-            Here the recovery is native, and Packout simply inherits it.
+            On other EVM chains, a Safe with a recovery module can reach a similar outcome. Here the
+            recovery authority is the chain's own, and Packout reuses it.
           </p>
         </div>
         <div className="self-end">

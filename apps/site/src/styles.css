@@ -152,6 +152,10 @@
   animation-delay: calc(var(--order, 0) * 80ms + 60ms);
 }
 
+:root[data-still] :is(.drift, .caret, .packout-trail) {
+  animation-play-state: paused;
+}
+
 @media (prefers-reduced-motion: reduce) {
   .drift,
   .caret,

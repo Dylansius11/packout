@@ -1,5 +1,5 @@
 import { DustField, Wordmark } from '@packout/brand';
-import type { CSSProperties } from 'react';
+import { type CSSProperties, useEffect, useState } from 'react';
 import { block, DEMO_WORKSPACE, demoRun, links, short } from '../content';
 import { BlockLink, gutter } from '../ui';
 
@@ -49,11 +49,29 @@ function Nav() {
             </a>
           </li>
         </ul>
-        <a href={links.vendor} className="signal text-[12px]">
+        <a href={links.vendor} className="command text-[12px]">
           Run the exit
         </a>
       </div>
     </nav>
+  );
+}
+
+/** Moving lines repeat for as long as the page is open, so anyone can stop them (WCAG 2.2.2). */
+function MotionToggle() {
+  const [still, setStill] = useState(false);
+  useEffect(() => {
+    document.documentElement.toggleAttribute('data-still', still);
+  }, [still]);
+  return (
+    <button
+      type="button"
+      aria-pressed={still}
+      onClick={() => setStill((value) => !value)}
+      className="uppercase underline underline-offset-4 hover:text-ivory"
+    >
+      {still ? 'Resume motion' : 'Pause motion'}
+    </button>
   );
 }
 
@@ -66,10 +84,15 @@ export function Hero() {
         mirror
         intensity={0.2}
       />
+      {/* Reading text never sits on dust: the void closes in from the left and from below. */}
+      <div
+        aria-hidden="true"
+        className="absolute inset-0 -z-10 bg-[linear-gradient(to_top,#000_30%,transparent_58%),linear-gradient(90deg,#000_44%,transparent_80%)] max-md:bg-black/90"
+      />
       <Nav />
 
       <div className={`${gutter} flex flex-1 flex-col justify-center pb-8 pt-[3vh]`}>
-        <div className="max-w-[64rem] bg-[radial-gradient(closest-side,rgb(0_0_0/0.85),transparent)] py-4">
+        <div className="max-w-[64rem] py-4">
           <h1 className="display surface text-[clamp(2.6rem,5.9vw,5.5rem)] text-ivory">
             <span className="block">Your vendor can quit.</span>
             <span className="block text-ash">Your workspace won't.</span>
@@ -128,7 +151,8 @@ export function Hero() {
           Recorded on Portaldot testnet, 29 Oct 2026 · workspace{' '}
           <a href={block(demoRun.vendorAppend)} className="underline underline-offset-4">
             {short(DEMO_WORKSPACE)}
-          </a>
+          </a>{' '}
+          · <MotionToggle />
         </p>
       </section>
     </header>

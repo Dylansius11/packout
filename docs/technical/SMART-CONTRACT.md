@@ -238,3 +238,5 @@ The public bundle remains `packout.bundle/1`. Its native lookup sidecar referenc
 
 Evidence: gitignored `out/native-verification/sdk-evidence.json` and `cli-evidence.json`; public `bundle.json` and `native-blocks.json` were exported through the production Succession helper. CLI verification used its default native WSS endpoint and each process exited on its own. Native HTTP returned intermittent gateway 503 errors during earlier probes and remains explicitly selectable, without automatic fallback. Local real-socket regressions cover HTTP abort, stalled WebSocket upgrade, an established silent peer and per-request cancellation. Wrong-network, noncanonical/future references, conflicting admissions, cache mutation and equal-count stored-head contradictions are covered by deterministic regressions. No Solidity or browser behavior changed.
 
+Reruns of the no-key scenario with `pnpm verify bundle.json --native-blocks native-blocks.json` on 2026-11-01 printed the same verdict: five checks PASS, decryption SKIPPED, exit 0. The landing page (`apps/site`, Builders section) shows that output verbatim.
+

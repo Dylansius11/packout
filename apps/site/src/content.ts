@@ -40,7 +40,7 @@ export const moves: Move[] = [
   },
   {
     title: 'Export',
-    body: 'One file of ciphertext and a checkpoint. The key never goes in it, so the file is safe to keep anywhere.',
+    body: 'One file of encrypted history and a checkpoint, never the key. Keep a reliable copy, and keep the key somewhere else.',
     vendor: 'online',
     workspace: 'bundle.json saved',
   },
@@ -128,7 +128,11 @@ export const tampers: { label: string; breaks: CheckId | null }[] = [
 export const record: { what: string; value: string; height?: number }[] = [
   { what: 'Registry contract', value: short(REGISTRY), height: 238168 },
   { what: 'Takeover, rotateEpoch', value: '0.021 tPOT', height: demoRun.takeover },
-  { what: 'Each append after the first', value: '0.031 tPOT', height: demoRun.ownerAppend },
+  {
+    what: 'A later append, one operation, as measured',
+    value: '0.031 tPOT',
+    height: demoRun.ownerAppend,
+  },
   { what: 'Vendor comeback', value: 'reverted, NotWriter', height: demoRun.refusal },
   { what: 'Inherited takeover, same owner', value: 'outer and inner Ok', height: 248474 },
   { what: 'Vendor refused after recovery', value: 'NotWriter, epoch 2', height: 248482 },
