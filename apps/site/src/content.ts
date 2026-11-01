@@ -133,3 +133,45 @@ export const record: { what: string; value: string; height?: number }[] = [
   { what: 'Inherited takeover, same owner', value: 'outer and inner Ok', height: 248474 },
   { what: 'Vendor refused after recovery', value: 'NotWriter, epoch 2', height: 248482 },
 ];
+
+export const succession: { line: string; height?: number }[] = [
+  { line: 'Two of three backup wallets approve', height: 248462 },
+  { line: 'A waiting period the real owner can cancel (10 blocks in this test)' },
+  { line: 'The inheritor rotates the epoch as the same owner', height: 248474 },
+  { line: 'Two shares rebuild the encryption key, offline' },
+  { line: 'The next operation lands in the same workspace', height: 248479 },
+  { line: 'The old vendor tries again and is refused', height: 248482 },
+];
+
+/** Real output of the independent verifier against the Succession workspace, 2026-11-01. */
+export const cliRun = {
+  command: 'pnpm verify bundle.json --native-blocks native-blocks.json',
+  lines: [
+    ['PASS', 'Format', 'PACKOUT bundle v1 contains 6 operations with a matching checkpoint count.'],
+    [
+      'PASS',
+      'Envelopes',
+      'Every envelope has version 1, a 24-byte nonce and a 16-byte authentication tag.',
+    ],
+    [
+      'PASS',
+      'Head chain',
+      'Recomputed envelope digests and the ordered head chain match the claimed checkpoint.',
+    ],
+    [
+      'PASS',
+      'Anchored on chain',
+      'The registry admission at operation 6 matches the final digest and checkpoint head.',
+    ],
+    [
+      'PASS',
+      'Completeness',
+      'The bundle contains all 6 operations admitted at the observed chain state.',
+    ],
+    [
+      'SKIPPED',
+      'Decrypt and read',
+      'No key file was supplied; plaintext and journal operations were not checked.',
+    ],
+  ],
+} as const;

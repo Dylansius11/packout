@@ -1,8 +1,11 @@
+import { Builders } from './sections/builders';
 import { Checks } from './sections/checks';
+import { Boundaries, Close, Footer } from './sections/close';
 import { ExitMoves } from './sections/exit-moves';
 import { Hero } from './sections/hero';
 import { LeftBehind } from './sections/left-behind';
 import { Record } from './sections/record';
+import { Succession } from './sections/succession';
 
 export function App() {
   return (
@@ -19,7 +22,12 @@ export function App() {
         <ExitMoves />
         <Checks />
         <Record />
+        <Succession />
+        <Builders />
+        <Boundaries />
+        <Close />
       </main>
+      <Footer />
     </>
   );
 }

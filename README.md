@@ -1,5 +1,7 @@
 # PACKOUT
 
+![Packout](assets/packout-logo-vibes.png)
+
 [![CI](https://github.com/Dylansius11/packout/actions/workflows/ci.yml/badge.svg)](https://github.com/Dylansius11/packout/actions/workflows/ci.yml) [![Testnet smoke](https://github.com/Dylansius11/packout/actions/workflows/testnet-smoke.yml/badge.svg)](https://github.com/Dylansius11/packout/actions/workflows/testnet-smoke.yml)
 
 **Move your workspace to another app, with its history intact and your control unchanged.**
@@ -77,6 +79,17 @@ pnpm demo:local
 pnpm demo:full:local       # whole exit story: restore, takeover, owner write, vendor write reverted on-chain
 ```
 
+Click through the apps on the same local chain (after the two commands above):
+
+```bash
+pnpm vendor-api            # Vendor A's API on :8787
+pnpm vendor-a              # http://localhost:5173/?e2e=1  Vendor A, the SaaS being left
+pnpm client-b              # http://localhost:5174/?e2e=1  Packout Restore (Client B)
+pnpm site                  # http://localhost:5175         the Packout landing page
+```
+
+`?e2e=1` swaps the browser wallet for Hardhat's unlocked test account, so no extension is needed locally.
+
 Browser end-to-end test (starts its own chain, vendor API and Vendor A on separate ports):
 
 ```bash
@@ -127,8 +140,9 @@ This is not a production recovery setup: all keys/shares are on one rehearsal ma
 | `pnpm demo:checkin`, `pnpm demo:full` | Run end to end on Portaldot testnet (2026-10-29, hashes above) and on a local chain. `demo:full` also mines the vendor's reverted write after takeover |
 | Portaldot testnet deployment | Live at `0xA76ae793b3a648b87F512aacbf7C4cE2eeac61E0` |
 | Vendor A API and web app | Done on a local chain; Playwright covers onboarding, member writes, anchoring and export |
-| Client B restore app | Done on a local chain: import, six-check verification, takeover with `rotateEpoch`, continued writes and stale-bundle refusal (`pnpm client-b`, port 5174). Playwright runs the whole exit story with the vendor process stopped |
-| Public workspace proof | Client B `#/proof/<wsId>`: owner, epoch, writers, every append and the access timeline, read only from Portaldot events. No key or wallet needed |
+| Packout Restore (Client B) | Done on a local chain: import, six-check verification, takeover with `rotateEpoch`, continued writes and stale-bundle refusal (`pnpm client-b`, port 5174). Playwright runs the whole exit story with the vendor process stopped |
+| Public workspace proof | Packout Restore `#/proof/<wsId>`: owner, epoch, writers, every append and the access timeline, read only from Portaldot events. No key or wallet needed |
+| Landing page and design system | `pnpm site` (port 5175): the exit story with real testnet blocks, an illustration of the six checks and the CLI's real output. Packout's visual language is in [DESIGN.md](DESIGN.md) and `packages/brand`; Vendor A deliberately keeps its own plain look |
 | Succession (PRD F9) | Authority gates and key recovery passed on Portaldot testnet (2026-10-30): same owner, epoch 2/count 6, two-share reconstruction/decryption, mined vendor refusal. SDK and independent CLI verify native/EVM history; browser/proof-panel/video integration remains open |
 
 Progress is tracked box by box in [BUILD-PLAN.md](BUILD-PLAN.md); open questions and blockers in [OPEN-DECISIONS.md](OPEN-DECISIONS.md); surprises and fixes in [LESSONS.md](LESSONS.md).
@@ -139,9 +153,11 @@ Progress is tracked box by box in [BUILD-PLAN.md](BUILD-PLAN.md); open questions
 contracts/       PackoutRegistry (Solidity, Hardhat 3) and its tests
 packages/sdk/    @packout/sdk: encoding, encryption, head chain, bundle, verifier, reducer, chain client, 2-of-3 key shares
 packages/verify/ @packout/verify: independent bundle verifier CLI, written from the spec (no SDK code)
+packages/brand/  @packout/brand: pixel mark, wordmark, dither field and design tokens (DESIGN.md)
 apps/vendor-api/ Vendor A's API: stores ciphertext, batches anchors to the registry
 apps/vendor-a/   Vendor A web app (the SaaS being left)
-apps/client-b/   Client B: independent restore, takeover and proof app (never imports Vendor A code)
+apps/client-b/   Packout Restore (Client B): independent restore, takeover and proof app (never imports Vendor A code)
+apps/site/       the Packout landing page
 scripts/         demo:checkin, demo:full, smoke:testnet, succession preflight/spike/demo
 e2e/             Playwright: the whole exit story with the vendor stopped
 docs/technical/  architecture, contract spec, Portaldot integration notes
