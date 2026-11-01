@@ -86,7 +86,8 @@ Goal: one real core flow on Portaldot testnet, honestly documented. Breadth come
 
 ## Phase 8: Design and UX pass (target 2026-11-04)
 
-- [ ] **8.1 DESIGN.md** once the founder picks references (OPEN-DECISIONS D8). Do not start before.
+- [x] **8.1 DESIGN.md** once the founder picks references (OPEN-DECISIONS D8). Do not start before.
+  - 2026-11-01: written from the founder's logo files. Tokens, pixel mark, wordmark and dither field live in `packages/brand`; the landing page (`apps/site`, `pnpm site`) is the reference build.
 - [ ] **8.2 Apply design** to Vendor A and Client B using `impeccable`, `emil-design-eng`, `design-taste-frontend`, `motion`. Client B must look like a different product.
 - [x] **8.3 UX audit** against CLAUDE.md section 8 at 1280px and 390px, keyboard-only, reduced motion.
   - 2026-10-27: done on the current functional screens, with no visual design pass (D8 is deferred). The full section 4 flow and the proof view were walked in headless Chromium, including runs with reduced motion and with slow RPC.

@@ -2,6 +2,11 @@
 
 Read the headlines before starting work. Format: `### YYYY-MM-DD: headline`, then what happened, root cause, rule going forward. Newest on top.
 
+### 2026-11-01: Scripted file writes on Windows default to CRLF
+- What happened: files generated or patched with Python's text mode (`open(path, 'w')`) came back with CRLF line endings, and Biome failed every one of them with a full-file format diff.
+- Root cause: Python's universal newline translation writes `\r\n` on Windows; Biome expects LF.
+- Rule: write generated files with `newline='\n'` (or use the edit tools), and run `biome check --write` on the touched paths before staging.
+
 ### 2026-10-30: Native history needs a reliable transport and real cancellation
 - What happened: the compiled verifier initialized over native HTTP, then received nginx HTTP 503 on valid historical header, block and event-storage reads. Single raw, standard-provider and bounded-provider block requests succeeded.
 - Root cause: the gateway returned HTML errors; its underlying availability fault is UNVERIFIED. The library's HTTP provider does not bound or abort fetch, and its WebSocket disconnect starts a graceful close rather than forcing termination. Both can leave accepted-but-stalled I/O alive.

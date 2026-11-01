@@ -1,0 +1,87 @@
+@import "@fontsource-variable/host-grotesk";
+
+/*
+ * Packout's world is the logo's: an emissive black void, one bitmap face riding baselines,
+ * fields of grey dust behind the work. Rank is depth (brightness, tracking, drift), not boxes.
+ * Contrast on void: ivory 19:1, ash 8.2:1 (body copy), smoke 4.8:1 (labels, captions, rear
+ * planes), dust is never text. Signal amber marks the caret, focus and the single primary action.
+ */
+@font-face {
+  font-family: "Geist Pixel Square";
+  src: url("./fonts/GeistPixel-Square.woff2") format("woff2");
+  font-display: swap;
+}
+
+@theme {
+  --font-sans: "Host Grotesk Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-pixel: "Geist Pixel Square", ui-monospace, "SFMono-Regular", monospace;
+  --font-mono: "Geist Pixel Square", ui-monospace, "SFMono-Regular", monospace;
+
+  --color-void: #000000;
+  --color-dust: #242424;
+  --color-smoke: #7a7974;
+  --color-ash: #a3a29c;
+  --color-ivory: #f5f4ef;
+  --color-signal: #ffb21f;
+  --color-signal-ink: #120c00;
+
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+}
+
+@layer base {
+  html {
+    background: var(--color-void);
+    color: var(--color-ivory);
+    color-scheme: dark;
+    caret-color: var(--color-signal);
+    scrollbar-color: var(--color-smoke) var(--color-void);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background: var(--color-signal);
+    color: var(--color-signal-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-signal);
+    outline-offset: 3px;
+  }
+}
+
+@utility font-pixel-tight {
+  font-family: var(--font-pixel);
+  font-feature-settings: "tnum" 1;
+  letter-spacing: 0;
+}
+
+/* The mark's loose pixels keep leaving, a step at a time, like the pack is still packing out. */
+@keyframes packout-trail {
+  0%,
+  100% {
+    transform: translate(0, 0);
+    opacity: 1;
+  }
+  45% {
+    transform: translate(7px, -2px);
+    opacity: 0.2;
+  }
+  55% {
+    transform: translate(-1px, 0);
+    opacity: 0;
+  }
+}
+
+[data-drifting] .packout-trail {
+  transform-box: fill-box;
+  animation: packout-trail 3.2s steps(4, end) infinite;
+  animation-delay: calc(var(--trail-index) * -0.53s);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [data-drifting] .packout-trail {
+    animation: none;
+  }
+}
