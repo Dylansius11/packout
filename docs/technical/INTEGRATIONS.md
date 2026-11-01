@@ -85,6 +85,8 @@ Copy `.env.example` to `.env` at the repo root. Never commit `.env`.
 | `PACKOUT_DEPLOYMENTS_DIR` | deploy script, vendor-api | where `<network>.json` is written and read; default `contracts/deployments/`. E2E points it at a temp dir so it never overwrites a developer's `localhost.json` |
 | `VITE_PACKOUT_NETWORK`, `VITE_VENDOR_API_URL`, `VITE_LOCAL_RPC_URL` | vendor-a (client-b without the vendor URL) | build-time network, API URL and local chain URL |
 | `VITE_PACKOUT_DEPLOYMENT` | vendor-a | build-time deployment JSON that overrides `contracts/deployments/<network>.json` (used by E2E) |
+| `VITE_PACKOUT_SITE_URL` | vendor-a | where the footer's "Exit-ready with Packout" link points; default `http://localhost:5175` (the landing page dev server) |
+| `VITE_VENDOR_APP_URL`, `VITE_RESTORE_APP_URL` | site (landing page) | where "Run the exit" and "Open Packout Restore" point; defaults `http://localhost:5173` and `http://localhost:5174` |
 | `SUCCESSION_W_MNEMONIC` | F9 spike and `demo:succession` (BUILD-PLAN 10.1, 10.2) | sr25519 mnemonic of the dedicated workspace-authority account W (section 6). Testnet only, never a personal wallet |
 | `SUCCESSION_N_MNEMONIC`, `SUCCESSION_BACKUP_1_MNEMONIC` … `_3_` | same | the inheritor N and the three backups. `pnpm succession:keys` appends only the missing ones and prints addresses only |
 | `PORTALDOT_NATIVE_WSS` | succession scripts | native Substrate endpoint, default `wss://test-node-v3.portaldot.dev` |

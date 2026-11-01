@@ -1,6 +1,7 @@
+import { PixelMark } from '@packout/brand';
 import { Link, Outlet, useRouterState } from '@tanstack/react-router';
 import { useRef } from 'react';
-import { chain, registryLookup, rpcHost } from '../config/env';
+import { chain, packoutSiteUrl, registryLookup, rpcHost } from '../config/env';
 import { useFocusOnChange } from '../lib/focus';
 import { Notice } from './notice';
 
@@ -19,9 +20,20 @@ export function AppShell() {
       </a>
       <header className="border-b border-border bg-surface">
         <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3 sm:px-6">
-          <Link to="/" className="flex items-baseline gap-2">
-            <span className="text-lg font-semibold tracking-tight">Vendor A</span>
-            <span className="text-sm text-muted-foreground">Issue journal</span>
+          <Link to="/" className="flex items-center gap-2.5">
+            <svg viewBox="0 0 24 24" className="size-7" aria-hidden="true">
+              <rect width="24" height="24" rx="6" className="fill-primary" />
+              <path
+                d="M7 8h10M7 12h10M7 16h6"
+                stroke="white"
+                strokeWidth="2"
+                strokeLinecap="round"
+              />
+            </svg>
+            <span className="flex items-baseline gap-2">
+              <span className="text-lg font-semibold tracking-tight">Vendor A</span>
+              <span className="text-sm text-muted-foreground">Issue journal</span>
+            </span>
           </Link>
           <span className="rounded-sm border border-border bg-muted px-2 py-0.5 text-xs text-muted-foreground">
             {chain.name}
@@ -42,9 +54,18 @@ export function AppShell() {
         <Outlet />
       </main>
       <footer className="border-t border-border">
-        <p className="mx-auto max-w-5xl px-4 py-4 text-xs text-muted-foreground sm:px-6">
-          Vendor A stores only encrypted data. Restore checks against Portaldot via {rpcHost}.
-        </p>
+        <div className="mx-auto flex max-w-5xl flex-col gap-2 px-4 py-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-6">
+          <p>
+            Vendor A stores only encrypted data. Restore checks against Portaldot via {rpcHost}.
+          </p>
+          <a
+            href={packoutSiteUrl}
+            className="inline-flex items-center gap-1.5 rounded-sm text-foreground hover:underline"
+          >
+            <PixelMark size={12} />
+            Exit-ready with Packout
+          </a>
+        </div>
       </footer>
     </div>
   );

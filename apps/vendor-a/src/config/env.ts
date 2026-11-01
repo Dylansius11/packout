@@ -24,6 +24,8 @@ if (!parsed.success) {
 
 export const network: NetworkName = parsed.data.network;
 export const vendorApiUrl = parsed.data.vendorApiUrl.replace(/\/$/, '');
+/** Where "Exit-ready with Packout" points: the Packout landing page. */
+export const packoutSiteUrl = import.meta.env.VITE_PACKOUT_SITE_URL || 'http://localhost:5175';
 
 const chains = {
   localhost: defineChain({
