@@ -11,10 +11,11 @@ export const STATUS_LABEL: Record<IssueStatus, string> = {
   done: 'Done',
 };
 
+/** Rank by brightness: work that is finished or moving comes forward, open work waits in ash. */
 const statusTone: Record<IssueStatus, string> = {
-  open: 'border-input text-foreground',
-  in_progress: 'border-warning-line bg-warning-soft text-warning',
-  done: 'border-success-line bg-success-soft text-success',
+  open: 'text-ash',
+  in_progress: 'text-ivory',
+  done: 'text-ivory',
 };
 
 /** The restored journal. Every issue and comment carries the position Portaldot gave it. */
@@ -26,56 +27,59 @@ export function IssueList({
   renderActions?: (view: IssueView) => ReactNode;
 }) {
   if (views.length === 0) {
-    return (
-      <p className="rounded-md border border-dashed border-border px-4 py-6 text-sm text-muted-foreground">
-        This workspace has no issues yet.
-      </p>
-    );
+    return <p className="prose-ash">This workspace has no issues yet.</p>;
   }
   return (
-    <ul className="space-y-4">
+    <ul className="space-y-14">
       {views.map((view) => (
         <li key={view.issue.id}>
           <article
             aria-labelledby={`issue-${view.issue.id}`}
-            className="space-y-3 rounded-md border border-border bg-surface p-4"
+            className="space-y-5 border-t border-dust pt-6"
           >
-            <header className="space-y-1">
-              <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-1">
-                <h3 id={`issue-${view.issue.id}`} className="text-base font-semibold break-words">
+            <header className="space-y-2">
+              <div className="flex flex-wrap items-start justify-between gap-x-6 gap-y-2">
+                <h3
+                  id={`issue-${view.issue.id}`}
+                  className="display min-w-0 text-[clamp(1.25rem,2.2vw,1.75rem)] text-ivory"
+                >
                   {view.issue.title}
                 </h3>
                 <span
                   className={cn(
-                    'shrink-0 rounded-sm border px-2 py-0.5 text-xs font-medium',
+                    'baseline shrink-0 pt-[0.35em] text-[12px]',
                     statusTone[view.issue.status],
                   )}
                 >
                   {STATUS_LABEL[view.issue.status]}
                 </span>
               </div>
-              <p className="text-xs text-muted-foreground">
+              <p className="text-[14px] text-smoke">
                 {view.issue.createdBy.name} · {formatTime(view.issue.createdAt)}
               </p>
             </header>
             {view.issue.description ? (
-              <p className="whitespace-pre-wrap break-words text-sm">{view.issue.description}</p>
+              <p className="max-w-[62ch] whitespace-pre-wrap break-words text-[17px] leading-relaxed text-ash">
+                {view.issue.description}
+              </p>
             ) : null}
-            <div className="flex flex-wrap gap-x-4 gap-y-1">
+            <div className="flex flex-wrap gap-x-6 gap-y-2">
               <AnchorBadge stored={view.created} />
               {view.statusOp ? (
-                <span className="inline-flex gap-1.5 text-xs text-muted-foreground">
+                <span className="baseline depth-2 text-[11px]">
                   Status changed · <AnchorBadge stored={view.statusOp} />
                 </span>
               ) : null}
             </div>
             {view.comments.length > 0 ? (
-              <ul className="divide-y divide-border border-t border-border">
+              <ul className="space-y-5 pt-2">
                 {view.comments.map(({ comment, stored }) => (
-                  <li key={comment.opId} className="space-y-1 py-2.5 text-sm">
-                    <p className="whitespace-pre-wrap break-words">{comment.text}</p>
-                    <p className="flex flex-wrap gap-x-3 text-xs text-muted-foreground">
-                      <span>
+                  <li key={comment.opId} className="space-y-1.5">
+                    <p className="max-w-[62ch] whitespace-pre-wrap break-words text-[16px] leading-relaxed text-ivory">
+                      {comment.text}
+                    </p>
+                    <p className="flex flex-wrap items-baseline gap-x-5 gap-y-1">
+                      <span className="text-[14px] text-smoke">
                         {comment.author.name} · {formatTime(comment.ts)}
                       </span>
                       <AnchorBadge stored={stored} />

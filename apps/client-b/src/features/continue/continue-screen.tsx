@@ -3,7 +3,9 @@ import { type FormEvent, useId, useRef, useState } from 'react';
 import { useAccount } from 'wagmi';
 import { connectedWriter } from '@/chain/wallet';
 import { ChainFacts } from '@/components/chain-facts';
+import { FieldError } from '@/components/field-error';
 import { Notice } from '@/components/notice';
+import { PageHead } from '@/components/page-head';
 import { TxStatus } from '@/components/tx-status';
 import { Button } from '@/components/ui/button';
 import { Input, Label, Select, Textarea } from '@/components/ui/input';
@@ -51,12 +53,8 @@ function NewIssueForm({ write, disabled }: { write: WriteFn; disabled: boolean }
   }
 
   return (
-    <form
-      onSubmit={submit}
-      aria-labelledby="new-issue-heading"
-      className="space-y-3 rounded-md border border-border bg-surface p-4"
-    >
-      <h2 id="new-issue-heading" className="text-base font-semibold">
+    <form onSubmit={submit} aria-labelledby="new-issue-heading" className="max-w-[36rem] space-y-8">
+      <h2 id="new-issue-heading" className="display text-[clamp(1.5rem,2.6vw,2.25rem)] text-ivory">
         New issue
       </h2>
       <div>
@@ -115,16 +113,17 @@ function IssueActions({
   const issueId = view.issue.id;
 
   return (
-    <div className="grid gap-4 border-t border-border pt-3 md:grid-cols-2">
-      <div className="space-y-2">
+    <div className="grid gap-x-10 gap-y-8 pt-2 md:grid-cols-2">
+      <div>
         <Label htmlFor={statusId}>Status</Label>
-        <div className="flex gap-2">
+        <div className="flex items-end gap-3">
           <Select
             id={statusId}
             ref={statusRef}
             value={status}
             onChange={(event) => setStatus(event.target.value as IssueStatus)}
             disabled={disabled}
+            className="min-w-0 flex-1"
           >
             {(Object.keys(STATUS_LABEL) as IssueStatus[]).map((value) => (
               <option key={value} value={value}>
@@ -144,7 +143,6 @@ function IssueActions({
         </div>
       </div>
       <form
-        className="space-y-2"
         onSubmit={async (event) => {
           event.preventDefault();
           const text = comment.trim();
@@ -154,7 +152,7 @@ function IssueActions({
         }}
       >
         <Label htmlFor={commentId}>Comment</Label>
-        <div className="flex gap-2">
+        <div className="flex items-end gap-3">
           <Input
             id={commentId}
             ref={commentRef}
@@ -162,6 +160,7 @@ function IssueActions({
             maxLength={5000}
             onChange={(event) => setComment(event.target.value)}
             disabled={disabled}
+            className="min-w-0 flex-1"
           />
           <Button type="submit" variant="outline" disabled={disabled || comment.trim() === ''}>
             Anchor comment
@@ -224,19 +223,38 @@ export function ContinueScreen(props: {
   };
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Keep writing</h1>
-        <p className="mt-1 max-w-prose text-sm text-muted-foreground">
+    <div className="space-y-14">
+      <PageHead title="Keep writing">
+        <p>
           Each change is encrypted on this device, then appended on Portaldot by your owner wallet
           as the next operation of this workspace. Nothing goes to any vendor.
         </p>
-      </div>
+      </PageHead>
 
       <ChainFacts onChain={props.onChain} registry={workspace.registry} />
 
-      <section aria-labelledby="writer-heading" className="space-y-3">
-        <h2 id="writer-heading" className="text-base font-semibold">
+      <section aria-labelledby="where-heading" className="space-y-4">
+        <h2 id="where-heading" className="baseline depth-0 text-[14px]">
+          Where your writes live
+        </h2>
+        <dl className="grid sm:grid-cols-[8.5rem_1fr] sm:gap-x-6">
+          <dt className="baseline depth-2 pt-3 text-[11px] sm:py-1.5">This device</dt>
+          <dd className="pt-1 text-[16px] text-ash sm:py-1">
+            Your workspace key and your copy of the history.
+          </dd>
+          <dt className="baseline depth-2 pt-3 text-[11px] sm:py-1.5">Portaldot</dt>
+          <dd className="pt-1 text-[16px] text-ash sm:py-1">
+            One fingerprint of each encrypted operation, in order, in a block you can open.
+          </dd>
+          <dt className="baseline depth-2 pt-3 text-[11px] sm:py-1.5">The vendor</dt>
+          <dd className="pt-1 text-[16px] text-ash sm:py-1">
+            Nothing. This app has no connection to it.
+          </dd>
+        </dl>
+      </section>
+
+      <section aria-labelledby="writer-heading" className="space-y-6">
+        <h2 id="writer-heading" className="baseline depth-0 text-[14px]">
           Writing as
         </h2>
         <div className="max-w-sm">
@@ -249,11 +267,7 @@ export function ContinueScreen(props: {
             aria-describedby={nameError ? `${nameId}-error` : undefined}
             aria-invalid={nameError ? true : undefined}
           />
-          {nameError ? (
-            <p id={`${nameId}-error`} role="alert" className="mt-1.5 text-sm text-danger">
-              {nameError}
-            </p>
-          ) : null}
+          {nameError ? <FieldError id={`${nameId}-error`}>{nameError}</FieldError> : null}
         </div>
         <WalletPanel />
         {!action.open ? (
@@ -281,8 +295,8 @@ export function ContinueScreen(props: {
 
       <NewIssueForm write={write} disabled={disabled} />
 
-      <section aria-labelledby="issues-heading" className="space-y-3">
-        <h2 id="issues-heading" className="text-lg font-semibold">
+      <section aria-labelledby="issues-heading" className="space-y-8">
+        <h2 id="issues-heading" className="display text-[clamp(1.5rem,2.6vw,2.25rem)] text-ivory">
           Workspace
         </h2>
         <IssueList

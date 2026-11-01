@@ -1,5 +1,6 @@
+import { DustField, Wordmark } from '@packout/brand';
 import type { AppendedEvent } from '@packout/sdk';
-import { ArrowLeft, Check, CircleNotch, Copy } from '@phosphor-icons/react';
+import { ArrowLeft } from '@phosphor-icons/react';
 import { type ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import type { Address, Hex } from 'viem';
 import { Notice } from '@/components/notice';
@@ -30,12 +31,10 @@ const source: ProofSource | null =
 
 function Who({ address, owner }: { address: Address; owner: Address }) {
   return (
-    <span className="tabular break-all font-mono text-xs">
+    <span className="hash tabular break-all text-[13px] text-ivory">
       {address}
       {address.toLowerCase() === owner.toLowerCase() ? (
-        <span className="ml-2 rounded-sm border border-input px-1.5 py-0.5 font-sans text-[11px] text-muted-foreground">
-          owner
-        </span>
+        <span className="baseline depth-2 ml-3 text-[11px]">owner</span>
       ) : null}
     </span>
   );
@@ -53,18 +52,11 @@ function CopyButton({ value, label }: { value: string; label: string }) {
     }
   }
   return (
-    <span className="inline-flex items-center gap-2">
-      <Button
-        size="sm"
-        variant="outline"
-        onClick={() => void copy()}
-        aria-label={`Copy ${label}`}
-        className="h-7 px-2 text-xs"
-      >
-        {outcome === 'copied' ? <Check size={14} aria-hidden /> : <Copy size={14} aria-hidden />}
+    <span className="inline-flex items-center gap-3">
+      <Button size="sm" variant="outline" onClick={() => void copy()} aria-label={`Copy ${label}`}>
         Copy
       </Button>
-      <span role="status" className="text-xs text-muted-foreground">
+      <span role="status" className="text-[14px] text-ash">
         {outcome === 'copied'
           ? 'Copied'
           : outcome === 'failed'
@@ -82,19 +74,19 @@ function Facts({ data, registry }: { data: ProofData; registry: Address }) {
     [data.access, workspace.epoch],
   );
   return (
-    <section aria-label="Workspace facts" className="rounded-md border border-border bg-surface">
-      <dl className="grid sm:grid-cols-[auto_1fr] sm:gap-x-6">
+    <section aria-label="Workspace facts">
+      <dl className="grid sm:grid-cols-[11rem_1fr] sm:gap-x-8">
         <Row label="Owner">
-          <span className="tabular break-all font-mono text-sm">{workspace.owner}</span>
+          <span className="hash tabular break-all text-[14px] text-ivory">{workspace.owner}</span>
         </Row>
         <Row label="Epoch">
-          <span className="tabular font-mono text-sm">{workspace.epoch}</span>
+          <span className="hash tabular text-[14px] text-ivory">{workspace.epoch}</span>
         </Row>
         <Row label={`Writers in epoch ${workspace.epoch}`}>
           {writers.length === 0 ? (
-            <span className="text-sm">None. Only the owner can write.</span>
+            <span className="text-[16px] text-ash">None. Only the owner can write.</span>
           ) : (
-            <ul className="space-y-1">
+            <ul className="space-y-1.5">
               {writers.map((writer) => (
                 <li key={writer}>
                   <Who address={writer} owner={workspace.owner} />
@@ -104,18 +96,18 @@ function Facts({ data, registry }: { data: ProofData; registry: Address }) {
           )}
         </Row>
         <Row label="Operations">
-          <span className="tabular font-mono text-sm">{String(workspace.count)}</span>
+          <span className="hash tabular text-[14px] text-ivory">{String(workspace.count)}</span>
         </Row>
         <Row label="Head">
-          <span className="flex flex-wrap items-center gap-x-3 gap-y-1">
-            <span className="tabular font-mono text-sm" title={workspace.head}>
+          <span className="flex flex-wrap items-center gap-x-5 gap-y-1">
+            <span className="hash tabular text-[14px] text-ivory" title={workspace.head}>
               {shortHex(workspace.head)}
             </span>
             <CopyButton value={workspace.head} label="full head" />
           </span>
         </Row>
         <Row label="Registry">
-          <span className="tabular break-all font-mono text-sm">{registry}</span>
+          <span className="hash tabular break-all text-[14px] text-ivory">{registry}</span>
         </Row>
       </dl>
     </section>
@@ -125,11 +117,17 @@ function Facts({ data, registry }: { data: ProofData; registry: Address }) {
 function Row({ label, children }: { label: string; children: ReactNode }) {
   return (
     <div className="contents">
-      <dt className="px-4 pt-3 text-xs uppercase tracking-wide text-muted-foreground sm:py-2.5">
-        {label}
-      </dt>
-      <dd className="px-4 pb-3 sm:py-2">{children}</dd>
+      <dt className="baseline depth-2 pt-5 text-[11px] sm:py-3">{label}</dt>
+      <dd className="pt-1.5 sm:py-2">{children}</dd>
     </div>
+  );
+}
+
+function SectionTitle({ id, children }: { id: string; children: ReactNode }) {
+  return (
+    <h2 id={id} className="display text-[clamp(1.5rem,2.6vw,2.25rem)] text-ivory">
+      {children}
+    </h2>
   );
 }
 
@@ -139,10 +137,8 @@ function AppendList({ data }: { data: ProofData }) {
   const owner = data.workspace.owner;
   const missing = data.workspace.count - BigInt(data.appended.length);
   return (
-    <section aria-labelledby="appends-heading" className="space-y-3">
-      <h2 id="appends-heading" className="text-lg font-semibold">
-        Recent appends
-      </h2>
+    <section aria-labelledby="appends-heading" className="space-y-8">
+      <SectionTitle id="appends-heading">Recent appends</SectionTitle>
       {missing !== 0n ? (
         <Notice tone="warning" title="The event history is incomplete">
           The registry counts {String(data.workspace.count)} operations, but {rpcHost} returned{' '}
@@ -150,12 +146,10 @@ function AppendList({ data }: { data: ProofData }) {
         </Notice>
       ) : null}
       {newestFirst.length === 0 ? (
-        <p className="rounded-md border border-dashed border-border px-4 py-6 text-sm text-muted-foreground">
-          Nothing has been appended to this workspace yet.
-        </p>
+        <p className="prose-ash">Nothing has been appended to this workspace yet.</p>
       ) : (
         <>
-          <ol className="divide-y divide-border rounded-md border border-border bg-surface">
+          <ol className="space-y-7">
             {newestFirst.slice(0, shown).map((event) => (
               <AppendRow key={event.index.toString()} event={event} owner={owner} />
             ))}
@@ -173,25 +167,30 @@ function AppendList({ data }: { data: ProofData }) {
 
 function AppendRow({ event, owner }: { event: AppendedEvent; owner: Address }) {
   return (
-    <li className="space-y-1.5 px-4 py-3">
-      <p className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
-        <span className="tabular font-mono text-sm font-medium">#{String(event.index)}</span>
-        <span className="text-xs text-muted-foreground">epoch {event.epoch}</span>
-        <span className="text-xs text-muted-foreground">
-          digest <code title={event.digest}>{shortHex(event.digest)}</code>
-        </span>
-      </p>
-      <p className="text-xs text-muted-foreground">
-        Written by <Who address={event.author} owner={owner} />
-      </p>
-      <TxRef txHash={event.txHash} blockNumber={Number(event.blockNumber)} />
+    <li className="grid gap-x-8 gap-y-1.5 sm:grid-cols-[6rem_1fr]">
+      <p className="baseline depth-0 tabular text-[16px]">#{String(event.index)}</p>
+      <div className="min-w-0 space-y-1.5">
+        <p className="baseline depth-2 flex flex-wrap items-baseline gap-x-5 gap-y-1 text-[11px]">
+          <span>epoch {event.epoch}</span>
+          <span>
+            digest{' '}
+            <code title={event.digest} className="hash text-[12px] normal-case text-ash">
+              {shortHex(event.digest)}
+            </code>
+          </span>
+        </p>
+        <p className="text-[15px] text-ash">
+          Written by <Who address={event.author} owner={owner} />
+        </p>
+        <TxRef txHash={event.txHash} blockNumber={Number(event.blockNumber)} />
+      </div>
     </li>
   );
 }
 
 function AddressList({ addresses, owner }: { addresses: readonly Address[]; owner: Address }) {
   return (
-    <ul className="mt-1 space-y-1">
+    <ul className="mt-1.5 space-y-1.5">
       {addresses.map((address) => (
         <li key={address}>
           <Who address={address} owner={owner} />
@@ -206,11 +205,11 @@ function TimelineItem({ entry, owner }: { entry: TimelineEntry; owner: Address }
   return (
     <li
       className={cn(
-        'space-y-1.5 border-l-2 py-3 pl-4 pr-4',
-        rotated && entry.dropped.length > 0 ? 'border-warning-line' : 'border-border',
+        'space-y-2 border-l pl-6',
+        rotated && entry.dropped.length > 0 ? 'border-ivory' : 'border-smoke',
       )}
     >
-      <p className="text-sm font-medium">
+      <p className="baseline depth-0 text-[13px] md:text-[14px]">
         {entry.kind === 'created' && 'Workspace created'}
         {entry.kind === 'granted' && `Writer authorized in epoch ${entry.epoch}`}
         {entry.kind === 'revoked' && `Writer revoked in epoch ${entry.epoch}`}
@@ -227,9 +226,9 @@ function TimelineItem({ entry, owner }: { entry: TimelineEntry; owner: Address }
         </div>
       ) : null}
       {entry.kind === 'rotated' ? (
-        <div className="space-y-2 text-xs">
+        <div className="space-y-4 text-[15px]">
           <div>
-            <p className="text-muted-foreground">
+            <p className="text-ash">
               {entry.writers.length === 0
                 ? 'Authorized writers: none, only the owner can write.'
                 : 'Authorized writers:'}
@@ -239,8 +238,8 @@ function TimelineItem({ entry, owner }: { entry: TimelineEntry; owner: Address }
             ) : null}
           </div>
           {entry.dropped.length > 0 ? (
-            <div className="text-warning">
-              <p>Lost write access at this block:</p>
+            <div>
+              <p className="text-ivory">Lost write access at this block:</p>
               <AddressList addresses={entry.dropped} owner={owner} />
             </div>
           ) : null}
@@ -254,16 +253,12 @@ function TimelineItem({ entry, owner }: { entry: TimelineEntry; owner: Address }
 function AccessTimeline({ data }: { data: ProofData }) {
   const timeline = useMemo(() => buildTimeline(data.access), [data.access]);
   return (
-    <section aria-labelledby="access-heading" className="space-y-3">
-      <h2 id="access-heading" className="text-lg font-semibold">
-        Who could write, and when that changed
-      </h2>
+    <section aria-labelledby="access-heading" className="space-y-8">
+      <SectionTitle id="access-heading">Who could write, and when that changed</SectionTitle>
       {timeline.length === 0 ? (
-        <p className="rounded-md border border-dashed border-border px-4 py-6 text-sm text-muted-foreground">
-          No access events were returned for this workspace.
-        </p>
+        <p className="prose-ash">No access events were returned for this workspace.</p>
       ) : (
-        <ol className="rounded-md border border-border bg-surface px-1">
+        <ol className="space-y-9">
           {timeline.map((entry) => (
             <TimelineItem
               key={`${entry.blockNumber}-${entry.logIndex}`}
@@ -296,10 +291,10 @@ function Loaded({ wsId, source: s }: { wsId: Hex; source: ProofSource }) {
 
   if (state.phase === 'loading') {
     return (
-      <div className="space-y-3">
-        <p role="status" className="flex items-center gap-2 text-sm">
-          <CircleNotch size={18} weight="bold" className="spin text-primary" aria-hidden />
+      <div className="space-y-6">
+        <p role="status" className="baseline depth-0 max-w-[52ch] text-[13px] leading-relaxed">
           Reading the workspace from Portaldot via {rpcHost}…
+          <span aria-hidden className="caret" />
         </p>
         {now - state.startedAt > SLOW_MS ? (
           <Notice tone="warning" title="Still waiting after 10 s">
@@ -336,18 +331,13 @@ function Loaded({ wsId, source: s }: { wsId: Hex; source: ProofSource }) {
     );
   }
   return (
-    <div className="space-y-8">
+    <div className="space-y-20">
       <Facts data={state.data} registry={s.address} />
       <AppendList data={state.data} />
       <AccessTimeline data={state.data} />
-      <p className="text-xs text-muted-foreground">
+      <p className="text-[14px] text-smoke">
         Read up to block {String(state.data.latestBlock)}.{' '}
-        <button
-          ref={retryButton}
-          type="button"
-          onClick={retry}
-          className="underline underline-offset-2 hover:text-foreground"
-        >
+        <button ref={retryButton} type="button" onClick={retry} className="ghost-link text-[12px]">
           Read again
         </button>
       </p>
@@ -360,28 +350,37 @@ export function ProofPage({ wsIdText }: { wsIdText: string }) {
   const wsId = parseWorkspaceId(wsIdText);
   const main = useRef<HTMLElement>(null);
   return (
-    <div className="min-h-dvh">
+    <div className="relative isolate min-h-dvh">
+      {/* The dust lives behind the header only and is gone before the first row of the ledger. */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 -z-10 h-80 [mask-image:linear-gradient(to_bottom,#000_55%,transparent)]"
+      >
+        <DustField
+          className="block h-full w-full"
+          anchor="end"
+          mirror
+          intensity={0.16}
+          interactive
+        />
+        <div className="absolute inset-0 bg-black/70 lg:bg-[linear-gradient(90deg,#000_0%,rgb(0_0_0/0.7)_28%,transparent_60%)]" />
+      </div>
       <button
         type="button"
         onClick={() => main.current?.focus()}
-        className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-10 focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-foreground"
+        className="baseline sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-10 focus:bg-signal focus:px-3 focus:py-2 focus:text-[12px] focus:text-signal-ink"
       >
         Skip to content
       </button>
-      <header className="border-b border-border bg-rail px-4 py-4 lg:px-12">
-        <div className="mx-auto flex max-w-3xl flex-wrap items-center justify-between gap-x-6 gap-y-2">
-          <div>
-            <p className="text-xl font-semibold tracking-tight">Client B</p>
-            <p className="font-mono text-xs uppercase tracking-[0.14em] text-muted-foreground">
-              Workspace proof
-            </p>
+      <header className="px-5 pt-6 lg:px-16 lg:pt-10">
+        <div className="mx-auto flex max-w-[60rem] flex-wrap items-baseline justify-between gap-x-8 gap-y-3">
+          <div className="flex items-baseline gap-x-5 text-ivory">
+            <Wordmark size={17} />
+            <p className="baseline depth-2 text-[12px]">Workspace proof</p>
           </div>
-          <a
-            href="#/"
-            className="inline-flex min-h-8 items-center gap-1.5 text-sm text-muted-foreground underline-offset-2 hover:text-foreground hover:underline"
-          >
+          <a href="#/" className="ghost-link inline-flex min-h-8 items-center gap-2 text-[12px]">
             <ArrowLeft size={14} aria-hidden />
-            Back to Client B
+            Back to Packout Restore
           </a>
         </div>
       </header>
@@ -389,17 +388,17 @@ export function ProofPage({ wsIdText }: { wsIdText: string }) {
         id="proof-main"
         ref={main}
         tabIndex={-1}
-        className="px-4 py-8 outline-none lg:px-12 lg:py-12"
+        className="px-5 pt-14 pb-24 outline-none lg:px-16 lg:pt-16 lg:pb-32"
       >
-        <div className="mx-auto max-w-3xl space-y-6">
-          <div className="space-y-2">
-            <h1 className="text-2xl font-semibold">Workspace proof</h1>
-            <p className="text-sm text-muted-foreground">
+        <div className="mx-auto max-w-[60rem] space-y-20">
+          <div className="space-y-5">
+            <h1 className="display text-[clamp(2.25rem,5.2vw,4.5rem)] text-ivory">
+              Workspace proof
+            </h1>
+            <p className="prose-ash">
               Read from Portaldot via {rpcHost}. This page trusts that endpoint.
             </p>
-            <p className="tabular break-all font-mono text-xs text-muted-foreground">
-              {wsId ?? wsIdText}
-            </p>
+            <p className="hash tabular break-all text-[13px] text-ash">{wsId ?? wsIdText}</p>
           </div>
           {!registryLookup.ok ? (
             <Notice tone="danger" title="This build cannot check anything">

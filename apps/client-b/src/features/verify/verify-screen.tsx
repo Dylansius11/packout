@@ -1,8 +1,9 @@
 import type { StepResult } from '@packout/sdk';
-import { ArrowRight, CircleNotch } from '@phosphor-icons/react';
+import { ArrowRight } from '@phosphor-icons/react';
 import type { Address } from 'viem';
 import { ChainFacts } from '@/components/chain-facts';
 import { Notice } from '@/components/notice';
+import { PageHead } from '@/components/page-head';
 import { StepRow } from '@/components/step-row';
 import { Button } from '@/components/ui/button';
 import { rpcHost } from '../../config/env';
@@ -15,7 +16,7 @@ const STALL_MS = 30_000;
 
 function failureHelp(step: StepResult): string | null {
   if (step.id === 'complete') {
-    return 'Portaldot has operations this file does not contain. Export a newer bundle from the app that holds the latest history (or from Client B if it wrote last) and import that one.';
+    return 'Portaldot has operations this file does not contain. Export a newer bundle from the app that holds the latest history (or from Packout Restore if it wrote last) and import that one.';
   }
   if (step.id === 'anchored') {
     return 'Nothing was changed on Portaldot. Check that this app is pointed at the same network the bundle was exported from.';
@@ -41,11 +42,7 @@ export function VerifyScreen(props: {
   const now = useNow(running);
 
   if (state.phase === 'idle') {
-    return (
-      <p className="text-sm text-muted-foreground">
-        Import a bundle first: nothing has been checked yet.
-      </p>
-    );
+    return <p className="prose-ash">Import a bundle first: nothing has been checked yet.</p>;
   }
 
   const label =
@@ -53,11 +50,11 @@ export function VerifyScreen(props: {
 
   if (state.phase === 'running') {
     return (
-      <div className="space-y-4">
-        <h1 className="text-2xl font-semibold">Verifying</h1>
-        <p role="status" className="flex items-center gap-2 text-sm">
-          <CircleNotch size={18} weight="bold" className="spin text-primary" aria-hidden />
+      <div className="space-y-8">
+        <PageHead title="Verifying" />
+        <p role="status" className="baseline depth-0 max-w-[48ch] text-[13px] leading-relaxed">
           Checking {label} against Portaldot via {rpcHost}…
+          <span aria-hidden className="caret" />
         </p>
         {now - state.startedAt > STALL_MS ? (
           <Notice tone="warning" title="Still waiting after 30 s">
@@ -71,8 +68,8 @@ export function VerifyScreen(props: {
 
   if (state.phase === 'unreachable') {
     return (
-      <div className="space-y-4">
-        <h1 className="text-2xl font-semibold">Could not reach Portaldot</h1>
+      <div className="space-y-8">
+        <PageHead title="Could not reach Portaldot" />
         <Notice tone="danger" title={`Portaldot via ${rpcHost} did not answer`}>
           {state.message} This is a connection problem, not a verdict on your bundle: nothing was
           marked as failed.
@@ -86,21 +83,17 @@ export function VerifyScreen(props: {
   const failed = report.steps.find((step) => step.status === 'fail');
 
   return (
-    <div className="space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">{report.ok ? 'Verified' : 'Verification failed'}</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
+    <div className="space-y-14">
+      <PageHead title={report.ok ? 'Verified' : 'Verification failed'}>
+        <p>
           Checked {label} against Portaldot via {rpcHost}. This app trusts that endpoint for the
           on-chain steps.
         </p>
-      </div>
+      </PageHead>
 
-      <ol
-        aria-label="Verification steps"
-        className="divide-y divide-border rounded-md border border-border bg-surface px-4"
-      >
-        {report.steps.map((step) => (
-          <StepRow key={step.id} status={step.status} title={step.title}>
+      <ol aria-label="Verification steps" className="space-y-8">
+        {report.steps.map((step, index) => (
+          <StepRow key={step.id} status={step.status} title={step.title} order={index + 2}>
             <p>{step.message}</p>
           </StepRow>
         ))}
@@ -109,15 +102,15 @@ export function VerifyScreen(props: {
       {failed ? (
         <Notice tone="danger" title={`Blocked: “${failed.title}” failed`}>
           <p>{failed.message}</p>
-          {failureHelp(failed) ? <p className="mt-1">{failureHelp(failed)}</p> : null}
-          <p className="mt-1">
+          {failureHelp(failed) ? <p>{failureHelp(failed)}</p> : null}
+          <p>
             Taking over and writing stay locked until every check passes. Nothing was changed on
             Portaldot.
           </p>
         </Notice>
       ) : null}
 
-      <div className="flex flex-wrap gap-3">
+      <div className="flex flex-wrap items-center gap-x-8 gap-y-3">
         {report.ok ? (
           <Button onClick={props.onNext}>
             {props.takenOver ? 'Continue writing' : 'Continue to take over'}
@@ -140,8 +133,11 @@ export function VerifyScreen(props: {
       {report.ok && report.onChain ? (
         <>
           <ChainFacts onChain={report.onChain} registry={props.registry} />
-          <section aria-labelledby="workspace-heading" className="space-y-3">
-            <h2 id="workspace-heading" className="text-lg font-semibold">
+          <section aria-labelledby="workspace-heading" className="space-y-8">
+            <h2
+              id="workspace-heading"
+              className="display text-[clamp(1.5rem,2.6vw,2.25rem)] text-ivory"
+            >
               Workspace{props.takenOver ? '' : ' (read-only until you take over)'}
             </h2>
             <IssueList views={props.views} />

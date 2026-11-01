@@ -25,7 +25,7 @@ import { useVerification } from './hooks/use-verification';
 import { describeFailure } from './lib/errors';
 import { useFocusOnChange } from './lib/focus';
 
-/** Client B: restore a workspace from a bundle, take it over, keep writing. No code path to any vendor. */
+/** Packout Restore: restore a workspace from a bundle, take it over, keep writing. No code path to any vendor. */
 export function App() {
   const proofRoute = useProofRoute();
   const onProof = proofRoute !== null;
@@ -165,7 +165,7 @@ function RestoreApp() {
         </Notice>
       );
     }
-    if (view === null) return <p className="text-sm text-muted-foreground">Reading this device…</p>;
+    if (view === null) return <p className="text-[16px] text-ash">Reading this device…</p>;
     if (active === 'import') {
       return (
         <ImportScreen
@@ -220,10 +220,10 @@ function RestoreApp() {
   }
 
   return (
-    <div className="min-h-dvh lg:grid lg:grid-cols-[288px_1fr]">
+    <div className="relative isolate min-h-dvh lg:grid lg:grid-cols-[320px_1fr]">
       <a
         href="#main"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-10 focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-primary-foreground"
+        className="baseline sr-only focus:not-sr-only focus:absolute focus:left-2 focus:top-2 focus:z-10 focus:bg-signal focus:px-3 focus:py-2 focus:text-[12px] focus:text-signal-ink"
       >
         Skip to content
       </a>
@@ -235,8 +235,13 @@ function RestoreApp() {
         onForget={() => void forget()}
         proofHref={workspace ? proofHref(workspace.wsId) : undefined}
       />
-      <main id="main" ref={main} tabIndex={-1} className="px-4 py-8 outline-none lg:px-12 lg:py-12">
-        <div className="mx-auto max-w-3xl space-y-6">
+      <main
+        id="main"
+        ref={main}
+        tabIndex={-1}
+        className="px-5 pt-8 pb-20 outline-none lg:px-16 lg:pt-16 lg:pb-28"
+      >
+        <div className="max-w-[46rem] space-y-10">
           {storedError ? (
             <Notice tone="danger" title="The workspace on this device cannot be read">
               {storedError}

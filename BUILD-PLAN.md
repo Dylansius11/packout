@@ -88,7 +88,8 @@ Goal: one real core flow on Portaldot testnet, honestly documented. Breadth come
 
 - [x] **8.1 DESIGN.md** once the founder picks references (OPEN-DECISIONS D8). Do not start before.
   - 2026-11-01: written from the founder's logo files. Tokens, pixel mark, wordmark and dither field live in `packages/brand`; the landing page (`apps/site`, `pnpm site`) is the reference build.
-- [ ] **8.2 Apply design** to Vendor A and Client B using `impeccable`, `emil-design-eng`, `design-taste-frontend`, `motion`. Client B must look like a different product.
+- [x] **8.2 Apply design** to Vendor A and Client B using `impeccable`, `emil-design-eng`, `design-taste-frontend`, `motion`. Client B must look like a different product.
+  - 2026-11-01: Client B ships as **Packout Restore** in the cracktro-void world (DESIGN.md); Vendor A keeps a plain light SaaS look with its own mark and an "Exit-ready with Packout" footer link. Both Playwright specs pass unchanged against the redesign, and the screens were checked at 1280 and 390 px.
 - [x] **8.3 UX audit** against CLAUDE.md section 8 at 1280px and 390px, keyboard-only, reduced motion.
   - 2026-10-27: done on the current functional screens, with no visual design pass (D8 is deferred). The full section 4 flow and the proof view were walked in headless Chromium, including runs with reduced motion and with slow RPC.
   - Fixed: missing `<h1>`s (axe), focus dropped to `<body>` after 25 actions, a refused Client B write whose reason vanished, and colliding rail links at 390px. axe now reports 0 violations, and e2e asserts that focus lands on the verification result.

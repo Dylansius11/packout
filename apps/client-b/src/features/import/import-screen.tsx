@@ -1,7 +1,10 @@
+import { DustField } from '@packout/brand';
 import { parseBundle } from '@packout/sdk';
-import { FileArrowUp } from '@phosphor-icons/react';
+import { ArrowRight } from '@phosphor-icons/react';
 import { type DragEvent, useId, useState } from 'react';
+import { FieldError } from '@/components/field-error';
 import { Notice } from '@/components/notice';
+import { PageHead } from '@/components/page-head';
 import { Button } from '@/components/ui/button';
 import { Label, Textarea } from '@/components/ui/input';
 import { cn } from '@/lib/utils';
@@ -82,97 +85,103 @@ export function ImportScreen({
   }
 
   return (
-    <form onSubmit={submit} className="space-y-6" noValidate>
-      <div>
-        <h1 className="text-2xl font-semibold">Restore a workspace</h1>
-        <p className="mt-1 max-w-prose text-sm text-muted-foreground">
-          Bring the bundle your old app exported and the workspace key. Both stay in this browser.
-          Nothing is sent to the old vendor, and this app has no connection to it.
-        </p>
+    <>
+      {/* The title-screen dust sits right of the form and fades to void before any text. */}
+      <div
+        aria-hidden
+        className="pointer-events-none fixed inset-y-0 right-0 -z-10 hidden lg:left-80 lg:block"
+      >
+        <DustField className="block h-full w-full" anchor="end" mirror intensity={0.14} />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,#000_0%,#000_42%,transparent_92%)]" />
       </div>
 
-      {hasWorkspace ? (
-        <Notice title="A workspace is already on this device">
-          Importing a bundle that passes every check replaces it here. History already anchored on
-          Portaldot is not affected.
-        </Notice>
-      ) : null}
-
-      <div>
-        <p className="mb-1.5 text-sm font-medium">1. Bundle file</p>
-        <label
-          htmlFor={fileId}
-          onDragOver={(event) => {
-            event.preventDefault();
-            setDragging(true);
-          }}
-          onDragLeave={() => setDragging(false)}
-          onDrop={onDrop}
-          className={cn(
-            'flex cursor-pointer flex-col items-center gap-2 rounded-md border border-dashed border-input px-4 py-8 text-center transition-colors duration-150 hover:bg-surface has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-2 has-[:focus-visible]:outline-ring',
-            dragging && 'border-primary bg-surface',
-          )}
-        >
-          <FileArrowUp size={28} aria-hidden className="text-primary" />
-          <span className="text-sm">
-            {file ? (
-              <>
-                <strong className="font-medium">{file.name}</strong> is ready. Drop or choose
-                another to replace it.
-              </>
-            ) : (
-              'Drop bundle.json here, or choose it'
-            )}
-          </span>
-          <input
-            id={fileId}
-            type="file"
-            accept=".json,application/json"
-            className="sr-only"
-            aria-describedby={fileError ? `${fileId}-error` : undefined}
-            onChange={(event) => {
-              void pick(event.currentTarget.files?.[0]);
-              event.currentTarget.value = '';
-            }}
-          />
-        </label>
-        {fileError ? (
-          <p id={`${fileId}-error`} role="alert" className="mt-2 text-sm text-danger">
-            {fileError}
+      <form onSubmit={submit} className="max-w-[36rem] space-y-14" noValidate>
+        <PageHead title="Restore a workspace">
+          <p>
+            Bring the bundle your old app exported and the workspace key. Both stay in this browser.
+            Nothing is sent to the old vendor, and this app has no connection to it.
           </p>
+        </PageHead>
+
+        {hasWorkspace ? (
+          <Notice title="A workspace is already on this device">
+            Importing a bundle that passes every check replaces it here. History already anchored on
+            Portaldot is not affected.
+          </Notice>
         ) : null}
-      </div>
 
-      <div>
-        <Label htmlFor={keyId}>2. Workspace key or invite link</Label>
-        <Textarea
-          id={keyId}
-          rows={3}
-          value={keyText}
-          onChange={(event) => {
-            setKeyText(event.target.value);
-            setKeyError(null);
-          }}
-          spellCheck={false}
-          autoComplete="off"
-          autoCapitalize="off"
-          className="break-all font-mono"
-          placeholder="The key, or the whole invite link"
-          aria-invalid={keyError ? true : undefined}
-          aria-describedby={keyError ? `${keyId}-error` : `${keyId}-hint`}
-        />
-        {keyError ? (
-          <p id={`${keyId}-error`} role="alert" className="mt-2 text-sm text-danger">
-            {keyError}
-          </p>
-        ) : (
-          <p id={`${keyId}-hint`} className="mt-2 text-xs text-muted-foreground">
-            The key decrypts the history on this device. It never leaves this browser.
-          </p>
-        )}
-      </div>
+        <div>
+          <p className="baseline depth-1 mb-3 text-[12px]">1. Bundle file</p>
+          <label
+            htmlFor={fileId}
+            onDragOver={(event) => {
+              event.preventDefault();
+              setDragging(true);
+            }}
+            onDragLeave={() => setDragging(false)}
+            onDrop={onDrop}
+            className={cn(
+              'drop-target flex cursor-pointer flex-col gap-2 px-6 py-10 [--drop-ink:var(--color-smoke)] hover:[--drop-ink:var(--color-ash)] has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-offset-3 has-[:focus-visible]:outline-signal',
+              dragging && '[--drop-ink:var(--color-ivory)] bg-white/[0.04]',
+            )}
+          >
+            <span className="text-[18px] leading-snug text-ivory">
+              {file ? (
+                <>
+                  <strong className="hash break-all font-normal text-[16px]">{file.name}</strong> is
+                  ready. Drop or choose another to replace it.
+                </>
+              ) : (
+                'Drop bundle.json here, or choose it'
+              )}
+            </span>
+            <input
+              id={fileId}
+              type="file"
+              accept=".json,application/json"
+              className="sr-only"
+              aria-describedby={fileError ? `${fileId}-error` : undefined}
+              onChange={(event) => {
+                void pick(event.currentTarget.files?.[0]);
+                event.currentTarget.value = '';
+              }}
+            />
+          </label>
+          {fileError ? <FieldError id={`${fileId}-error`}>{fileError}</FieldError> : null}
+        </div>
 
-      <Button type="submit">Check this bundle against Portaldot</Button>
-    </form>
+        <div>
+          <Label htmlFor={keyId}>2. Workspace key or invite link</Label>
+          <Textarea
+            id={keyId}
+            rows={3}
+            value={keyText}
+            onChange={(event) => {
+              setKeyText(event.target.value);
+              setKeyError(null);
+            }}
+            spellCheck={false}
+            autoComplete="off"
+            autoCapitalize="off"
+            className="break-all"
+            placeholder="The key, or the whole invite link"
+            aria-invalid={keyError ? true : undefined}
+            aria-describedby={keyError ? `${keyId}-error` : `${keyId}-hint`}
+          />
+          {keyError ? (
+            <FieldError id={`${keyId}-error`}>{keyError}</FieldError>
+          ) : (
+            <p id={`${keyId}-hint`} className="mt-3 max-w-[62ch] text-[14px] text-smoke">
+              The key decrypts the history on this device. It never leaves this browser.
+            </p>
+          )}
+        </div>
+
+        <Button type="submit">
+          Check this bundle against Portaldot
+          <ArrowRight size={16} aria-hidden />
+        </Button>
+      </form>
+    </>
   );
 }

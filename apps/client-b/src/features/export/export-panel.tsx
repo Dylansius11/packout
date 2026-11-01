@@ -1,5 +1,4 @@
 import { serializeBundle, type VerificationReport, verifyBundle } from '@packout/sdk';
-import { DownloadSimple } from '@phosphor-icons/react';
 import { useRef, useState } from 'react';
 import { Notice } from '@/components/notice';
 import { Button } from '@/components/ui/button';
@@ -49,14 +48,11 @@ export function ExportPanel({ workspace, ops }: { workspace: WorkspaceRecord; op
     state.phase === 'blocked' ? state.report.steps.find((s) => s.status === 'fail') : null;
 
   return (
-    <section
-      aria-labelledby="export-heading"
-      className="space-y-3 rounded-md border border-border bg-surface p-4"
-    >
-      <h2 id="export-heading" className="text-base font-semibold">
+    <section aria-labelledby="export-heading" className="space-y-5 border-t border-dust pt-8">
+      <h2 id="export-heading" className="baseline depth-0 text-[14px]">
         Export a bundle
       </h2>
-      <p className="text-sm text-muted-foreground">
+      <p className="prose-ash text-[16px]">
         Saves every operation this device holds as a new bundle, so the workspace can move again. It
         is checked against Portaldot first; nothing unverified is offered.
       </p>
@@ -66,7 +62,6 @@ export function ExportPanel({ workspace, ops }: { workspace: WorkspaceRecord; op
         onClick={run}
         disabled={state.phase === 'checking'}
       >
-        <DownloadSimple size={16} aria-hidden />
         {state.phase === 'checking' ? 'Checking…' : 'Verify and export'}
       </Button>
       {state.phase === 'saved' ? (
