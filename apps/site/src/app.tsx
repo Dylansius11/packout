@@ -1,6 +1,8 @@
+import { Checks } from './sections/checks';
 import { ExitMoves } from './sections/exit-moves';
 import { Hero } from './sections/hero';
 import { LeftBehind } from './sections/left-behind';
+import { Record } from './sections/record';
 
 export function App() {
   return (
@@ -15,6 +17,8 @@ export function App() {
       <main id="main">
         <LeftBehind />
         <ExitMoves />
+        <Checks />
+        <Record />
       </main>
     </>
   );

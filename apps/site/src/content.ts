@@ -75,3 +75,61 @@ export const moves: Move[] = [
     workspace: 'still yours',
   },
 ];
+
+export type CheckId = 'format' | 'envelopes' | 'head' | 'anchored' | 'complete' | 'decrypt';
+
+export const checks: { id: CheckId; title: string; asks: string; failure: string }[] = [
+  {
+    id: 'format',
+    title: 'Bundle format',
+    asks: 'Is this a Packout bundle, and does its count add up?',
+    failure: 'Not a Packout bundle.',
+  },
+  {
+    id: 'envelopes',
+    title: 'Encrypted operations',
+    asks: 'Is every operation a well-formed sealed envelope?',
+    failure: 'An envelope is damaged.',
+  },
+  {
+    id: 'head',
+    title: 'History integrity',
+    asks: 'Rehash every operation in order. Does the chain still meet the checkpoint?',
+    failure: 'One flipped byte, and the head chain no longer matches.',
+  },
+  {
+    id: 'anchored',
+    title: 'Anchored on Portaldot',
+    asks: 'Did the registry admit this exact last operation?',
+    failure: 'Portaldot has no matching admission. This is not the history that was anchored.',
+  },
+  {
+    id: 'complete',
+    title: 'Complete history',
+    asks: 'Is anything newer on-chain that this file is missing?',
+    failure: 'This bundle is stale: 1 operation is missing from this file.',
+  },
+  {
+    id: 'decrypt',
+    title: 'Decrypt and read',
+    asks: 'Does your key open every operation, here on this device?',
+    failure: 'Operation 1 cannot be decrypted with this key.',
+  },
+];
+
+export const tampers: { label: string; breaks: CheckId | null }[] = [
+  { label: 'Untouched file', breaks: null },
+  { label: 'Flip one byte', breaks: 'head' },
+  { label: 'Drop an operation', breaks: 'anchored' },
+  { label: 'Use an older export', breaks: 'complete' },
+  { label: 'Wrong key', breaks: 'decrypt' },
+];
+
+export const record: { what: string; value: string; height?: number }[] = [
+  { what: 'Registry contract', value: short(REGISTRY), height: 238168 },
+  { what: 'Takeover, rotateEpoch', value: '0.021 tPOT', height: demoRun.takeover },
+  { what: 'Each append after the first', value: '0.031 tPOT', height: demoRun.ownerAppend },
+  { what: 'Vendor comeback', value: 'reverted, NotWriter', height: demoRun.refusal },
+  { what: 'Inherited takeover, same owner', value: 'outer and inner Ok', height: 248474 },
+  { what: 'Vendor refused after recovery', value: 'NotWriter, epoch 2', height: 248482 },
+];
