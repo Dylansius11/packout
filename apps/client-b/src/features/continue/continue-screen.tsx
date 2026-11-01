@@ -10,7 +10,7 @@ import { TxStatus } from '@/components/tx-status';
 import { Button } from '@/components/ui/button';
 import { Input, Label, Select, Textarea } from '@/components/ui/input';
 import { WalletPanel } from '@/components/wallet-panel';
-import { registryReader } from '../../chain/clients';
+import { publicClient, registryReader } from '../../chain/clients';
 import type { StoredOp, WorkspaceRecord } from '../../db/types';
 import type { Access } from '../../domain/gating';
 import type { IssueView } from '../../domain/journal-view';
@@ -183,7 +183,7 @@ export function ContinueScreen(props: {
 }) {
   const { workspace, action } = props;
   const account = useAccount();
-  const tx = useTx();
+  const tx = useTx(publicClient);
   const [displayName, setDisplayName] = useState(workspace.displayName ?? '');
   const [nameError, setNameError] = useState<string | null>(null);
   const [lastWrite, setLastWrite] = useState<StoredOp | null>(null);

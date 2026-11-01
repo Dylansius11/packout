@@ -1,5 +1,4 @@
 import { createHash } from 'node:crypto';
-import { setTimeout as delay } from 'node:timers/promises';
 import type { Address, Hex } from 'viem';
 import { z } from 'zod';
 
@@ -98,23 +97,4 @@ export function fundingMessage(role: string, address: Address, network: DemoNetw
       ? ` Fund mapped native address ${mappedNativeAddress(address)} (INTEGRATIONS.md section 2).`
       : '';
   return `The ${role} account ${address} has zero balance. Fund it before continuing.${mapped}`;
-}
-
-export async function waitForFinalized(
-  client: { getBlock(input: { blockTag: 'finalized' }): Promise<{ number: bigint | null }> },
-  blockNumber: bigint,
-  options: { timeoutMs?: number; pollMs?: number } = {},
-): Promise<bigint> {
-  const timeoutMs = options.timeoutMs ?? 120_000;
-  const deadline = Date.now() + timeoutMs;
-  while (true) {
-    const finalized = await client.getBlock({ blockTag: 'finalized' });
-    if (finalized.number !== null && finalized.number >= blockNumber) return finalized.number;
-    if (Date.now() >= deadline) {
-      throw new Error(
-        `Transaction in block ${blockNumber} is not finalized: timeout after ${timeoutMs / 1000} seconds. It may finalize later; check the printed transaction hash before running again.`,
-      );
-    }
-    await delay(Math.min(options.pollMs ?? 1000, Math.max(0, deadline - Date.now())));
-  }
 }

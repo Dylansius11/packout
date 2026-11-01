@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { waitForFinalized } from '@packout/sdk';
 import { test } from 'vitest';
 import {
   fundingMessage,
@@ -6,7 +7,6 @@ import {
   parseDeployment,
   parseNetwork,
   parseTestnetEnv,
-  waitForFinalized,
 } from '../lib/demo.ts';
 
 const owner = '0xb8c47dfB101938a0F57011aEf6EF5cC2CE97D859';

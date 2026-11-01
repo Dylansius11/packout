@@ -6,9 +6,9 @@ import { TxRef } from './tx-ref';
 
 const STALL_MS = 30_000;
 
-const STAGES = ['Prepare', 'Wallet', 'Submitted', 'Included'] as const;
+const STAGES = ['Prepare', 'Wallet', 'Submitted', 'Included', 'Finalized'] as const;
 
-const stageOf = { preparing: 0, wallet: 1, submitted: 2, confirmed: 3 } as const;
+const stageOf = { preparing: 0, wallet: 1, submitted: 2, included: 3, finalized: 4 } as const;
 
 /**
  * The transaction state machine as one baseline. Stages already passed step back in ash, the stage the
@@ -36,7 +36,7 @@ function Stages({ at, pending }: { at: number; pending: boolean }) {
   );
 }
 
-/** The honest state of one chain action: preparing, waiting for the wallet, submitted, included, or failed. */
+/** Receipt inclusion is intermediate; only the RPC's finalized height establishes finality. */
 export function TxStatus({ state, doneText }: { state: TxState; doneText: ReactNode }) {
   const pending = txPending(state);
   const now = useNow(pending);
@@ -55,11 +55,24 @@ export function TxStatus({ state, doneText }: { state: TxState; doneText: ReactN
       </div>
     );
   }
-  if (state.phase === 'confirmed') {
+  if (state.phase === 'included' || state.phase === 'unfinalized' || state.phase === 'finalized') {
+    const finalized = state.phase === 'finalized';
     return (
-      <div role="status" className="state-in space-y-3">
-        <Stages at={stageOf.confirmed} pending={false} />
-        <p className="max-w-[62ch] text-[16px] leading-relaxed text-ivory">{doneText}</p>
+      <div role="status" data-tx-state={state.phase} className="state-in space-y-3">
+        <Stages at={finalized ? stageOf.finalized : stageOf.included} pending={pending} />
+        <p className="max-w-[62ch] text-[16px] leading-relaxed text-ivory">
+          {finalized
+            ? 'Finalized.'
+            : `Included in block ${state.blockNumber}. ${state.phase === 'included' ? 'Waiting for Portaldot to finalize this block.' : 'Finality has not been confirmed.'}`}
+        </p>
+        {finalized ? (
+          <p className="max-w-[62ch] text-[16px] leading-relaxed text-ivory">{doneText}</p>
+        ) : null}
+        {state.phase === 'unfinalized' ? (
+          <p className="max-w-[62ch] text-[16px] leading-relaxed text-ivory">
+            {state.message} Check this transaction before sending again.
+          </p>
+        ) : null}
         <TxRef txHash={state.hash} blockNumber={state.blockNumber} />
       </div>
     );

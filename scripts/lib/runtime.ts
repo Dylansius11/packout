@@ -13,6 +13,7 @@ import {
   serializeBundle,
   type TxResult,
   type VerificationReport,
+  waitForFinalized,
 } from '@packout/sdk';
 import {
   type Account,
@@ -35,7 +36,6 @@ import {
   parseDeployment,
   parseLocalEnv,
   parseTestnetEnv,
-  waitForFinalized,
 } from './demo.ts';
 
 export interface DemoSession {

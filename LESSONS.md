@@ -2,6 +2,11 @@
 
 Read the headlines before starting work. Format: `### YYYY-MM-DD: headline`, then what happened, root cause, rule going forward. Newest on top.
 
+### 2026-11-01: Shared browser helpers must stay within the configured TypeScript library
+- What happened: extracting the script finality loop into the browser-safe SDK hit TS2550 when its timer used `Promise.withResolvers`.
+- Root cause: the project's configured TypeScript library does not include that ES2024 API, even though the Node development runtime supports it.
+- Rule: use the existing portable Promise/timer convention for shared browser code; do not raise the language-library target for a small helper.
+
 ### 2026-11-01: Scripted file writes on Windows default to CRLF
 - What happened: files generated or patched with Python's text mode (`open(path, 'w')`) came back with CRLF line endings, and Biome failed every one of them with a full-file format diff.
 - Root cause: Python's universal newline translation writes `\r\n` on Windows; Biome expects LF.

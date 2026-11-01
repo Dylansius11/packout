@@ -1,4 +1,5 @@
-import { useCallback, useRef, useState } from 'react';
+import { waitForFinalized } from '@packout/sdk';
+import { useCallback, useState } from 'react';
 import type { Hex } from 'viem';
 import { describeFailure } from '../lib/errors.ts';
 
@@ -7,7 +8,9 @@ export type TxState =
   | { phase: 'preparing'; startedAt: number }
   | { phase: 'wallet'; startedAt: number }
   | { phase: 'submitted'; startedAt: number; hash: Hex }
-  | { phase: 'confirmed'; hash: Hex; blockNumber: number }
+  | { phase: 'included'; startedAt: number; hash: Hex; blockNumber: number }
+  | { phase: 'finalized'; hash: Hex; blockNumber: number }
+  | { phase: 'unfinalized'; hash: Hex; blockNumber: number; message: string }
   | { phase: 'failed'; message: string };
 
 export type TxProgress = {
@@ -17,34 +20,52 @@ export type TxProgress = {
 };
 
 export const txPending = (state: TxState) =>
-  state.phase === 'preparing' || state.phase === 'wallet' || state.phase === 'submitted';
+  state.phase === 'preparing' ||
+  state.phase === 'wallet' ||
+  state.phase === 'submitted' ||
+  state.phase === 'included';
 
-/** Tracks one chain action from preparation to inclusion, so the screen always says what is really happening. */
-export function useTx() {
+type FinalityClient = Parameters<typeof waitForFinalized>[0];
+type IncludedTx = { hash: Hex; blockNumber: number };
+
+/** A successful receipt is returned even if finality is unknown: never invite a duplicate send. */
+export async function runTransaction<T extends IncludedTx>(
+  client: FinalityClient,
+  work: (progress: TxProgress) => Promise<T>,
+  setState: (state: TxState) => void,
+): Promise<T | null> {
+  const startedAt = Date.now();
+  setState({ phase: 'preparing', startedAt });
+  let result: T;
+  try {
+    result = await work({
+      preparing: () => setState({ phase: 'preparing', startedAt }),
+      wallet: () => setState({ phase: 'wallet', startedAt }),
+      submitted: (hash) => setState({ phase: 'submitted', startedAt, hash }),
+    });
+  } catch (error) {
+    setState({ phase: 'failed', message: describeFailure(error) });
+    return null;
+  }
+
+  const included = { hash: result.hash, blockNumber: result.blockNumber };
+  setState({ phase: 'included', startedAt: Date.now(), ...included });
+  try {
+    await waitForFinalized(client, BigInt(result.blockNumber));
+    setState({ phase: 'finalized', ...included });
+  } catch (error) {
+    setState({ phase: 'unfinalized', ...included, message: describeFailure(error) });
+  }
+  return result;
+}
+
+/** Tracks one chain action through inclusion to the RPC's finalized block. */
+export function useTx(client: FinalityClient) {
   const [state, setState] = useState<TxState>({ phase: 'idle' });
-  const startedAt = useRef(0);
-
   const run = useCallback(
-    async <T extends { hash: Hex; blockNumber: number }>(
-      work: (progress: TxProgress) => Promise<T>,
-    ): Promise<T | null> => {
-      startedAt.current = Date.now();
-      const at = () => startedAt.current;
-      setState({ phase: 'preparing', startedAt: at() });
-      try {
-        const result = await work({
-          preparing: () => setState({ phase: 'preparing', startedAt: at() }),
-          wallet: () => setState({ phase: 'wallet', startedAt: at() }),
-          submitted: (hash) => setState({ phase: 'submitted', startedAt: at(), hash }),
-        });
-        setState({ phase: 'confirmed', hash: result.hash, blockNumber: result.blockNumber });
-        return result;
-      } catch (error) {
-        setState({ phase: 'failed', message: describeFailure(error) });
-        return null;
-      }
-    },
-    [],
+    <T extends IncludedTx>(work: (progress: TxProgress) => Promise<T>) =>
+      runTransaction(client, work, setState),
+    [client],
   );
   const reset = useCallback(() => setState({ phase: 'idle' }), []);
   return { state, run, reset };

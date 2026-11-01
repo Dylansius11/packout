@@ -10,7 +10,7 @@ import { TxRef } from '@/components/tx-ref';
 import { TxStatus } from '@/components/tx-status';
 import { Button } from '@/components/ui/button';
 import { WalletPanel } from '@/components/wallet-panel';
-import { registryReader } from '../../chain/clients';
+import { publicClient, registryReader } from '../../chain/clients';
 import type { WorkspaceRecord } from '../../db/types';
 import type { Access } from '../../domain/gating';
 import { takeOverWorkspace } from '../../domain/takeover';
@@ -27,7 +27,7 @@ export function TakeoverScreen(props: {
 }) {
   const { workspace, onChain, action } = props;
   const account = useAccount();
-  const tx = useTx();
+  const tx = useTx(publicClient);
   const [newEpoch, setNewEpoch] = useState<number | null>(null);
   const taken = workspace.takeover;
 
@@ -69,8 +69,12 @@ export function TakeoverScreen(props: {
             <TxRef txHash={taken.txHash} blockNumber={taken.blockNumber} />
           </p>
         </Notice>
+        <TxStatus
+          state={tx.state}
+          doneText="Taken over. Vendor A can no longer write to this workspace."
+        />
         <ChainFacts onChain={onChain} registry={workspace.registry} />
-        <Button onClick={props.onContinue}>
+        <Button onClick={props.onContinue} disabled={pending}>
           Continue writing
           <ArrowRight size={16} aria-hidden />
         </Button>

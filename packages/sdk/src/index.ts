@@ -8,6 +8,7 @@ export {
 export { canonicalJson, type JsonValue } from './canonical.ts';
 export { packoutRegistryAbi } from './chain/abi.ts';
 export { describeRegistryError, RegistryError, type RegistryErrorReason } from './chain/errors.ts';
+export { waitForFinalized } from './chain/finality.ts';
 export {
   createRegistryReader,
   type RegistryReader,

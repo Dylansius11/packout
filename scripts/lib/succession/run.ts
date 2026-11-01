@@ -10,11 +10,12 @@ import {
   sealOp,
   splitWorkspaceKey,
   verifyBundle,
+  waitForFinalized,
   workspaceId,
 } from '@packout/sdk';
 import type { Call } from '@polkadot/types/interfaces';
 import { bytesToHex, encodeFunctionData, type Hex, hexToBytes } from 'viem';
-import { mappedNativeAddress, waitForFinalized } from '../demo.ts';
+import { mappedNativeAddress } from '../demo.ts';
 import { decodedRevert, forceRejectedAppend } from '../force-rejected.ts';
 import { createDemoOperations } from '../operations.ts';
 import { createDemoActions, printVerification, requireVerifiedRestore } from '../runtime.ts';

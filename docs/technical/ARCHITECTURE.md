@@ -54,6 +54,17 @@ flowchart LR
 
 `apps/client-b` never imports from `apps/vendor-*` and never calls the vendor API (a test enforces it). It depends only on the SDK, the chain and the bundle file.
 
+Packout Restore distinguishes a successful receipt (**Included in block N**) from
+**Finalized**. Its shared SDK `waitForFinalized` helper (also used by the demo
+scripts) polls `getBlock({ blockTag: 'finalized' })` every second until that
+height covers the receipt block, with a 120-second timeout. If finality times out
+or the RPC fails, the UI keeps the included transaction's hash and block link
+and says finality is unconfirmed; it does not label the transaction reverted or
+invite resubmission. A reverted write remains a failure with its reason.
+On the local Hardhat 3/EDR simulation, a local probe after `evm_mine`
+returned block `0x1` for both `latest` and `finalized`, with the same hash
+(2026-11-01); local rehearsal therefore does not need extra blocks to finalize.
+
 ## 4. Data placement and formats
 
 | Data | Device | Vendor API | Portaldot |
