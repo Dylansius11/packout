@@ -1,76 +1,65 @@
 @import "tailwindcss";
-@import "@fontsource-variable/ibm-plex-sans";
-@import "@fontsource/ibm-plex-mono/400.css";
-@import "@fontsource/ibm-plex-mono/500.css";
+@import "@packout/brand/tokens.css";
+@source "../../../packages/brand/src";
 
 /*
- * Client B is a graphite instrument panel, deliberately unlike Vendor A's light journal:
- * dark neutral surfaces, one gold accent, square corners, mono for every hash and address.
- * Green, orange and red appear only as state colors and always come with a word.
+ * Packout Restore lives in the cracktro void (DESIGN.md): black ground, one bitmap face riding
+ * baselines, rank as depth rather than boxes, amber only for the caret, focus and the one primary
+ * action. The semantic names below are what the components were written against; they now point at
+ * the void palette so nothing can render in a stale colour.
  */
 @theme {
-  --font-sans: "IBM Plex Sans Variable", ui-sans-serif, system-ui, sans-serif;
-  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  --color-background: var(--color-void);
+  --color-rail: var(--color-void);
+  --color-surface: var(--color-void);
+  --color-raised: #111111;
+  --color-foreground: var(--color-ivory);
+  --color-muted-foreground: var(--color-ash);
+  --color-border: var(--color-dust);
+  --color-input: var(--color-smoke);
+  --color-primary: var(--color-signal);
+  --color-primary-hover: #ffc657;
+  --color-primary-foreground: var(--color-signal-ink);
+  --color-ring: var(--color-signal);
 
-  --color-background: #0f1011;
-  --color-rail: #131416;
-  --color-surface: #18191b;
-  --color-raised: #212326;
-  --color-foreground: #ecebe6;
-  --color-muted-foreground: #a6a59d;
-  --color-border: #2b2d31;
-  --color-input: #70747b;
-  --color-primary: #e8b04a;
-  --color-primary-hover: #f1c26b;
-  --color-primary-foreground: #17130a;
-  --color-ring: #f1c26b;
+  /* State is never colour: success is ivory, caution is ash, failure is the reversed cell. */
+  --color-success: var(--color-ivory);
+  --color-success-soft: var(--color-void);
+  --color-success-line: var(--color-smoke);
+  --color-warning: var(--color-ash);
+  --color-warning-soft: var(--color-void);
+  --color-warning-line: var(--color-smoke);
+  --color-danger: var(--color-ivory);
+  --color-danger-soft: var(--color-void);
+  --color-danger-line: var(--color-ivory);
 
-  --color-success: #7ee2a8;
-  --color-success-soft: #0e2218;
-  --color-success-line: #21573a;
-  --color-warning: #fdba74;
-  --color-warning-soft: #261a0e;
-  --color-warning-line: #6b4421;
-  --color-danger: #fca5a5;
-  --color-danger-soft: #2a1214;
-  --color-danger-line: #702529;
-
-  --radius-sm: 2px;
-  --radius-md: 4px;
-  --radius-lg: 4px;
-
-  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
 }
 
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
-    color-scheme: dark;
   }
   body {
     margin: 0;
-    background: var(--color-background);
-    color: var(--color-foreground);
+    background: var(--color-void);
+    color: var(--color-ivory);
     font-family: var(--font-sans);
-    font-size: 15px;
+    font-size: 16px;
     line-height: 1.55;
-    -webkit-font-smoothing: antialiased;
   }
   h1,
   h2,
   h3 {
+    font-family: var(--font-pixel);
+    font-weight: 400;
+    letter-spacing: 0;
     text-wrap: balance;
-    letter-spacing: -0.02em;
   }
   p {
     text-wrap: pretty;
-  }
-  ::selection {
-    background: color-mix(in oklab, var(--color-primary) 35%, transparent);
-  }
-  :focus-visible {
-    outline: 2px solid var(--color-ring);
-    outline-offset: 2px;
   }
   button,
   [role="button"],
@@ -80,13 +69,265 @@
   }
   code,
   kbd {
-    font-family: var(--font-mono);
+    font-family: var(--font-pixel);
     font-size: 0.88em;
   }
   textarea,
   input,
   select {
     font: inherit;
+  }
+  /* Landing targets of a screen change: focus is real, the outline would just frame the heading. */
+  [tabindex="-1"]:focus-visible {
+    outline: none;
+  }
+}
+
+/*
+ * Depth is the only hierarchy: brightness, tracking and drift step together.
+ * depth-0 sits in front and widest; each step back is dimmer and tighter. Nothing is boxed.
+ */
+@layer components {
+  .baseline {
+    font-family: var(--font-pixel);
+    text-transform: uppercase;
+    line-height: 1.45;
+    overflow-wrap: anywhere;
+  }
+  .depth-0 {
+    color: var(--color-ivory);
+    letter-spacing: 0.16em;
+  }
+  .depth-1 {
+    color: var(--color-ash);
+    letter-spacing: 0.1em;
+  }
+  .depth-2 {
+    color: var(--color-smoke);
+    letter-spacing: 0.06em;
+  }
+
+  /* Failure is a reversed glyph run: the one place ivory becomes ground. */
+  .reversed {
+    background: var(--color-ivory);
+    color: var(--color-void);
+    padding: 0.32em 0.5em 0.28em;
+  }
+
+  .caret {
+    display: inline-block;
+    width: 0.62em;
+    height: 1em;
+    margin-left: 0.35em;
+    vertical-align: -0.12em;
+    background: var(--color-signal);
+    animation: caret 1.06s steps(1, end) infinite;
+  }
+
+  /* The one primary action of a view. */
+  .signal {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75em;
+    background: var(--color-signal);
+    color: var(--color-signal-ink);
+    font-family: var(--font-pixel);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    line-height: 1.3;
+    padding: 1em 1.4em 0.92em;
+    transition:
+      transform 160ms var(--ease-out),
+      background-color 160ms ease,
+      color 160ms ease;
+  }
+  .signal:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .signal:hover:not(:disabled) {
+      background: var(--color-primary-hover);
+    }
+  }
+  .signal:disabled {
+    background: transparent;
+    color: var(--color-smoke);
+    box-shadow: inset 0 -1px 0 var(--color-smoke);
+    pointer-events: none;
+  }
+
+  /* Secondary actions read as bracketed commands; the brackets are real, aria-hidden spans. */
+  .command {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6em;
+    font-family: var(--font-pixel);
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    line-height: 1.3;
+    color: var(--color-ash);
+    padding: 0.7em 0.2em 0.62em;
+    transition:
+      color 160ms ease,
+      transform 160ms var(--ease-out);
+  }
+  .command > .bracket {
+    color: var(--color-smoke);
+  }
+  .command > .label {
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.45em;
+    transition: text-decoration-color 160ms ease;
+  }
+  .command:active:not(:disabled) {
+    transform: scale(0.97);
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .command:hover:not(:disabled) {
+      color: var(--color-ivory);
+    }
+    .command:hover:not(:disabled) > .label {
+      text-decoration-color: var(--color-signal);
+    }
+  }
+  .command:disabled {
+    color: var(--color-smoke);
+    pointer-events: none;
+  }
+
+  .ghost-link {
+    font-family: var(--font-pixel);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-ash);
+    text-decoration: underline;
+    text-decoration-color: var(--color-smoke);
+    text-underline-offset: 0.45em;
+    text-decoration-thickness: 1px;
+    transition:
+      color 160ms ease,
+      text-decoration-color 160ms ease;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .ghost-link:hover {
+      color: var(--color-ivory);
+      text-decoration-color: var(--color-signal);
+    }
+  }
+  .ghost-link:disabled {
+    color: var(--color-smoke);
+    pointer-events: none;
+  }
+
+  /* Forgetting is irreversible on this device: it turns into a reversed cell when it is reached for. */
+  .forget {
+    font-family: var(--font-pixel);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    line-height: 1.3;
+    color: var(--color-ash);
+    padding: 0.7em 0.6em 0.62em;
+    transition:
+      color 160ms ease,
+      background-color 160ms ease;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .forget:hover {
+      background: var(--color-ivory);
+      color: var(--color-void);
+    }
+  }
+  .forget:focus-visible {
+    background: var(--color-ivory);
+    color: var(--color-void);
+  }
+
+  /* Inputs are the one place a line is functional: an underline marks where to type. */
+  .field {
+    display: block;
+    width: 100%;
+    border: 0;
+    border-bottom: 1px solid var(--color-smoke);
+    border-radius: 0;
+    background: transparent;
+    color: var(--color-ivory);
+    font-family: var(--font-sans);
+    font-size: 17px;
+    line-height: 1.45;
+    padding: 0.55rem 0 0.5rem;
+    transition: border-color 160ms ease;
+  }
+  .field::placeholder {
+    color: var(--color-smoke);
+  }
+  .field:hover:not(:disabled) {
+    border-bottom-color: var(--color-ash);
+  }
+  .field:focus {
+    border-bottom-color: var(--color-ivory);
+  }
+  .field[aria-invalid="true"] {
+    border-bottom: 3px solid var(--color-ivory);
+  }
+  .field:disabled {
+    color: var(--color-smoke);
+    border-bottom-color: var(--color-dust);
+    cursor: not-allowed;
+  }
+  select.field {
+    cursor: pointer;
+    padding-right: 1.5rem;
+  }
+
+  /* Hashes and addresses: the pixel face in its own case, never forced to capitals. */
+  .hash {
+    font-family: var(--font-pixel);
+    letter-spacing: 0.03em;
+    overflow-wrap: anywhere;
+  }
+
+  .prose-ash {
+    color: var(--color-ash);
+    font-size: clamp(1.0625rem, 0.98rem + 0.3vw, 1.1875rem);
+    line-height: 1.6;
+    max-width: 62ch;
+    text-wrap: pretty;
+  }
+
+  .display {
+    font-family: var(--font-pixel);
+    font-weight: 400;
+    line-height: 0.98;
+    letter-spacing: 0;
+    text-wrap: balance;
+    overflow-wrap: anywhere;
+  }
+
+  /* The pixel-dotted outline of the drop target: a functional box, so it may be one. */
+  .drop-target {
+    background-image:
+      linear-gradient(90deg, var(--drop-ink) 50%, transparent 0),
+      linear-gradient(90deg, var(--drop-ink) 50%, transparent 0),
+      linear-gradient(0deg, var(--drop-ink) 50%, transparent 0),
+      linear-gradient(0deg, var(--drop-ink) 50%, transparent 0);
+    background-repeat: repeat-x, repeat-x, repeat-y, repeat-y;
+    background-size:
+      4px 2px,
+      4px 2px,
+      2px 4px,
+      2px 4px;
+    background-position:
+      0 0,
+      0 100%,
+      0 0,
+      100% 0;
+    transition: background-color 160ms ease;
   }
 }
 
@@ -98,8 +339,14 @@
   .state-in {
     animation: state-in 200ms var(--ease-out) both;
   }
-  .spin {
-    animation: spin 900ms linear infinite;
+}
+
+@keyframes caret {
+  0% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0;
   }
 }
 
@@ -109,18 +356,25 @@
     transform: translateY(4px);
   }
 }
-@keyframes spin {
-  to {
-    transform: rotate(360deg);
+
+/* Lines rise out of the void in the order they happened, then hold still. */
+@keyframes surface {
+  from {
+    opacity: 0;
+    filter: blur(6px);
+    transform: translateY(0.4em);
   }
+}
+.surface {
+  animation: surface 560ms var(--ease-out) both;
+  animation-delay: calc(var(--order, 0) * 80ms + 60ms);
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .state-in {
+  .state-in,
+  .caret,
+  .surface {
     animation: none;
-  }
-  .spin {
-    animation-duration: 3s;
   }
   *,
   *::before,

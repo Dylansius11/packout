@@ -16,7 +16,7 @@ const parsed = envSchema.safeParse({
 });
 if (!parsed.success) {
   throw new Error(
-    `Invalid Client B environment: ${parsed.error.issues.map((issue) => `${issue.path.join('.')} ${issue.message}`).join('; ')}. VITE_PACKOUT_NETWORK must be localhost or portaldotTestnet.`,
+    `Invalid Packout Restore environment: ${parsed.error.issues.map((issue) => `${issue.path.join('.')} ${issue.message}`).join('; ')}. VITE_PACKOUT_NETWORK must be localhost or portaldotTestnet.`,
   );
 }
 

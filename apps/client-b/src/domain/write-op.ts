@@ -44,7 +44,7 @@ export async function appendOwnerOp(input: {
   const onChain = await reader.getWorkspace(workspace.wsId);
   if (!onChain) throw new Error('This workspace no longer exists in the connected registry.');
   if (onChain.owner.toLowerCase() !== account.toLowerCase()) {
-    throw new Error(`Only the owner ${onChain.owner} can write from Client B.`);
+    throw new Error(`Only the owner ${onChain.owner} can write from Packout Restore.`);
   }
 
   const local = await db.ops.where('wsId').equals(workspace.wsId).sortBy('index');
