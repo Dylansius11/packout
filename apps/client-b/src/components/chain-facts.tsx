@@ -19,23 +19,21 @@ export function ChainFacts({
     ['Registry', registry],
   ];
   return (
-    <section
-      aria-label="Workspace on Portaldot"
-      className="rounded-md border border-border bg-surface"
-    >
-      <dl className="grid sm:grid-cols-[auto_1fr] sm:gap-x-6">
+    <section aria-label="Workspace on Portaldot">
+      <dl className="grid sm:grid-cols-[8.5rem_1fr] sm:gap-x-6">
         {rows.map(([label, value, title]) => (
           <div key={label} className="contents">
-            <dt className="px-4 pt-3 text-xs uppercase tracking-wide text-muted-foreground sm:py-2">
-              {label}
-            </dt>
-            <dd className="tabular break-all px-4 pb-3 font-mono text-sm sm:py-2" title={title}>
+            <dt className="baseline depth-2 pt-4 text-[11px] sm:py-2.5">{label}</dt>
+            <dd
+              className="hash tabular break-all pt-1 text-[13px] text-ivory sm:py-2"
+              title={title}
+            >
               {value}
             </dd>
           </div>
         ))}
       </dl>
-      <p className="border-t border-border px-4 py-2 text-xs text-muted-foreground">
+      <p className="mt-3 max-w-[62ch] text-[14px] leading-relaxed text-smoke">
         Read from Portaldot via {rpcHost}. This app trusts that endpoint for these facts.
       </p>
     </section>

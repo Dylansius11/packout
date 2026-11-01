@@ -2,19 +2,23 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import type * as React from 'react';
 import { cn } from '@/lib/utils';
 
+/**
+ * default: the one amber action of a view. outline: a bracketed command. ghost: an underlined
+ * pixel link. danger: reversed when reached for, because what it does cannot be undone here.
+ */
 export const buttonVariants = cva(
-  'inline-flex shrink-0 select-none items-center justify-center gap-2 rounded-md font-medium whitespace-nowrap transition-[background-color,transform,border-color] duration-150 ease-out active:scale-[0.98] disabled:pointer-events-none disabled:opacity-45 [&_svg]:shrink-0',
+  'select-none text-left whitespace-normal sm:whitespace-nowrap disabled:pointer-events-none [&_svg]:shrink-0',
   {
     variants: {
       variant: {
-        default: 'bg-primary text-primary-foreground hover:bg-primary-hover',
-        outline: 'border border-input bg-transparent text-foreground hover:bg-raised',
-        ghost: 'text-foreground hover:bg-raised',
-        danger: 'border border-danger-line bg-danger-soft text-danger hover:bg-[#3a1619]',
+        default: 'signal',
+        outline: 'command',
+        ghost: 'ghost-link px-1 py-2 text-[12px] disabled:no-underline',
+        danger: 'forget',
       },
       size: {
-        default: 'h-10 px-4 text-sm',
-        sm: 'h-8 px-3 text-sm',
+        default: '',
+        sm: 'text-[11px]',
       },
     },
     defaultVariants: { variant: 'default', size: 'default' },
@@ -26,9 +30,25 @@ export function Button({
   variant,
   size,
   type = 'button',
+  children,
   ...props
 }: React.ComponentProps<'button'> & VariantProps<typeof buttonVariants>) {
+  const bracketed = variant === 'outline';
   return (
-    <button type={type} className={cn(buttonVariants({ variant, size }), className)} {...props} />
+    <button type={type} className={cn(buttonVariants({ variant, size }), className)} {...props}>
+      {bracketed ? (
+        <>
+          <span aria-hidden className="bracket">
+            [
+          </span>
+          <span className="label">{children}</span>
+          <span aria-hidden className="bracket">
+            ]
+          </span>
+        </>
+      ) : (
+        children
+      )}
+    </button>
   );
 }
