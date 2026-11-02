@@ -1,0 +1,48 @@
+# Vendor A's API on the shared VPS. One small container, no published port: the shared Caddy
+# (vps-caddy-1, network vps_annona) reaches it by name. See deploy/vps/README.md.
+services:
+  packout-api:
+    image: node:24-alpine
+    container_name: packout-api
+    command: ["node", "/app/main.mjs"]
+    working_dir: /app
+    user: "1000:1000"
+    restart: unless-stopped
+    env_file: .env # VENDOR_WRITER_PRIVATE_KEY only; chmod 600, never committed
+    environment:
+      PORT: "8787"
+      PACKOUT_NETWORK: portaldotTestnet
+      PORTALDOT_EVM_RPC: https://test-evm-rpc-v3.portaldot.dev
+      DATABASE_PATH: /data/vendor-api.sqlite
+      PACKOUT_DEPLOYMENTS_DIR: /app/deployments
+      CORS_ORIGIN: https://packout-vendor-a.vercel.app
+      NODE_OPTIONS: --max-old-space-size=96
+    volumes:
+      - ./main.mjs:/app/main.mjs:ro
+      - ./deployments:/app/deployments:ro
+      - ./data:/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m
+    cap_drop: [ALL]
+    security_opt: ["no-new-privileges:true"]
+    # The host already swaps; this container must not add to it.
+    mem_limit: 160m
+    memswap_limit: 160m
+    cpus: 0.5
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1:8787/health"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 15s
+    logging:
+      driver: json-file
+      options:
+        max-size: 10m
+        max-file: "3"
+    networks: [vps_annona]
+
+networks:
+  vps_annona:
+    external: true

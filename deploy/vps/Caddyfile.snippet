@@ -1,0 +1,18 @@
+
+# Packout - Vendor A's API (docker compose in /opt/packout, deploy/vps in the Packout repo).
+# Added 2026-11-02 at the owner request. Nothing above this line was changed.
+packout-api.43.129.38.115.sslip.io {
+	encode zstd gzip
+	header {
+		Strict-Transport-Security "max-age=31536000; includeSubDomains"
+		X-Content-Type-Options "nosniff"
+		Referrer-Policy "no-referrer"
+		-Server
+	}
+	reverse_proxy packout-api:8787 {
+		transport http {
+			dial_timeout 5s
+			response_header_timeout 30s
+		}
+	}
+}
