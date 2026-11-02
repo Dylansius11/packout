@@ -179,3 +179,136 @@ export const cliRun = {
     ],
   ],
 } as const;
+
+const REPO = links.code;
+/** A folder (`tree`) or a file (`blob`) on the repository's main branch. */
+const tree = (path: string) => `${REPO}/tree/main/${path}`;
+const file = (path: string) => `${REPO}/blob/main/${path}`;
+
+const CONTRACT_DOC = 'docs/technical/SMART-CONTRACT.md';
+
+/**
+ * The numbers strip. Every value is a row of the README's "Packout in numbers" table, and each
+ * one links to the section of the docs that holds its evidence.
+ */
+export const stats: {
+  value: string;
+  label: string;
+  source: { text: string; href: string };
+}[] = [
+  {
+    value: '6 of 6',
+    label: 'checks pass on the real testnet bundle',
+    source: { text: 'SMART-CONTRACT §9.1', href: `${file(CONTRACT_DOC)}#91-recorded-testnet-runs` },
+  },
+  {
+    value: '6',
+    label: 'transactions in the testnet exit story',
+    source: { text: 'SMART-CONTRACT §9.1', href: `${file(CONTRACT_DOC)}#91-recorded-testnet-runs` },
+  },
+  {
+    value: 'NotWriter',
+    label: `the old vendor’s write reverted in block ${demoRun.refusal}`,
+    source: { text: `Explorer, block ${demoRun.refusal}`, href: block(demoRun.refusal) },
+  },
+  {
+    value: '2 of 3',
+    label: 'backup wallets recover authority',
+    source: {
+      text: 'SMART-CONTRACT §9.3',
+      href: `${file(CONTRACT_DOC)}#93-key-recovery-succession-demo-2026-10-30`,
+    },
+  },
+  {
+    value: '0.031 tPOT',
+    label: 'one measured single-digest append',
+    source: {
+      text: 'SMART-CONTRACT §8',
+      href: `${file(CONTRACT_DOC)}#8-cost-on-portaldot-testnet`,
+    },
+  },
+  {
+    value: '416',
+    label: 'unit and integration tests',
+    source: { text: 'README, in numbers', href: `${REPO}#packout-in-numbers` },
+  },
+];
+
+export const resourceTags = ['SDK', 'VERIFY', 'AGENT', 'CONTRACT', 'DOCS'] as const;
+export type ResourceTag = (typeof resourceTags)[number];
+
+export interface Resource {
+  title: string;
+  what: string;
+  tag: ResourceTag;
+  /** Repository path, shown on the card. */
+  path: string;
+  href: string;
+}
+
+/** Real paths in the repository: folders open as `tree`, files as `blob`. */
+export const resources: Resource[] = [
+  {
+    title: 'Agent skill',
+    what: 'Teaches your coding agent to integrate the SDK, add an exit path and verify a bundle.',
+    tag: 'AGENT',
+    path: 'skills/packout',
+    href: tree('skills/packout'),
+  },
+  {
+    title: '@packout/sdk',
+    what: 'Encrypt on the device, anchor in batches, export, verify and rebuild the workspace state.',
+    tag: 'SDK',
+    path: 'packages/sdk',
+    href: tree('packages/sdk'),
+  },
+  {
+    title: 'Verifier CLI',
+    what: 'Written from the spec alone, sharing no code with the SDK.',
+    tag: 'VERIFY',
+    path: 'packages/verify',
+    href: tree('packages/verify'),
+  },
+  {
+    title: 'Registry contract',
+    what: 'One small Solidity contract: owner, epoch, writers, count and head per workspace.',
+    tag: 'CONTRACT',
+    path: 'contracts',
+    href: tree('contracts'),
+  },
+  {
+    title: 'Architecture',
+    what: 'Components, data placement, bundle format, the demo sequence and the trust model.',
+    tag: 'DOCS',
+    path: 'docs/technical/ARCHITECTURE.md',
+    href: file('docs/technical/ARCHITECTURE.md'),
+  },
+  {
+    title: 'Contract specification',
+    what: 'Storage, head chain, functions, events, costs and the recorded testnet runs.',
+    tag: 'CONTRACT',
+    path: CONTRACT_DOC,
+    href: file(CONTRACT_DOC),
+  },
+  {
+    title: 'Integrations',
+    what: 'Portaldot testnet facts, funding an EVM key, wallets and environment variables.',
+    tag: 'DOCS',
+    path: 'docs/technical/INTEGRATIONS.md',
+    href: file('docs/technical/INTEGRATIONS.md'),
+  },
+  {
+    title: 'Demo bundles',
+    what: 'Where demo bundles and keys go, and how to check one before you present it.',
+    tag: 'VERIFY',
+    path: 'demo-kit',
+    href: tree('demo-kit'),
+  },
+  {
+    title: 'Design system',
+    what: 'The tokens and components behind this page and Packout Restore.',
+    tag: 'DOCS',
+    path: 'DESIGN.md',
+    href: file('DESIGN.md'),
+  },
+];

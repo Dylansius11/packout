@@ -1,4 +1,5 @@
-import { gutter, SectionHeading } from '../ui';
+import { Reveal } from '../components/reveal';
+import { Pull, Section } from '../components/section';
 
 const gaps = [
   {
@@ -20,32 +21,36 @@ const gaps = [
 
 export function LeftBehind() {
   return (
-    <section aria-labelledby="left-behind" className={`${gutter} py-[clamp(6rem,14vw,11rem)]`}>
-      <SectionHeading id="left-behind">
-        An export is a file. You needed the workspace.
-      </SectionHeading>
-      <dl className="mt-16 space-y-14 md:mt-24 md:space-y-20">
-        {gaps.map((gap) => (
-          <div
+    <Section
+      n="01"
+      label="The problem"
+      headingId="left-behind"
+      heading="An export is a file. You needed the workspace."
+    >
+      <dl className="mt-14 space-y-5 md:mt-20">
+        {gaps.map((gap, index) => (
+          <Reveal
             key={gap.word}
-            className="grid gap-5 md:grid-cols-[minmax(0,15rem)_1fr_1fr] md:gap-12"
+            delay={index * 70}
+            className="grid gap-4 md:grid-cols-[minmax(0,13rem)_1fr_1.15fr] md:gap-8"
           >
-            <dt className="baseline depth-0 text-[15px]">{gap.word}</dt>
-            <dd className="text-[17px] leading-relaxed text-smoke line-through decoration-[#333331]">
+            <dt className="baseline depth-0 pt-1 text-[15px] md:pt-5">{gap.word}</dt>
+            <dd className="px-1 text-[17px] leading-relaxed text-ash line-through decoration-smoke md:p-5">
               <span className="sr-only">With an ordinary export: </span>
               {gap.lost}
             </dd>
-            <dd className="text-[17px] leading-relaxed text-ivory">
+            <dd className="rounded-2xl border border-signal/30 bg-signal/[0.07] p-5 text-[17px] leading-relaxed text-ivory">
               <span className="sr-only">With Packout: </span>
               {gap.kept}
             </dd>
-          </div>
+          </Reveal>
         ))}
       </dl>
-      <p className="prose-ash mt-20 md:mt-28">
-        Your data stays encrypted on your devices. Portaldot only ever sees fingerprints and
-        permissions, which is exactly enough to settle an argument about what happened.
-      </p>
-    </section>
+      <Pull className="mt-20 md:mt-28">
+        Your data stays encrypted on your devices. Portaldot only ever sees{' '}
+        <mark>fingerprints and permissions</mark>, which is exactly enough to settle an argument
+        about what happened.
+      </Pull>
+    </Section>
   );
 }
