@@ -1,12 +1,13 @@
 import { DustField, Wordmark } from '@packout/brand';
 import { type CSSProperties, useEffect, useState } from 'react';
 import { block, DEMO_WORKSPACE, demoRun, links, short } from '../content';
-import { BlockLink, gutter } from '../ui';
+import { BlockLink, GithubLink, gutter } from '../ui';
 
 const nav = [
   { href: '#exit', label: 'How it works' },
   { href: '#record', label: 'Proof' },
-  { href: '#builders', label: 'Builders' },
+  { href: '#builders', label: 'Kit' },
+  { href: '#build', label: 'Build' },
 ];
 
 /** Rear planes drift; each step forward halves the rate; the front plane holds still. */
@@ -34,8 +35,8 @@ function Nav() {
       <a href="#top" aria-label="Packout, back to top" className="text-ivory">
         <Wordmark size={16} drifting />
       </a>
-      <div className="flex items-center gap-8">
-        <ul className="hidden items-center gap-8 md:flex">
+      <div className="flex items-center gap-3 sm:gap-8">
+        <ul className="hidden items-center gap-8 lg:flex">
           {nav.map((item) => (
             <li key={item.href}>
               <a href={item.href} className="ghost-link text-[13px] no-underline">
@@ -43,12 +44,8 @@ function Nav() {
               </a>
             </li>
           ))}
-          <li>
-            <a href={links.code} className="ghost-link text-[13px] no-underline">
-              Code
-            </a>
-          </li>
         </ul>
+        <GithubLink />
         <a href={links.vendor} className="command text-[12px]">
           Run the exit
         </a>

@@ -1,3 +1,4 @@
+import { Build } from './sections/build';
 import { Builders } from './sections/builders';
 import { Checks } from './sections/checks';
 import { Boundaries, Close, Footer } from './sections/close';
@@ -24,6 +25,7 @@ export function App() {
         <Record />
         <Succession />
         <Builders />
+        <Build />
         <Boundaries />
         <Close />
       </main>

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { moves } from '../content';
-import { gutter, SectionHeading } from '../ui';
+import { DemoLinks, gutter, SectionHeading } from '../ui';
 
 /**
  * The seven moves of the demo. Scrolling pulls one move to the front plane; the board on the
@@ -35,6 +35,9 @@ export function ExitMoves() {
         This is the run we do live. Nothing here is mocked: the vendor process really stops, and the
         refusal at the end is a mined transaction.
       </p>
+      <div className="mt-8">
+        <DemoLinks />
+      </div>
 
       <div className="mt-16 grid gap-12 lg:mt-24 lg:grid-cols-[minmax(0,22rem)_1fr] lg:gap-24">
         <div className="hidden lg:block">

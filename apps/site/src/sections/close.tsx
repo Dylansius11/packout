@@ -1,6 +1,6 @@
 import { DustField, PixelMark, Wordmark } from '@packout/brand';
 import { links } from '../content';
-import { gutter, SectionHeading } from '../ui';
+import { DemoLinks, GithubLink, gutter, SectionHeading } from '../ui';
 
 const nots = [
   ['Not a backup service.', 'For files only you use, plain encrypted storage is simpler.'],
@@ -64,13 +64,17 @@ export function Close() {
 
 export function Footer() {
   return (
-    <footer
-      className={`${gutter} flex flex-col gap-6 py-12 md:flex-row md:items-center md:justify-between`}
-    >
-      <Wordmark size={13} className="text-ash" />
-      <p className="baseline depth-2 text-[11px] whitespace-normal">
-        Built for Portaldot Hacker House 2026 · Modular Cloud and Middleware · MIT licence
-      </p>
+    <footer className={`${gutter} flex flex-col gap-10 py-12`}>
+      <DemoLinks />
+      <div className="flex flex-col gap-6 md:flex-row md:items-center md:justify-between">
+        <div className="flex flex-wrap items-center gap-x-8 gap-y-2">
+          <Wordmark size={13} className="text-ash" />
+          <GithubLink label="Source on GitHub" />
+        </div>
+        <p className="baseline depth-2 text-[11px] whitespace-normal">
+          Built for Portaldot Hacker House 2026 · Modular Cloud and Middleware
+        </p>
+      </div>
     </footer>
   );
 }
