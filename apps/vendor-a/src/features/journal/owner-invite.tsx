@@ -10,8 +10,8 @@ export function OwnerInvite() {
     keyFromBase64Url(workspace.keyB64),
   );
   return (
-    <section aria-labelledby="invite-heading" className="space-y-2">
-      <h2 id="invite-heading" className="text-base font-semibold">
+    <section aria-labelledby="invite-heading" className="space-y-3">
+      <h2 id="invite-heading" className="display text-xl">
         Invite members
       </h2>
       <p className="text-sm text-muted-foreground">

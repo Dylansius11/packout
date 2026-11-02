@@ -120,7 +120,7 @@ export function ExportPanel() {
 
   return (
     <section aria-labelledby="export-heading" className="space-y-3">
-      <h2 id="export-heading" className="text-base font-semibold">
+      <h2 id="export-heading" className="display text-xl">
         Export bundle
       </h2>
       <p className="text-sm text-muted-foreground">
@@ -140,7 +140,7 @@ export function ExportPanel() {
 
       {state.phase !== 'idle' ? (
         <ol
-          className="divide-y divide-border rounded-md border border-border bg-surface px-4"
+          className="rounded-xl border border-border bg-surface p-4 shadow-card"
           aria-label="Export checks"
         >
           <StepRow
@@ -199,7 +199,7 @@ export function ExportPanel() {
           >
             Download again
           </Button>
-          <div className="space-y-2 rounded-md border border-warning-line bg-warning-soft p-3 text-sm text-warning">
+          <div className="space-y-2 rounded-lg border border-warning-line bg-warning-soft p-4 text-sm text-warning">
             <p className="font-medium">The workspace key is not in the file.</p>
             <p>
               To open the bundle elsewhere you also need the key. Anyone who has it can read the

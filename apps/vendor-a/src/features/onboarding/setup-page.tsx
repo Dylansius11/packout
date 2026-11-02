@@ -5,6 +5,8 @@ import { type RefObject, useEffect, useRef, useState } from 'react';
 import { type UseAccountReturnType, useAccount, useConnect, useDisconnect } from 'wagmi';
 import { getWalletClient, switchChain } from 'wagmi/actions';
 import { CopyButton } from '@/components/copy-button';
+import { DataPath } from '@/components/data-path';
+import { FlowSteps } from '@/components/flow-steps';
 import { Notice } from '@/components/notice';
 import { StepRow, type StepRowStatus } from '@/components/step-row';
 import { TxRef } from '@/components/tx-ref';
@@ -70,9 +72,12 @@ function WalletPanel({ account }: { account: UseAccountReturnType }) {
 
   if (account.isConnected) {
     return (
-      <p className="flex flex-wrap items-center gap-3 text-sm">
-        <span>
-          Wallet connected: <code className="break-all">{account.address}</code>
+      <p className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border border-border bg-surface py-1.5 pr-1.5 pl-4 text-sm shadow-card">
+        <span className="flex min-w-0 items-center gap-2">
+          <span aria-hidden="true" className="size-2 shrink-0 rounded-full bg-success" />
+          <span className="min-w-0">
+            Wallet connected: <code className="break-all">{account.address}</code>
+          </span>
         </span>
         <Button variant="ghost" size="sm" onClick={() => disconnect()}>
           Disconnect
@@ -119,13 +124,13 @@ function InvitePanel({
   return (
     <section
       aria-labelledby="invite-heading"
-      className="state-in space-y-3 rounded-md border border-success-line bg-success-soft p-4"
+      className="state-in space-y-4 rounded-xl border border-success-line bg-success-soft p-5 sm:p-6"
     >
       <h2
         id="invite-heading"
         ref={headingRef}
         tabIndex={-1}
-        className="text-base font-semibold text-success outline-none"
+        className="display text-2xl text-success outline-none"
       >
         Member invite link
       </h2>
@@ -172,11 +177,11 @@ export function SetupPage({ salt }: { salt: string }) {
     return <p className="text-sm text-muted-foreground">Reading this setup from the device…</p>;
   if (record === null) {
     return (
-      <div className="space-y-4">
-        <h1 className="text-2xl font-semibold">Set up a workspace</h1>
+      <div className="max-w-2xl space-y-5">
+        <h1 className="display text-4xl">Set up a workspace</h1>
         <Notice tone="danger" title="This setup is not on this device">
           Setups are stored in the browser that started them.{' '}
-          <Link to="/new" className="underline">
+          <Link to="/new" className="font-medium underline underline-offset-2">
             Start a new one
           </Link>
           .
@@ -186,8 +191,8 @@ export function SetupPage({ salt }: { salt: string }) {
   }
   if (!registryLookup.ok || !registryReader) {
     return (
-      <div className="space-y-4">
-        <h1 className="text-2xl font-semibold">Set up a workspace</h1>
+      <div className="max-w-2xl space-y-5">
+        <h1 className="display text-4xl">Set up a workspace</h1>
         <Notice tone="danger" title="Cannot set up a workspace">
           {registryLookup.ok ? 'The registry reader is not available.' : registryLookup.message}
         </Notice>
@@ -223,61 +228,82 @@ export function SetupPage({ salt }: { salt: string }) {
     account.address !== undefined &&
     record.ownerAddress.toLowerCase() !== account.address.toLowerCase();
 
+  const doneCount = SETUP_STEPS.filter((step) => record.steps[step.id].status === 'done').length;
+
   return (
-    <div className="mx-auto max-w-2xl space-y-6">
-      <div>
-        <h1 className="text-2xl font-semibold">Set up “{record.label}”</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Each step shows what really happened. If this page reloads, setup resumes from the first
-          unfinished step.
-        </p>
-      </div>
-
-      {complete ? null : <WalletPanel account={account} />}
-      {wrongAccount ? (
-        <Notice tone="danger" title="Wrong wallet account">
-          This workspace belongs to <code className="break-all">{record.ownerAddress}</code>. Switch
-          to that account in your wallet to continue.
-        </Notice>
-      ) : null}
-
-      <ol
-        className="divide-y divide-border rounded-md border border-border bg-surface px-4"
-        aria-label="Setup steps"
-      >
-        {SETUP_STEPS.map((step) => {
-          const state = record.steps[step.id];
-          const status: StepRowStatus = state.status;
-          return (
-            <StepRow key={step.id} status={status} title={step.title}>
-              {state.status === 'pending' ? <p>{step.summary}</p> : stepDetail(state, now)}
-            </StepRow>
-          );
-        })}
-      </ol>
-
-      {complete ? (
-        <InvitePanel record={record} headingRef={inviteHeading} />
-      ) : (
-        <div className="flex flex-wrap items-center gap-3">
-          <Button
-            ref={startRef}
-            onClick={() => start(record)}
-            disabled={running || !account.isConnected || wrongAccount}
-          >
-            {running
-              ? 'Working…'
-              : failed
-                ? 'Try again'
-                : started
-                  ? 'Continue setup'
-                  : 'Start setup'}
-          </Button>
-          {!account.isConnected ? (
-            <span className="text-sm text-muted-foreground">Connect a wallet to start.</span>
-          ) : null}
+    <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_21rem] lg:gap-20">
+      <div className="max-w-2xl min-w-0 space-y-8">
+        <FlowSteps current={complete ? 2 : 1} />
+        <div className="space-y-3">
+          <h1 className="display text-4xl md:text-5xl">Set up “{record.label}”</h1>
+          <p className="text-muted-foreground">
+            Each step shows what really happened. If this page reloads, setup resumes from the first
+            unfinished step.
+          </p>
         </div>
-      )}
+
+        {complete ? null : <WalletPanel account={account} />}
+        {wrongAccount ? (
+          <Notice tone="danger" title="Wrong wallet account">
+            This workspace belongs to <code className="break-all">{record.ownerAddress}</code>.
+            Switch to that account in your wallet to continue.
+          </Notice>
+        ) : null}
+
+        <div className="rounded-xl border border-border bg-surface p-5 shadow-card sm:p-6">
+          <div className="mb-5 flex items-center gap-3 text-xs font-medium text-muted-foreground">
+            <span className="tabular shrink-0">
+              {doneCount} of {SETUP_STEPS.length} done
+            </span>
+            <span
+              aria-hidden="true"
+              className="relative h-1 flex-1 overflow-hidden rounded-full bg-muted"
+            >
+              <span
+                className="progress-fill absolute inset-0 rounded-full bg-primary"
+                style={{ transform: `scaleX(${doneCount / SETUP_STEPS.length})` }}
+              />
+            </span>
+          </div>
+          <ol aria-label="Setup steps">
+            {SETUP_STEPS.map((step) => {
+              const state = record.steps[step.id];
+              const status: StepRowStatus = state.status;
+              return (
+                <StepRow key={step.id} status={status} title={step.title}>
+                  {state.status === 'pending' ? <p>{step.summary}</p> : stepDetail(state, now)}
+                </StepRow>
+              );
+            })}
+          </ol>
+        </div>
+
+        {complete ? (
+          <InvitePanel record={record} headingRef={inviteHeading} />
+        ) : (
+          <div className="flex flex-wrap items-center gap-3">
+            <Button
+              ref={startRef}
+              onClick={() => start(record)}
+              disabled={running || !account.isConnected || wrongAccount}
+            >
+              {running
+                ? 'Working…'
+                : failed
+                  ? 'Try again'
+                  : started
+                    ? 'Continue setup'
+                    : 'Start setup'}
+            </Button>
+            {!account.isConnected ? (
+              <span className="text-sm text-muted-foreground">Connect a wallet to start.</span>
+            ) : null}
+          </div>
+        )}
+      </div>
+      <aside className="lg:border-l lg:border-border lg:pl-10">
+        <DataPath headingId="legend-heading" />
+      </aside>
     </div>
   );
 }

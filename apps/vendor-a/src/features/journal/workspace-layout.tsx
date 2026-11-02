@@ -1,5 +1,6 @@
 import { Link, Outlet } from '@tanstack/react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
+import { Avatar } from '@/components/avatar';
 import { Notice } from '@/components/notice';
 import { db } from '../../db/db';
 import type { WorkspaceRecord } from '../../db/types';
@@ -13,16 +14,28 @@ function OpenWorkspace({ workspace }: { workspace: WorkspaceRecord }) {
   const journal = useJournal(workspace);
   return (
     <JournalContext.Provider value={journal}>
-      <div className="space-y-6">
-        <header className="space-y-1">
-          <h1 className="break-words text-2xl font-semibold">
-            <Link to="/w/$wsId" params={{ wsId: workspace.wsId }} className="hover:underline">
+      <div className="space-y-8">
+        <header className="space-y-3 border-b border-border pb-6">
+          <h1 className="display break-words text-4xl md:text-5xl">
+            <Link
+              to="/w/$wsId"
+              params={{ wsId: workspace.wsId }}
+              className="inline-block rounded-md py-1.5 decoration-border-strong underline-offset-8 hover:underline"
+            >
               {workspace.label}
             </Link>
           </h1>
-          <p className="text-sm text-muted-foreground">
-            {workspace.role === 'owner' ? 'You own this workspace' : 'You are a member'} · writing
-            as <strong className="font-medium text-foreground">{workspace.displayName}</strong> ·{' '}
+          <p className="flex flex-wrap items-center gap-x-2.5 gap-y-1.5 text-sm text-muted-foreground">
+            <span>
+              {workspace.role === 'owner' ? 'You own this workspace' : 'You are a member'}
+            </span>
+            <span aria-hidden="true">·</span>
+            <span className="inline-flex items-center gap-2">
+              writing as
+              <Avatar name={workspace.displayName} size="sm" />
+              <strong className="font-medium text-foreground">{workspace.displayName}</strong>
+            </span>
+            <span aria-hidden="true">·</span>
             <code title={workspace.wsId}>{shortHex(workspace.wsId)}</code>
           </p>
         </header>
@@ -44,11 +57,11 @@ export function WorkspaceLayout({ wsId }: { wsId: string }) {
   }
   if (workspace === null) {
     return (
-      <div className="space-y-4">
-        <h1 className="text-2xl font-semibold">Workspace not found</h1>
+      <div className="max-w-2xl space-y-5">
+        <h1 className="display text-4xl">Workspace not found</h1>
         <Notice tone="danger" title="This workspace is not on this device">
           Open the invite link you were sent to join it, or go back to your{' '}
-          <Link to="/" className="underline">
+          <Link to="/" className="font-medium underline underline-offset-2">
             workspaces
           </Link>
           .
