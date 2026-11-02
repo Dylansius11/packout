@@ -41,3 +41,9 @@ Thumbs.db
 .vscode/*
 !.vscode/extensions.json
 .idea/
+
+# Demo kit: bundles and workspace keys stay local
+demo-kit/bundles/*
+demo-kit/keys/*
+!demo-kit/bundles/.gitkeep
+!demo-kit/keys/.gitkeep
