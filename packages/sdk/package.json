@@ -1,21 +1,65 @@
 {
   "name": "@packout/sdk",
-  "version": "0.0.0",
-  "private": true,
+  "version": "0.1.0",
+  "description": "PACKOUT workspace exit kit: encryption, bundles, verification and registry clients",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Dylansius11/packout",
+    "directory": "packages/sdk"
+  },
+  "keywords": [
+    "packout",
+    "portaldot",
+    "workspace",
+    "encryption",
+    "data-portability"
+  ],
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
     "./native": "./src/native.ts"
   },
+  "engines": {
+    "node": ">=24"
+  },
+  "files": [
+    "dist"
+  ],
+  "publishConfig": {
+    "access": "public",
+    "exports": {
+      ".": {
+        "types": "./dist/index.d.ts",
+        "default": "./dist/index.js"
+      },
+      "./native": {
+        "types": "./dist/native.d.ts",
+        "default": "./dist/native.js"
+      }
+    }
+  },
   "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "prepack": "pnpm build",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {
     "@noble/ciphers": "2.4.0",
     "@noble/hashes": "2.4.0",
-    "@polkadot/api": "17.0.2",
     "shamir-secret-sharing": "0.0.4",
     "viem": "2.57.10",
     "zod": "4.6.7"
+  },
+  "peerDependencies": {
+    "@polkadot/api": "17.0.2"
+  },
+  "peerDependenciesMeta": {
+    "@polkadot/api": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@polkadot/api": "17.0.2"
   }
 }

@@ -1,8 +1,21 @@
 {
   "name": "@packout/verify",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "description": "Independent PACKOUT bundle v1 verifier",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Dylansius11/packout",
+    "directory": "packages/verify"
+  },
+  "keywords": [
+    "packout",
+    "portaldot",
+    "bundle",
+    "verification",
+    "cli"
+  ],
   "bin": {
     "packout-verify": "./dist/cli.js"
   },
@@ -11,6 +24,9 @@
   ],
   "engines": {
     "node": ">=24"
+  },
+  "publishConfig": {
+    "access": "public"
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json",
