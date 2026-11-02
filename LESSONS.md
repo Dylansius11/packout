@@ -2,6 +2,11 @@
 
 Read the headlines before starting work. Format: `### YYYY-MM-DD: headline`, then what happened, root cause, rule going forward. Newest on top.
 
+### 2026-11-02: A Vercel project created from a repo directory connects itself to GitHub and replaces a working site on the next push
+- What happened: landing, Restore and Vendor A returned 404 minutes after they were deployed, and only 17 minutes after a `curl` had answered 200.
+- Root cause: `vercel deploy` run inside `apps/*/dist` (which sits inside the git repo) created each project already linked to the GitHub repo. Every push to `main` then triggered a production deploy from the repo root, which has no build output, and the production alias moved to that empty deployment (`source: git` in the deployment record).
+- Rule: deploy with `node deploy/web/deploy.mjs <site|restore|vendor-a>`, which disconnects Git on every run. After any deploy, check `/` over HTTP and `npx vercel api /v9/projects/<name>` shows no `link`. Static apps with path routing (Vendor A) need a rewrite to `/index.html` (`apps/vendor-a/public/vercel.json`), otherwise `/join` and `/w/<id>` return 404 when opened directly.
+
 ### 2026-11-01: Shared browser helpers must stay within the configured TypeScript library
 - What happened: extracting the script finality loop into the browser-safe SDK hit TS2550 when its timer used `Promise.withResolvers`.
 - Root cause: the project's configured TypeScript library does not include that ES2024 API, even though the Node development runtime supports it.
