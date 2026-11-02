@@ -20,7 +20,7 @@ export function AppShell() {
         Skip to content
       </a>
       <header className="border-b border-border">
-        <div className="mx-auto flex max-w-[70rem] items-center justify-between gap-4 px-5 sm:px-8">
+        <div className="mx-auto flex max-w-[96rem] items-center justify-between gap-4 px-5 sm:px-8 lg:px-14">
           <Link to="/" className="-mx-1 flex min-h-16 items-center rounded-md px-1">
             <Logo />
           </Link>
@@ -37,7 +37,7 @@ export function AppShell() {
         id="main"
         ref={main}
         tabIndex={-1}
-        className="mx-auto w-full max-w-[70rem] flex-1 px-5 py-10 outline-none sm:px-8 md:py-14"
+        className="mx-auto w-full max-w-[96rem] flex-1 px-5 py-10 outline-none sm:px-8 md:py-14 lg:px-14"
       >
         {registryLookup.ok ? null : (
           <Notice tone="danger" title="This build has no registry address" className="mb-6">
@@ -47,7 +47,7 @@ export function AppShell() {
         <Outlet />
       </main>
       <footer className="border-t border-border">
-        <div className="mx-auto flex max-w-[70rem] flex-col gap-1 px-5 py-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8">
+        <div className="mx-auto flex max-w-[96rem] flex-col gap-1 px-5 py-4 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between sm:px-8 lg:px-14">
           <p>
             Vendor A stores only encrypted data. Restore checks against Portaldot via {rpcHost}.
           </p>

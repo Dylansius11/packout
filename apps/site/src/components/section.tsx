@@ -30,7 +30,7 @@ export function Section({
       aria-labelledby={headingId}
       className={`${gutter} scroll-mt-20 ${panel ? 'py-[clamp(0.75rem,2vw,2rem)]' : 'py-[clamp(4.5rem,9vw,8rem)]'}`}
     >
-      <div className="mx-auto max-w-[84rem]">
+      <div className="mx-auto max-w-[110rem]">
         <div className={panel ? 'panel' : undefined}>
           <Reveal>
             <p className="eyebrow">

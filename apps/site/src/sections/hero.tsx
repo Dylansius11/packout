@@ -71,7 +71,7 @@ export function Hero() {
       />
 
       <div className={`${gutter} flex flex-1 items-center py-12 md:py-20`}>
-        <div className="mx-auto w-full max-w-[84rem]">
+        <div className="mx-auto w-full max-w-[110rem]">
           <div className="max-w-[56rem]">
             <p className="eyebrow surface">
               <span>Packout</span>

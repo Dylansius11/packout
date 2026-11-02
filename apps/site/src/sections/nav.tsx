@@ -16,7 +16,7 @@ export function SiteNav() {
     <header className="sticky top-0 z-40 border-b border-hair bg-black/55 backdrop-blur-xl backdrop-saturate-150">
       <nav
         aria-label="Primary"
-        className={`${gutter} mx-auto flex h-16 max-w-[84rem] items-center justify-between`}
+        className={`${gutter} mx-auto flex h-16 max-w-[119rem] items-center justify-between`}
       >
         <a href="#top" aria-label="Packout, back to top" className="text-ivory">
           <Wordmark size={16} drifting />

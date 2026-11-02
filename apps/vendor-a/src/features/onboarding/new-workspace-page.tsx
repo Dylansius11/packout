@@ -23,7 +23,7 @@ export function NewWorkspacePage() {
 
   return (
     <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_21rem] lg:gap-20">
-      <div className="max-w-xl space-y-8">
+      <div className="max-w-2xl space-y-8">
         <FlowSteps current={0} />
         <div className="space-y-3">
           <h1 className="display text-4xl md:text-5xl">Create a workspace</h1>

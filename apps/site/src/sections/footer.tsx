@@ -5,7 +5,7 @@ import { DemoLinks, GithubLink, gutter } from '../ui';
 export function Footer() {
   return (
     <footer className={`${gutter} border-t border-hair pb-10 pt-14 md:pt-20`}>
-      <div className="mx-auto max-w-[84rem]">
+      <div className="mx-auto max-w-[110rem]">
         <div className="md:hidden">
           <Wordmark size={44} className="text-ivory" />
         </div>

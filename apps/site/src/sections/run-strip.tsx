@@ -55,7 +55,7 @@ export function RunStrip() {
             </div>
           </div>
         ))}
-        <ol className={`${gutter} mx-auto max-w-[84rem] space-y-4`}>
+        <ol className={`${gutter} mx-auto max-w-[119rem] space-y-4`}>
           <li className="sr-only">
             Operations 0, 1 and 2 were written through Vendor A and anchored in block{' '}
             {demoRun.vendorAppend}. The vendor was stopped. The owner signed rotateEpoch in block{' '}
@@ -73,7 +73,7 @@ export function RunStrip() {
         </ol>
       </div>
       <p
-        className={`${gutter} baseline mx-auto mt-4 max-w-[84rem] whitespace-normal text-[11px] tracking-[0.08em] text-ash`}
+        className={`${gutter} baseline mx-auto mt-4 max-w-[119rem] whitespace-normal text-[11px] tracking-[0.08em] text-ash`}
       >
         Recorded on Portaldot testnet, 29 Oct 2026 · workspace{' '}
         <a href={block(demoRun.vendorAppend)} className="underline underline-offset-4">

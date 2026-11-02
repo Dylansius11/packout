@@ -76,7 +76,7 @@ export function JoinPage() {
 
   return (
     <div className="grid gap-12 lg:grid-cols-[minmax(0,1fr)_21rem] lg:gap-20">
-      <div className="max-w-xl space-y-8">
+      <div className="max-w-2xl space-y-8">
         <div className="space-y-3">
           <h1 className="display text-4xl md:text-5xl">Join a workspace</h1>
           <p className="text-muted-foreground">

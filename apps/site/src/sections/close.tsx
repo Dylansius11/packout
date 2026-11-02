@@ -51,7 +51,7 @@ export function Close() {
         mirror
         intensity={0.2}
       />
-      <div className={`${gutter} mx-auto max-w-[84rem]`}>
+      <div className={`${gutter} mx-auto max-w-[119rem]`}>
         <Reveal className="flex flex-col items-start gap-10">
           <PixelMark size="clamp(4rem, 9vw, 7.5rem)" drifting className="text-ivory" />
           <h2 id="close-heading" className="display text-[clamp(2.6rem,7vw,6rem)] text-ivory">
