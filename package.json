@@ -27,7 +27,8 @@
     "vendor-a": "pnpm --filter @packout/vendor-a dev",
     "client-b": "pnpm --filter @packout/client-b dev",
     "site": "pnpm --filter @packout/site dev",
-    "e2e": "pnpm --filter @packout/e2e test"
+    "e2e": "pnpm --filter @packout/e2e test",
+    "e2e:testnet": "pnpm --filter @packout/e2e test:testnet"
   },
   "devDependencies": {
     "@biomejs/biome": "2.6.2",

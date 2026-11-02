@@ -30,7 +30,7 @@ export async function onboardOwner(page: Page, testInfo: TestInfo) {
   return { invite, key, keyString: keyString ?? '' };
 }
 
-export async function writeThreeMemberOps(page: Page, invite: URL) {
+export async function writeThreeMemberOps(page: Page, invite: URL, anchorTimeout?: number) {
   await page.goto(invite.href);
   await page.getByLabel('Your display name').fill('Dina');
   await page.getByRole('button', { name: 'Join workspace', exact: true }).click();
@@ -41,13 +41,17 @@ export async function writeThreeMemberOps(page: Page, invite: URL) {
   await page.getByLabel('Description', { exact: true }).fill('A real encrypted member operation.');
   await page.getByRole('button', { name: 'Create issue', exact: true }).click();
   const issue = page.getByRole('list', { name: 'Issues', exact: true }).getByRole('listitem');
-  await expect(issue.getByText('Anchored on Portaldot · #0', { exact: true })).toBeVisible();
+  await expect(issue.getByText('Anchored on Portaldot · #0', { exact: true })).toBeVisible({
+    timeout: anchorTimeout,
+  });
   await issue.getByRole('link').click();
   await expect(page.getByRole('heading', { name: 'Keep the history', exact: true })).toBeVisible();
   await page.getByLabel('Comment', { exact: true }).fill('The member does not need a wallet.');
   await page.getByRole('button', { name: 'Add comment', exact: true }).click();
   const comment = page.getByRole('list', { name: 'Comments', exact: true }).getByRole('listitem');
-  await expect(comment.getByText('Anchored on Portaldot · #1', { exact: true })).toBeVisible();
+  await expect(comment.getByText('Anchored on Portaldot · #1', { exact: true })).toBeVisible({
+    timeout: anchorTimeout,
+  });
   await page.getByLabel('Status', { exact: true }).selectOption('done');
   await expect(page.getByLabel('Status', { exact: true })).toHaveValue('done');
   await expect(
@@ -55,7 +59,7 @@ export async function writeThreeMemberOps(page: Page, invite: URL) {
       .getByRole('article')
       .locator('header')
       .getByText('Anchored on Portaldot · #2', { exact: true }),
-  ).toBeVisible();
+  ).toBeVisible({ timeout: anchorTimeout });
   await page.getByRole('link', { name: 'All issues', exact: true }).click();
 }
 
