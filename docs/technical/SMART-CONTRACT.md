@@ -240,3 +240,23 @@ Evidence: gitignored `out/native-verification/sdk-evidence.json` and `cli-eviden
 
 Reruns of the no-key scenario with `pnpm verify bundle.json --native-blocks native-blocks.json` on 2026-11-01 printed the same verdict: five checks PASS, decryption SKIPPED, exit 0. The landing page (`apps/site`, Builders section) shows that output verbatim.
 
+
+### 9.5 Hosted browser run on testnet (2026-11-02)
+
+`pnpm e2e:testnet` drove the hosted apps (`packout-vendor-a.vercel.app`, `packout-restore.vercel.app`), the hosted vendor API (`packout-api.43.129.38.115.sslip.io`) and Portaldot testnet with a real signing wallet. There is no browser extension: the spec installs an EIP-1193 provider (announced through EIP-6963) and signs in Node with a throwaway owner key generated for the run. It passed in 1.5 minutes (attempt 2 of 2; attempt 1 failed on a bug in the test provider, which auto-connected and hid the Connect button). Workspace `0x26c71cd026e33c94c6bfe2630bcb968fb5d623d4568dbfa929d2d61e7bf06071`, owner `0x784751C39121eAd57826201c9F1B7C68E74c656d`.
+
+| Step | Tx | Block |
+| --- | --- | --- |
+| Fund the throwaway owner (25 tPOT, from the deployer) | `0x94c2591ff0ec39b66bbf2ca6d78c3962da7fb247154a3d3c33bda56edb452502` | [289275](https://scanner-testnet-v3.portaldot.dev/#/blocks/289275) |
+| Owner creates the workspace in hosted Vendor A | `0x1a86b94aac8e24aa88e09caa16e23e458d61effb0744aa9439e4fd950b483016` | [289276](https://scanner-testnet-v3.portaldot.dev/#/blocks/289276) |
+| Owner grants the vendor writer | `0xf2b98e6981c7cc91bdef96e699658dd0b8a2e4fe257dc1d8cb29eb1a32c87fda` | [289277](https://scanner-testnet-v3.portaldot.dev/#/blocks/289277) |
+| Wallet-less member writes operation 0, anchored by the hosted API | `0x96f93eee35c08088c75df765b15f07f1775a2f5f682a7ac7634581f22cb72341` | [289278](https://scanner-testnet-v3.portaldot.dev/#/blocks/289278) |
+| Operation 1 | `0xee2b3eac0510edb4cffeb54fdf9ac2967e1ec1759eaf4cd51a049c2d8a944125` | [289280](https://scanner-testnet-v3.portaldot.dev/#/blocks/289280) |
+| Operation 2 | `0x4f2a2b5f476de6adb657a418617ceb007a7ffab54e036a741c90b9c4134ba162` | [289281](https://scanner-testnet-v3.portaldot.dev/#/blocks/289281) |
+| Owner takes over in hosted Packout Restore: `rotateEpoch` | `0x0a2afd7ab6466df20a1157cddde6c0c5d52b99978c2c844f244ec6340aa73721` | [289283](https://scanner-testnet-v3.portaldot.dev/#/blocks/289283) |
+| Owner writes operation 3 from Restore | `0xc5a4eb21610a19ba61833ed5c40332baeac2cdfe081d311ef9f620ce06293393` | [289286](https://scanner-testnet-v3.portaldot.dev/#/blocks/289286) |
+| Refund of the unused balance to the deployer | `0x5caa02aab28cf34aad93e42521e2830a4861a10ec42ccfba4c5e099bce6ce366` | [289288](https://scanner-testnet-v3.portaldot.dev/#/blocks/289288) |
+
+What the run asserted: six of six checks passed in Restore on real testnet history; Restore made zero requests to the vendor API (that origin was blocked in the page); the takeover reached **Finalized** in the UI and the finalized height covered its block; the vendor's comeback write was refused as `NotWriter(wsId, 0x651dBB59…F1a0, 1)`; a pre-takeover bundle failed "Complete history" (1 operation missing) and disabled continuing.
+
+Limits, stated plainly: the vendor refusal is an `eth_call` simulation from the vendor's address, not a mined reverted transaction (the mined one is in 9.1, block 238210); the hosted vendor process was not stopped, Restore's independence is shown by blocking its requests; the included-but-not-finalized branch exists but was not exercised. The run cost about 11.7 tPOT net after the refund (createWorkspace and grantWriter are storage deposits, about 7.7 and 3.9 tPOT per LESSONS), so a 3 tPOT owner is not enough. Evidence (gitignored): `out/testnet-e2e/<timestamp>/evidence.json`; it holds public hashes only.

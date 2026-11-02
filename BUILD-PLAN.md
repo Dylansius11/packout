@@ -78,7 +78,8 @@ Goal: one real core flow on Portaldot testnet, honestly documented. Breadth come
 
 ## Phase 7: Real testnet demo (target 2026-11-03)
 
-- [ ] **7.1 Full demo on Portaldot testnet** with hosted Vendor A, hosted Client B and hosted vendor API (hosting per OPEN-DECISIONS D5). Record tx hashes for every step in SMART-CONTRACT.md.
+- [x] **7.1 Full demo on Portaldot testnet** with hosted Vendor A, hosted Client B and hosted vendor API (hosting per OPEN-DECISIONS D5). Record tx hashes for every step in SMART-CONTRACT.md.
+  - 2026-11-02: `pnpm e2e:testnet` passed against the hosted apps, the hosted API and Portaldot testnet; every hash is in SMART-CONTRACT.md 9.5. Honest limits: the wallet is an injected provider signing in Node (no browser extension yet), and the hosted vendor process was not stopped (Restore's requests to it were blocked instead). The live demo should still be rehearsed once with a real wallet extension.
 - [x] **7.2 Proof view (F6, P1).** Read-only workspace proof page: owner, writers, count, head, recent appends with explorer links.
 - [ ] **7.3 Backup recording** of the full real run.
 - [x] **7.4 Headless full demo.** `pnpm demo:full` runs PRD section 4 without a browser: restore and verify, `rotateEpoch(wsId, [])`, owner write at the next index, vendor write refused by simulation and then mined as a reverted tx (OPEN-DECISIONS D10), old export refused as stale. Local rehearsal passes (`pnpm demo:full:local`); tick after the testnet run is recorded in SMART-CONTRACT.md.
