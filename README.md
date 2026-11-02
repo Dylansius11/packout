@@ -160,9 +160,7 @@ Details: [ARCHITECTURE.md](docs/technical/ARCHITECTURE.md), [SMART-CONTRACT.md](
 
 PACKOUT is for app builders. Pick the path you prefer.
 
-> **Publishing status, 2026-11-02:** `@packout/sdk` and `@packout/verify` 0.1.0 are built, packed and tested in an empty project, but not on npm yet. Until `npm view @packout/sdk` resolves, run from a clone: `git clone https://github.com/Dylansius11/packout && cd packout && pnpm install`, then use `pnpm verify bundle.json --key key.txt`. The agent skill below works today.
-
-**1. Verify a bundle** (no install beyond Node 24):
+**1. Verify a bundle** (published as `@packout/verify`; needs Node 24; verified from the npm registry on 2026-11-02):
 
 ```bash
 npx @packout/verify bundle.json --key key.txt
