@@ -32,7 +32,7 @@ export function CopyButton({
     <span className="inline-flex flex-wrap items-center gap-2">
       <Button variant="outline" size="sm" className={className} onClick={copy}>
         {state === 'copied' ? (
-          <Check size={16} weight="bold" aria-hidden />
+          <Check size={16} weight="bold" className="chip-in text-success" aria-hidden />
         ) : (
           <Copy size={16} aria-hidden />
         )}

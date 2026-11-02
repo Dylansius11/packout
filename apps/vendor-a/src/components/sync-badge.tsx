@@ -1,14 +1,16 @@
-import { AnchorSimple, CloudArrowUp, Laptop, WarningOctagon } from '@phosphor-icons/react';
 import { blockUrl } from '../config/env';
 import type { SyncState } from '../domain/sync-state';
 import { cn } from '../lib/utils';
 
-const tone = {
-  device: 'border-border bg-muted text-foreground',
-  vendor: 'border-warning-line bg-warning-soft text-warning',
+type Tone = 'device' | 'vendor' | 'anchored' | 'rejected' | 'stalled';
+
+const tone: Record<Tone, string> = {
+  device: 'border-border-strong bg-muted text-foreground',
+  vendor: 'border-transit-line bg-transit-soft text-transit',
   anchored: 'border-success-line bg-success-soft text-success',
   rejected: 'border-danger-line bg-danger-soft text-danger',
-} as const;
+  stalled: 'border-warning-line bg-warning-soft text-warning',
+};
 
 function describe(state: SyncState): { label: string; detail: string } {
   switch (state.kind) {
@@ -39,36 +41,48 @@ function describe(state: SyncState): { label: string; detail: string } {
   }
 }
 
-const icons = {
-  device: Laptop,
-  vendor: CloudArrowUp,
-  anchored: AnchorSimple,
-  rejected: WarningOctagon,
-} as const;
+/** How far along the path device, vendor, Portaldot a change got. Decorative: the label says it in words. */
+const REACHED = { device: 1, vendor: 2, anchored: 3, rejected: 1 } as const;
+
+function toneOf(state: SyncState): Tone {
+  if ((state.kind === 'device' || state.kind === 'vendor') && state.stalled) return 'stalled';
+  return state.kind;
+}
 
 /** Where one change lives right now. With `showBlock`, an anchored change links to its block. */
 export function SyncBadge({ state, showBlock = false }: { state: SyncState; showBlock?: boolean }) {
   const { label, detail } = describe(state);
-  const Icon = icons[state.kind];
   const url =
     state.kind === 'anchored' && state.blockNumber !== null ? blockUrl(state.blockNumber) : null;
+  const reached = REACHED[state.kind];
   return (
     <span className="inline-flex flex-wrap items-center gap-x-2 gap-y-1 text-xs">
       <span
+        key={state.kind}
         className={cn(
-          'inline-flex items-center gap-1.5 rounded-sm border px-2 py-0.5 font-medium',
-          tone[state.kind],
+          'chip-in inline-flex items-center gap-2 rounded-full border py-0.5 pr-2.5 pl-2 font-medium leading-5 transition-colors duration-200',
+          tone[toneOf(state)],
         )}
         title={detail}
         data-sync-state={state.kind}
       >
-        <Icon size={14} weight="bold" aria-hidden />
+        <span aria-hidden="true" className="flex shrink-0 gap-0.5">
+          {[1, 2, 3].map((step) => (
+            <span
+              key={step}
+              className={cn(
+                'h-[3px] w-2.5 rounded-full bg-current transition-opacity duration-300',
+                step <= reached ? 'opacity-100' : 'opacity-25',
+              )}
+            />
+          ))}
+        </span>
         {label}
       </span>
       {showBlock && state.kind === 'anchored' && state.blockNumber !== null ? (
         url ? (
           <a
-            className="text-primary underline underline-offset-2"
+            className="inline-flex min-h-11 items-center font-medium text-primary underline underline-offset-2 md:min-h-0"
             href={url}
             target="_blank"
             rel="noreferrer"

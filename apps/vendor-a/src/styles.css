@@ -1,47 +1,65 @@
 @import "tailwindcss";
 @import "@fontsource-variable/geist";
 @import "@fontsource-variable/geist-mono";
+@import "@fontsource-variable/newsreader/wght.css";
 
 /*
- * Neutral zinc surfaces, one blue accent. Green, amber and red appear only as state colors
- * (anchored, waiting, failed) and always come with a word, never color alone.
+ * Vendor A is a warm, paper-and-ink workspace tool with one deep teal accent.
+ * Ink, paper and teal carry the interface. Slate, green, clay and crimson appear only as state
+ * colors (sent to vendor, anchored, waiting, failed) and always come with a word, never color alone.
  */
 @theme {
   --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Newsreader Variable", ui-serif, Georgia, serif;
   --font-mono: "Geist Mono Variable", ui-monospace, "SFMono-Regular", Menlo, monospace;
 
-  --color-background: #fafafa;
-  --color-surface: #ffffff;
-  --color-foreground: #18181b;
-  --color-muted: #f4f4f5;
-  --color-muted-foreground: #52525b;
-  --color-border: #e4e4e7;
-  --color-input: #71717a;
-  --color-primary: #1d4ed8;
-  --color-primary-hover: #1e40af;
+  --color-background: #f6f3ec;
+  --color-surface: #fffefb;
+  --color-foreground: #1c1b18;
+  --color-muted: #edeadf;
+  --color-muted-foreground: #5e5a50;
+  --color-border: #e3ded2;
+  --color-border-strong: #cfc9ba;
+  --color-input: #8f897b;
+  --color-primary: #0b5b61;
+  --color-primary-hover: #08484d;
   --color-primary-foreground: #ffffff;
-  --color-ring: #2563eb;
+  --color-primary-soft: #e3f0ef;
+  --color-primary-line: #b9d6d4;
+  --color-ring: #0b5b61;
 
-  --color-success: #166534;
-  --color-success-soft: #f0fdf4;
-  --color-success-line: #bbf7d0;
-  --color-warning: #78350f;
-  --color-warning-soft: #fffbeb;
-  --color-warning-line: #fde68a;
-  --color-danger: #991b1b;
-  --color-danger-soft: #fef2f2;
-  --color-danger-line: #fecaca;
+  --color-transit: #2f5575;
+  --color-transit-soft: #e8eef4;
+  --color-transit-line: #c5d3e0;
+  --color-success: #1f6a3a;
+  --color-success-soft: #eaf3ea;
+  --color-success-line: #bfdcc5;
+  --color-warning: #8a3a12;
+  --color-warning-soft: #fbeee4;
+  --color-warning-line: #efcdb6;
+  --color-danger: #9b1c2e;
+  --color-danger-soft: #fbeaea;
+  --color-danger-line: #edc0c4;
 
   --radius-sm: 6px;
-  --radius-md: 8px;
-  --radius-lg: 8px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+  --radius-xl: 18px;
+
+  --shadow-card:
+    0 1px 0 rgb(28 27 24 / 0.03), 0 1px 3px rgb(28 27 24 / 0.05),
+    0 6px 16px -10px rgb(28 27 24 / 0.1);
+  --shadow-raised: 0 1px 2px rgb(28 27 24 / 0.06), 0 10px 28px -12px rgb(28 27 24 / 0.18);
+  --shadow-button: inset 0 1px 0 rgb(255 255 255 / 0.14), 0 1px 2px rgb(8 72 77 / 0.35);
 
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-out-quart: cubic-bezier(0.23, 1, 0.32, 1);
 }
 
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
+    background: var(--color-background);
   }
   body {
     margin: 0;
@@ -65,11 +83,12 @@
     text-wrap: pretty;
   }
   ::selection {
-    background: color-mix(in oklab, var(--color-primary) 22%, white);
+    background: var(--color-primary-line);
   }
   :focus-visible {
     outline: 2px solid var(--color-ring);
     outline-offset: 2px;
+    border-radius: 4px;
   }
   button,
   [role="button"],
@@ -80,7 +99,8 @@
   code,
   kbd {
     font-family: var(--font-mono);
-    font-size: 0.9em;
+    font-size: 0.86em;
+    font-feature-settings: normal;
   }
   textarea,
   input,
@@ -93,9 +113,40 @@
   .tabular {
     font-variant-numeric: tabular-nums;
   }
+  /* Display headings: the one serif in the product, tight and optically sized. */
+  .display {
+    font-family: var(--font-display);
+    font-weight: 500;
+    font-optical-sizing: auto;
+    font-variant-numeric: lining-nums;
+    font-feature-settings: normal;
+    letter-spacing: -0.022em;
+    line-height: 1.08;
+  }
+  .select-caret {
+    appearance: none;
+    padding-right: 2.5rem;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%235e5a50' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 6.5l4 4 4-4'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 0.75rem center;
+    background-size: 1rem;
+  }
   /* Entrance for a state that just appeared (a step finishing, a banner arriving). */
   .state-in {
     animation: state-in 220ms var(--ease-out-expo) both;
+  }
+  /* A list item arriving. Stagger is capped by the caller (--i), so long lists never feel slow. */
+  .row-in {
+    animation: row-in 260ms var(--ease-out-quart) both;
+    animation-delay: calc(var(--i, 0) * 40ms);
+  }
+  /* A status or sync state that just changed. */
+  .chip-in {
+    animation: chip-in 200ms var(--ease-out-quart) both;
+  }
+  .progress-fill {
+    transform-origin: left center;
+    transition: transform 420ms var(--ease-out-expo);
   }
   .spin {
     animation: spin 900ms linear infinite;
@@ -108,6 +159,18 @@
     transform: translateY(4px);
   }
 }
+@keyframes row-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+@keyframes chip-in {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+}
 @keyframes spin {
   to {
     transform: rotate(360deg);
@@ -115,7 +178,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .state-in {
+  .state-in,
+  .row-in,
+  .chip-in {
     animation: none;
   }
   .spin {

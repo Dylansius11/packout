@@ -13,6 +13,7 @@
   "dependencies": {
     "@fontsource-variable/geist": "5.3.0",
     "@fontsource-variable/geist-mono": "5.3.0",
+    "@fontsource-variable/newsreader": "5.3.0",
     "@packout/brand": "workspace:*",
     "@packout/sdk": "workspace:*",
     "@phosphor-icons/react": "2.1.10",

@@ -6,10 +6,13 @@ import { shortHex } from '../lib/format';
 export function TxRef({ txHash, blockNumber }: { txHash: Hex | null; blockNumber: number | null }) {
   const url = blockNumber === null ? null : blockUrl(blockNumber);
   return (
-    <span className="tabular text-xs text-muted-foreground">
+    <span className="tabular block text-xs text-muted-foreground">
       {txHash ? (
         <>
-          Transaction <code title={txHash}>{shortHex(txHash)}</code>
+          Transaction{' '}
+          <code title={txHash} className="rounded-sm bg-muted px-1 py-px text-foreground">
+            {shortHex(txHash)}
+          </code>
         </>
       ) : null}
       {blockNumber !== null ? (
@@ -18,7 +21,7 @@ export function TxRef({ txHash, blockNumber }: { txHash: Hex | null; blockNumber
           Included in{' '}
           {url ? (
             <a
-              className="text-primary underline underline-offset-2"
+              className="font-medium text-primary underline underline-offset-2"
               href={url}
               target="_blank"
               rel="noreferrer"
