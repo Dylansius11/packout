@@ -100,7 +100,8 @@ Goal: one real core flow on Portaldot testnet, honestly documented. Breadth come
 
 - [ ] **9.1 README final**: problem, why Portaldot, architecture, deployment instructions, addresses and tx hashes, what was built in-window, AI-tool disclosure, license.
 - [ ] **9.2 Demo video** (3 min max): pain, one-liner, continuous real flow ending in rejected vendor write, why Portaldot, business, next 90 days.
-- [ ] **9.3 Pitch deck** (PDF or link): problem, why Portaldot is essential, proof of function, why continued support.
+- [x] **9.3 Pitch deck** (PDF or link): problem, why Portaldot is essential, proof of function, why continued support.
+  - 2026-11-03: live at https://packout-site.vercel.app/deck (12 slides; print to PDF from the page). Market sizing is a labelled planning scenario; only the 72,000 company records are sourced.
 - [ ] **9.4 Freeze checklist**: fresh-clone run, all links work, no secrets, no final core commits in the last 24 hours.
 - [ ] **9.5 Live demo script** rehearsed for 2026-11-08.
 

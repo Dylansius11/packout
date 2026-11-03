@@ -255,6 +255,7 @@ This is not a production recovery setup: all keys and shares are on one rehearsa
 | App | What it is | Link |
 |---|---|---|
 | Landing | The story, the six checks and real testnet blocks | https://packout-site.vercel.app |
+| Pitch deck | Twelve slides: problem, why Portaldot, proof, architecture, market, business, comparison, team | https://packout-site.vercel.app/deck |
 | Demo vendor (Vendor A) | The SaaS that gets shut down. A separate company's app | https://packout-vendor-a.vercel.app |
 | Packout Restore | The independent app that verifies, takes over and continues | https://packout-restore.vercel.app |
 
