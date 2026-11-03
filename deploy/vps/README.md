@@ -58,7 +58,7 @@ Expected API answers: an unknown workspace id gives `404 unknown-workspace`; a w
 
 ## Fund and watch the writer
 
-The writer account pays gas for every anchored batch. A single-digest append measured 0.031 tPOT on 2026-10-29. On 2026-11-02 the balance was about 10.46 tPOT (EVM units), enough for a few hundred appends. Anyone can create a workspace and grant this public address as a writer, so a stranger could spend it. That is acceptable for a testnet demo and not for production. Check the balance before a demo:
+The writer account pays gas for every anchored batch. A single-digest append to an existing head measured 0.031 tPOT on 2026-10-29, but two things cost far more. The node reserves the estimated maximum fee before it accepts a call, about 3.94 tPOT on 2026-11-03, so a balance below about 4 tPOT rejects every anchor with `Transaction is temporarily banned`. And a workspace's first anchor cost 3.88 tPOT on 2026-11-03. Keep at least 10 tPOT on the writer and budget about 4 tPOT per new workspace. Anyone can create a workspace and grant this public address as a writer, so a stranger could spend it. That is acceptable for a testnet demo and not for production. Check the balance before a demo:
 
 ```bash
 node --env-file=.env -e "import('viem').then(async v=>{const {privateKeyToAddress}=await import('viem/accounts');const c=v.createPublicClient({transport:v.http('https://test-evm-rpc-v3.portaldot.dev')});console.log(v.formatEther(await c.getBalance({address:privateKeyToAddress(process.env.VENDOR_WRITER_PRIVATE_KEY)})))})"

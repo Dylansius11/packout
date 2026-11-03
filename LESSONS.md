@@ -2,6 +2,11 @@
 
 Read the headlines before starting work. Format: `### YYYY-MM-DD: headline`, then what happened, root cause, rule going forward. Newest on top.
 
+### 2026-11-03: The vendor writer needs about 4 tPOT of headroom for every anchor, and a workspace's first anchor costs about 3.9 tPOT
+- What happened: during the first run with a real wallet, Vendor A showed "Sent to vendor, not anchored after 30 s" and a long RPC error ending in `Transaction is temporarily banned`. The shared writer held 2.59 tPOT, down from 10.46 the day before.
+- Root cause: the batcher passes the RPC gas estimate through unchanged, and at the 23205 wei gas price that estimate reserves 3.94 tPOT (169822766497408 gas) before any call can be accepted, even though the call usually costs far less. A balance below the reserve makes the node reject the transaction, and it then bans the resubmission for a while. After a 20 tPOT top-up the next mined append moved the nonce from 16 to 17 and cost 3.88 tPOT, so a workspace's first anchor is expensive. [INFERENCE] the first write fills the head slot, which is still empty after `createWorkspace`, so it pays an item deposit; the later 0.031 tPOT appends only update it. Each test workspace therefore drained the writer by about 3.9 tPOT.
+- Rule: before any demo or e2e run, check the writer balance and keep at least 10 tPOT on it (`deploy/vps/README.md`). Budget about 4 tPOT per new workspace. The batcher retries on its own timer, so topping up the writer is enough; nothing needs restarting.
+
 ### 2026-11-02: A Vercel project created from a repo directory connects itself to GitHub and replaces a working site on the next push
 - What happened: landing, Restore and Vendor A returned 404 minutes after they were deployed, and only 17 minutes after a `curl` had answered 200.
 - Root cause: `vercel deploy` run inside `apps/*/dist` (which sits inside the git repo) created each project already linked to the GitHub repo. Every push to `main` then triggered a production deploy from the repo root, which has no build output, and the production alias moved to that empty deployment (`source: git` in the deployment record).
