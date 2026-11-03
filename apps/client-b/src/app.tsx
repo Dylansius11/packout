@@ -2,11 +2,13 @@ import { reduceJournal } from '@packout/sdk';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { useAccount } from 'wagmi';
+import { registryReader } from './chain/clients';
 import { Notice } from './components/notice';
 import { Rail, type StepState, type View } from './components/rail';
 import { registryLookup } from './config/env';
 import { gates } from './domain/gating';
 import { type AnchoredOp, viewJournal } from './domain/journal-view';
+import { reconcilePendingOps } from './domain/pending-ops';
 import {
   bundleFromSession,
   forgetWorkspace,
@@ -60,8 +62,17 @@ function RestoreApp() {
   /** Why the last write was refused. The re-check that follows may replace the screen that showed it. */
   const [writeFailure, setWriteFailure] = useState<string | null>(null);
 
-  async function verifyDevice(current: Session | null) {
-    if (!current) return;
+  async function verifyDevice(start: Session | null) {
+    if (!start) return;
+    let current = start;
+    try {
+      // A write whose receipt never reached this tab may still have landed: take it back before checking.
+      if (registryReader && (await reconcilePendingOps(registryReader)) > 0) {
+        current = (await loadSession()) ?? start;
+      }
+    } catch {
+      // Portaldot could not be asked; the verification below reports that on its own.
+    }
     let input: { bundle: unknown; key: Uint8Array };
     try {
       input = { bundle: bundleFromSession(current), key: sessionKey(current.workspace) };

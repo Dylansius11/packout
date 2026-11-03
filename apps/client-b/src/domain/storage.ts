@@ -55,10 +55,11 @@ export async function saveVerifiedImport(
   if (!report.ok || !bundle || !ops)
     throw new Error('Only a bundle that passed every check can be kept.');
   const now = Date.now();
-  await db.transaction('rw', db.workspaces, db.ops, async () => {
+  await db.transaction('rw', db.workspaces, db.ops, db.pendingOps, async () => {
     const previous = await db.workspaces.get(bundle.wsId);
     await db.workspaces.clear();
     await db.ops.clear();
+    await db.pendingOps.where('wsId').notEqual(bundle.wsId).delete();
     await db.workspaces.put({
       wsId: bundle.wsId,
       chainId: bundle.chainId,
@@ -87,8 +88,9 @@ export async function saveVerifiedImport(
 }
 
 export async function forgetWorkspace(): Promise<void> {
-  await db.transaction('rw', db.workspaces, db.ops, async () => {
+  await db.transaction('rw', db.workspaces, db.ops, db.pendingOps, async () => {
     await db.workspaces.clear();
     await db.ops.clear();
+    await db.pendingOps.clear();
   });
 }

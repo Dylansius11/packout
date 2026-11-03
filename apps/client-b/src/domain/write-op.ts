@@ -13,12 +13,14 @@ import { type Address, bytesToHex, type Hex } from 'viem';
 import { db } from '../db/db.ts';
 import type { StoredOp, WorkspaceRecord } from '../db/types.ts';
 import type { TxProgress } from '../hooks/use-tx.ts';
+import { reconcilePendingOps } from './pending-ops.ts';
 import { StaleHistoryError, staleness } from './staleness.ts';
 
 /**
- * Encrypts one change, appends it from the owner wallet as the next operation, and only then keeps
- * it on this device with the index and transaction Portaldot gave it. If the chain moved on, it
- * stops before asking the wallet for anything.
+ * Encrypts one change, appends it from the owner wallet as the next operation, and keeps it on this
+ * device with the index and transaction Portaldot gave it. The sealed change is saved before the
+ * wallet is asked, so a tab closed mid-confirmation does not lose an operation Portaldot admitted:
+ * `reconcilePendingOps` takes it back. If the chain moved on, it stops before asking the wallet.
  */
 export async function appendOwnerOp(input: {
   workspace: WorkspaceRecord;
@@ -41,6 +43,7 @@ export async function appendOwnerOp(input: {
   const envelope = sealOp(op, key);
   const digest = envelopeDigest(envelope);
 
+  await reconcilePendingOps(reader);
   const onChain = await reader.getWorkspace(workspace.wsId);
   if (!onChain) throw new Error('This workspace no longer exists in the connected registry.');
   if (onChain.owner.toLowerCase() !== account.toLowerCase()) {
@@ -58,6 +61,13 @@ export async function appendOwnerOp(input: {
   const stale = staleness({ count: local.length, head: localHead }, onChain);
   if (stale) throw new StaleHistoryError(stale);
 
+  await db.pendingOps.put({
+    wsId: workspace.wsId,
+    digest,
+    envelope: bytesToHex(envelope),
+    op,
+    createdAt: Date.now(),
+  });
   progress.wallet();
   const writer = await input.writer();
   const result = await writer.appendBatch(workspace.wsId, onChain.count, onChain.head, [digest], {
@@ -82,8 +92,9 @@ export async function appendOwnerOp(input: {
     blockNumber,
     storedAt: Date.now(),
   };
-  await db.transaction('rw', db.workspaces, db.ops, async () => {
+  await db.transaction('rw', db.workspaces, db.ops, db.pendingOps, async () => {
     await db.ops.put(stored);
+    await db.pendingOps.delete([workspace.wsId, digest]);
     await db.workspaces.update(workspace.wsId, {
       checkpointBlock: Math.max(workspace.checkpointBlock, blockNumber),
       displayName: input.displayName,

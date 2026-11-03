@@ -32,3 +32,15 @@ export type StoredOp = {
   blockNumber: number | null;
   storedAt: number;
 };
+
+/**
+ * A sealed operation saved before the wallet is asked to send it. If the tab closes while the
+ * transaction is confirming, this is the only copy of the ciphertext: Portaldot keeps its digest, not its content.
+ */
+export type PendingOp = {
+  wsId: Hex;
+  digest: Hex;
+  envelope: Hex;
+  op: Op;
+  createdAt: number;
+};
