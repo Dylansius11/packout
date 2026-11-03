@@ -106,3 +106,13 @@ The landing page borrows the structure of a developer-tooling page (glass bar, i
 - **Resources grid** (`Resources`): a search field, filter chips, an `aria-live` count ("N of 9 resources"), cards that link to a real path under `https://github.com/Dylansius11/packout/tree|blob/main/`, and an empty state with a "Clear filters" action.
 - **Step-through** (`ExitMoves`): the seven moves of the demo as a `tablist` with a detail card; Previous and Next are `aria-disabled` at the ends, arrows and Home/End work on the list.
 - **Footer** (`Footer`): the large wordmark, the two demo links with their one-sentence explanations, the source link and one line of honest status.
+
+## 9. Pitch deck (`apps/site`, route `/deck`)
+
+A twelve-slide web deck for judges and pilots, in the landing's world: the same void, bitmap face, amber, dust, aurora, hairlines, eyebrows and panels, staged as full-viewport slides. It is a lazy chunk (`src/deck/`, styles in `deck.css` scoped under `.deck`), so the landing's JavaScript does not carry it. Every string is in `src/deck/content.ts`.
+
+- **Routing**: the hash is the source of truth (`/deck#6` opens slide 6). ArrowRight/ArrowLeft, Space and Shift+Space, PageDown/PageUp, Home/End, `1` to `9` and swipe move; `F` toggles full screen. The rail's twelve segments jump.
+- **Slides**: type is Host Grotesk for headlines with one lit phrase in the bitmap face and amber; the opening and the close use the bitmap face throughout. Under 60 rem every slide is one column and scrolls inside its slide while the bars stay fixed.
+- **Motion**: a slide's resting state is its final state. Animations attach only to the active slide (and only while `.deck[data-motion]` is set), so each slide replays on every arrival, and reduced motion, the "Pause motion" control (`data-still` on `<html>`, shared with the landing) and print show the finished slide. Counting numerals expose only their final value to assistive tech.
+- **Print**: `@page` is 1280 by 720 px, one slide per page, chrome hidden, colours exact. The close slide carries a `Print / save as PDF` button.
+- **Honesty**: the funnel's bars are fixed nested widths (100, 60, 30 %) and are labelled "not to scale"; the planning scenario label and the sourcing caption are always on screen.
