@@ -16,7 +16,12 @@ export function Footer() {
           <DemoLinks />
         </div>
         <div className="mt-14 flex flex-col gap-4 border-t border-hair pt-6 md:flex-row md:items-center md:justify-between">
-          <GithubLink label="Source on GitHub" />
+          <div className="flex flex-wrap items-center gap-x-8 gap-y-1">
+            <GithubLink label="Source on GitHub" />
+            <a href="/deck" className="ghost-link inline-flex min-h-11 items-center text-[12px]">
+              Pitch deck
+            </a>
+          </div>
           <p className="baseline whitespace-normal text-[11px] text-ash">
             Portaldot testnet only · built for Portaldot Hacker House 2026 · Modular Cloud and
             Middleware

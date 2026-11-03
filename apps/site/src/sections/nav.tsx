@@ -34,6 +34,16 @@ export function SiteNav() {
               </li>
             ))}
           </ul>
+          <a
+            href="/deck"
+            aria-label="Pitch deck"
+            className="pill border-signal/45 text-signal max-sm:px-3.5"
+          >
+            <span className="sm:hidden" aria-hidden="true">
+              Deck
+            </span>
+            <span className="max-sm:hidden">Pitch deck</span>
+          </a>
           <GithubLink pill />
           <a href={links.vendor} className="signal text-[12px] max-sm:px-4">
             Run the exit
