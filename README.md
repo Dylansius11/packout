@@ -241,7 +241,7 @@ sequenceDiagram
   F->>N: approve recovery (2 of 3), then the test delay passes
   N->>R: Recovery.control_inherited_account(W, rotateEpoch)
   Note over R: msg.sender is still H160(W), so the owner is unchanged
-  N->>R: workspace continues; the old vendor is refused
+  N->>R: workspace continues, the old vendor is refused
 ```
 
 Verified on 2026-10-30: native Recovery let an inheritor rotate the epoch and continue as the same owner, two backup shares recovered the encryption key, and the old vendor was refused. All hashes: [authority gate](docs/technical/SMART-CONTRACT.md#92-native-succession-gate-2026-10-30) and [key-recovery demo](docs/technical/SMART-CONTRACT.md#93-key-recovery-succession-demo-2026-10-30).
