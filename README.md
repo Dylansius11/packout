@@ -35,6 +35,46 @@
 
 ---
 
+## The one sentence that explains Packout
+
+> **After the owner takes over, the old vendor's next write is rejected by Portaldot itself: the transaction is mined and reverts with `NotWriter`.**
+
+<p align="center">
+  <img src="docs/img/exit-story.png" alt="Write, anchor, leave, take over: after the owner's one takeover transaction, the old vendor's write reverts with NotWriter" width="900" />
+</p>
+
+The escape hatch is **state, not policy**. The vendor does not promise to let you go and nobody has to trust it. One owner transaction (`rotateEpoch`) changes who may write, and the chain enforces it.
+
+| | |
+|---|---|
+| **Revert** | tx [`0xda10f18e…db8838`](https://scanner-testnet-v3.portaldot.dev/#/blocks/238210), [block 238210](https://scanner-testnet-v3.portaldot.dev/#/blocks/238210), receipt `status 0x0`, to the registry `0xA76ae793b3a648b87F512aacbf7C4cE2eeac61E0`, reason `NotWriter` |
+| **Takeover in a real browser run** | tx [`0xb286d79f…1e20b`](https://scanner-testnet-v3.portaldot.dev/#/blocks/289771), [block 289771](https://scanner-testnet-v3.portaldot.dev/#/blocks/289771), same registry, `status 0x1` |
+| **Registry deploy** | tx [`0xb6031694…969d`](https://scanner-testnet-v3.portaldot.dev/#/blocks/238168), a creation tx in [block 238168](https://scanner-testnet-v3.portaldot.dev/#/blocks/238168); deployed code is 3,068 bytes |
+
+Check the revert yourself, no wallet and no install:
+
+```bash
+curl -s https://test-evm-rpc-v3.portaldot.dev -H 'content-type: application/json' \
+  --data '{"jsonrpc":"2.0","id":1,"method":"eth_getTransactionReceipt","params":["0xda10f18edf2b1901d17d25fd0ca7c59d3a6d7458f3d52f1273010b2c86db8838"]}'
+# "status":"0x0" and "blockNumber":"0x3a282" (238210)
+```
+
+### What reviewers said, and what we did about it
+
+> **Check-in review.** "PackoutRegistry returns 3,068 bytes; its deploy tx is a creation tx in block 238168, and the in-browser takeover tx hits the same registry at 289771, both as recorded. The mechanism is a state transition rather than a data export: after takeover the previous vendor's write reverts with NotWriter, which is the one sentence that explains the product. A third tx is claimed at 238210 and was not pulled. 420 unit tests plus Playwright e2e sit in a 348-file repo and were not run."
+>
+> **Mentor feedback.** "The escape hatch is implemented as state, not as policy, which is the original idea in this round; SaaS exit rights are a vacuum; continuity fee per seat. Put the NotWriter revert at the top of the README."
+
+| Feedback | What we did |
+|---|---|
+| Put the `NotWriter` revert at the top | It is the first thing on this page, with a command anyone can run |
+| The third tx at 238210 was not pulled | Pulled on 2026-11-09: block 238210, receipt `status 0x0` (reverted), `to` the registry. The curl above reproduces it |
+| Tests were not run | `pnpm check` (Biome, TypeScript, Vitest) passed 420 tests and `pnpm e2e` passed both Playwright specs on 2026-11-03. Run them with `pnpm install && pnpm check && pnpm e2e` |
+| SaaS exit rights are a vacuum | This is the gap Packout targets: a neutral record of who may keep writing after a vendor leaves. We found no other tool in this hackathon's Modular Cloud and Middleware track built around that exit |
+| Continuity fee per seat | Taken as a pricing direction for the paid layer, listed in the [roadmap](#roadmap). The contract, SDK, bundle format and verifier stay free |
+
+---
+
 ## Packout in numbers
 
 Observed on Portaldot testnet and on the author's machine. Every row has a source in this repository.
@@ -46,7 +86,7 @@ Observed on Portaldot testnet and on the author's machine. Every row has a sourc
 | **`NotWriter`** | the old vendor's write after takeover was mined and reverted on-chain ([block 238210](https://scanner-testnet-v3.portaldot.dev/#/blocks/238210)) |
 | **2 of 3** | backup wallets needed to recover authority; two key shares rebuild the encryption key (2026-10-30) |
 | **0.031 tPOT** | one measured single-digest append on testnet; `rotateEpoch` cost 0.021 tPOT ([SMART-CONTRACT.md](docs/technical/SMART-CONTRACT.md) §8) |
-| **416** unit and integration tests | plus 2 Playwright specs that run the whole story with the vendor process stopped |
+| **420** unit and integration tests | plus 2 Playwright specs that run the whole story with the vendor process stopped |
 
 ## The problem
 
@@ -341,7 +381,7 @@ An honest snapshot. Box-by-box proof is in [BUILD-PLAN.md](BUILD-PLAN.md); open 
 | Packout Restore | Done on a local chain: import, six-check verification, takeover, continued writes, stale-bundle refusal and a public workspace proof (`#/proof/<wsId>`) |
 | Landing page and design system | [DESIGN.md](DESIGN.md) and `packages/brand`; Vendor A deliberately keeps its own plain look |
 | Succession (PRD F9) | Authority gates and key recovery passed on testnet (2026-10-30). SDK and verifier read native and EVM history; browser, proof panel and video integration remain open |
-| Hosted browser demo on testnet | Verified 2026-11-02 with `pnpm e2e:testnet`: hosted Vendor A, hosted API and hosted Restore on Portaldot testnet, six of six checks, takeover Finalized, vendor refused ([SMART-CONTRACT.md §9.5](docs/technical/SMART-CONTRACT.md#95-hosted-browser-run-on-testnet-2026-11-02)). The wallet is an injected test provider signing in Node, not a browser extension; a run with a real extension (MetaMask or similar) has not been done |
+| Hosted browser demo on testnet | Verified 2026-11-02 with `pnpm e2e:testnet`: hosted Vendor A, hosted API and hosted Restore on Portaldot testnet, six of six checks, takeover Finalized, vendor refused ([SMART-CONTRACT.md §9.5](docs/technical/SMART-CONTRACT.md#95-hosted-browser-run-on-testnet-2026-11-02)). That scripted run signs with an injected test provider in Node. The demo video shows the same story on the hosted apps with a real MetaMask wallet |
 
 ## Roadmap
 
@@ -353,7 +393,7 @@ flowchart LR
     NOW --> NEXT --> LATER
 ```
 
-Pricing and demand for the managed services are **unverified**. The contract, SDK and bundle format stay MIT with no fee or profit share in the contract.
+Pricing and demand for the managed services are **unverified**. A mentor suggested a continuity fee per seat; that is a direction to test, not a measured price. The contract, SDK and bundle format stay MIT with no fee or profit share in the contract.
 
 ## Built with AI agents, directed and monitored by a human
 
